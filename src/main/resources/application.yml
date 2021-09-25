@@ -16,4 +16,7 @@ spring:
         healthCheckInterval: 20s
         prefer-ip-address: true
 
+blockchain:
+  url: https://sample.mainnet
+
 swagger.authUrl: https://api.opex.dev
