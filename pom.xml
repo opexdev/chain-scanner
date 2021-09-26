@@ -12,6 +12,7 @@
     <modules>
         <module>EthScan</module>
         <module>Core</module>
+        <module>scan-gateway</module>
     </modules>
 
     <properties>
@@ -40,7 +41,7 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter</artifactId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
         </dependency>
     </dependencies>
 
