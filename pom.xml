@@ -45,7 +45,6 @@
     </dependencies>
 
     <build>
-        <sourceDirectory>EthScan/src/main/kotlin</sourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.jetbrains.kotlin</groupId>
