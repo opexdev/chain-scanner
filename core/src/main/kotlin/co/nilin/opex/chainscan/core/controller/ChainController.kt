@@ -8,10 +8,9 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-class ChainController(private val chain: Chain) {
-
+class ChainController(private val chainService: Chain) {
     @GetMapping("/transfers")
     suspend fun getTransfers(@RequestBody request: TransfersRequest): List<Transfer> {
-        return chain.getTransfers(request.startBlock, request.endBlock, request.addresses)
+        return chainService.getTransfers(request.startBlock, request.endBlock, request.addresses)
     }
 }
