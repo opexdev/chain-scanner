@@ -1,4 +1,4 @@
-package co.nilin.opex.chainscan.config
+package co.nilin.opex.chainscan.eth.config
 
 import org.springframework.context.annotation.Configuration
 

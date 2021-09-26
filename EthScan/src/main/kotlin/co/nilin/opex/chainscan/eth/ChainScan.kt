@@ -1,4 +1,4 @@
-package co.nilin.opex.chainscan
+package co.nilin.opex.chainscan.eth
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication

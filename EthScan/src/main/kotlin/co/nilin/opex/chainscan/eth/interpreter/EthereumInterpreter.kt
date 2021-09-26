@@ -1,7 +1,7 @@
-package co.nilin.opex.chainscan.interpreter
+package co.nilin.opex.chainscan.eth.interpreter
 
-import co.nilin.opex.chainscan.model.Transfer
-import co.nilin.opex.chainscan.service.Interpreter
+import co.nilin.opex.chainscan.core.model.Transfer
+import co.nilin.opex.chainscan.core.spi.Interpreter
 import org.web3j.protocol.core.methods.response.EthBlock
 
 const val ERC20_TRANSFER_METHOD_ID = "0xa9059cbb000000000000000000000000"
