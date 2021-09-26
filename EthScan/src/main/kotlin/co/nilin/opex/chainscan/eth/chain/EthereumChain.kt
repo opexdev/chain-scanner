@@ -3,6 +3,8 @@ package co.nilin.opex.chainscan.eth.chain
 import co.nilin.opex.chainscan.core.model.Transfer
 import co.nilin.opex.chainscan.core.spi.Chain
 import co.nilin.opex.chainscan.core.spi.Interpreter
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.springframework.beans.factory.annotation.Value
 import org.web3j.protocol.Web3j
 import org.web3j.protocol.core.methods.response.EthBlock
@@ -13,7 +15,25 @@ class EthereumChain(private val interpreter: Interpreter<EthBlock.TransactionObj
     private lateinit var url: String
     private val web3j: Web3j = Web3j.build(HttpService(url))
 
-    override fun getTransfers(startBlock: Long, endBlock: Long, addresses: List<String>): List<Transfer> {
-        TODO("Not yet implemented")
+    override suspend fun getTransfers(startBlock: Long, endBlock: Long, addresses: List<String>): List<Transfer> {
+        val transfers = mutableListOf<Transfer>()
+        runBlocking {
+            repeat((endBlock - startBlock).toInt()) { i ->
+                launch {
+                    val blockNumber = { (startBlock + i).toString() }
+                    val transactions = web3j.ethGetBlockByNumber(blockNumber, true).send().block.transactions
+                    transactions.forEach {
+                        val tx = it as EthBlock.TransactionObject
+                        val transfer = interpreter.interpret(tx)
+                        if (transfer != null) {
+                            if (transfer.isTokenTransfer && addresses.contains(transfer.token)) {
+                                transfers.add(transfer)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return transfers
     }
 }
