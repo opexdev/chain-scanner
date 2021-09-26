@@ -6,7 +6,12 @@
 
     <groupId>co.nilin.opex.chainscan</groupId>
     <artifactId>Chain-Scan</artifactId>
+    <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
+
+    <modules>
+        <module>EthScan</module>
+    </modules>
 
     <properties>
         <kotlin.version>1.5.21</kotlin.version>
@@ -43,7 +48,7 @@
         </dependency>
     </dependencies>
     <build>
-        <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
+        <sourceDirectory>EthScan/src/main/kotlin</sourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.jetbrains.kotlin</groupId>
