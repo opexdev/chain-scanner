@@ -1,8 +1,8 @@
-package co.nilin.opex.chainscan.chain
+package co.nilin.opex.chainscan.eth.chain
 
 import co.nilin.opex.chainscan.model.Transfer
-import co.nilin.opex.chainscan.service.Chain
-import co.nilin.opex.chainscan.service.Interpreter
+import co.nilin.opex.chainscan.eth.spi.Chain
+import co.nilin.opex.chainscan.eth.spi.Interpreter
 import org.springframework.beans.factory.annotation.Value
 import org.web3j.protocol.Web3j
 import org.web3j.protocol.core.methods.response.EthBlock

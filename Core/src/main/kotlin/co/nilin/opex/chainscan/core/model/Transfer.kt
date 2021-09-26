@@ -1,4 +1,4 @@
-package co.nilin.opex.chainscan.model
+package co.nilin.opex.chainscan.core.model
 
 data class Transfer(
     val txHash: String,
