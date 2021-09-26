@@ -3,6 +3,7 @@ package co.nilin.opex.chainscan.eth.impl
 import co.nilin.opex.chainscan.core.model.Transfer
 import co.nilin.opex.chainscan.core.spi.Chain
 import co.nilin.opex.chainscan.core.spi.Interpreter
+import co.nilin.opex.chainscan.eth.interpreter.EthereumInterpreter
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.springframework.beans.factory.annotation.Value
