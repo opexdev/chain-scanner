@@ -18,7 +18,8 @@ class EthereumChain(private val interpreter: Interpreter<EthBlock.TransactionObj
     override suspend fun getTransfers(startBlock: Long, endBlock: Long, addresses: List<String>): List<Transfer> {
         val transfers = mutableListOf<Transfer>()
         runBlocking {
-            repeat((endBlock - startBlock).toInt()) { i ->
+            val times = (endBlock - startBlock).toInt()
+            repeat(times) { i ->
                 launch {
                     val blockNumber = { (startBlock + i).toString() }
                     val transactions = web3j.ethGetBlockByNumber(blockNumber, true).send().block.transactions
