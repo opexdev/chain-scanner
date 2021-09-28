@@ -2,7 +2,7 @@ server.port: 8091
 
 spring:
   application:
-    name: scan-gateway
+    name: gateway
   main:
     allow-bean-definition-overriding: false
   cloud:
