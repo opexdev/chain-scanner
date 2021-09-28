@@ -20,7 +20,7 @@
     </properties>
 
     <build>
-        <sourceDirectory>src/main/kotlin</sourceDirectory>
+        <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
     </build>
 
 </project>

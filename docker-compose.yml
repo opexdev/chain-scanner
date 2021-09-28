@@ -22,16 +22,16 @@ services:
     environment:
       - POSTGRES_USER=opex
       - POSTGRES_PASSWORD=hiopex
-      - POSTGRES_DB=scan_gateway
+      - POSTGRES_DB=gateway
     volumes:
       - $DATA/scan-gateway-data:/var/lib/postgresql/data/
     networks:
       - chain-scan
 
-  scanner-gateway:
-    container_name: scan-gateway
+  gateway:
+    container_name: gateway
     build:
-      context: ./scan-gateway
+      context: ./gateway
       dockerfile: Dockerfile
     ports:
       - 127.0.0.1:9991:9991
