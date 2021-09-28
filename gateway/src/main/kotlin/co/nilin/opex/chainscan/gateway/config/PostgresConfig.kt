@@ -15,7 +15,7 @@ class PostgresConfig(db: DatabaseClient) {
                     id SERIAL PRIMARY KEY,
                     name VARCHAR(72) NOT NULL UNIQUE,
                     url VARCHAR(100) NOT NULL
-                )
+                );
                 
                 INSERT INTO scanner_module(name, url) VALUES('eth', 'lb://eth-scan') ON CONFLICT DO NOTHING; 
             """.trimIndent()

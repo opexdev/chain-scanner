@@ -23,21 +23,21 @@ services:
       - POSTGRES_PASSWORD=hiopex
       - POSTGRES_DB=scanner_gateway
     volumes:
-      - $DATA/gateway-data:/var/lib/postgresql/data/
+      - $DATA/scan-gateway-data:/var/lib/postgresql/data/
     networks:
       - scanner
 
   scanner-gateway:
     container_name: scanner-gateway
     build:
-      context: ./scan-gateway
+      context: ./gateway
       dockerfile: Dockerfile
     ports:
       - 127.0.0.1:9991:9991
       - 127.0.0.1:1051:1044
     environment:
       - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=1044
-      - SPRING_PROFILES_DEFAULT=docker
+      - SPRING_PROFILES_ACTIVE=docker
       - CONSUL_HOST=consul
       - DB_IP_PORT=postgres-gateway
     networks:

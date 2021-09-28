@@ -4,8 +4,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
 @SpringBootApplication
-class ScanGatewayApplication
+class GatewayApplication
 
 fun main(args: Array<String>) {
-	runApplication<ScanGatewayApplication>(*args)
+	runApplication<GatewayApplication>(*args)
 }
