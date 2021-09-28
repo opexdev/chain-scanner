@@ -34,7 +34,7 @@ services:
       context: ./gateway
       dockerfile: Dockerfile
     ports:
-      - 127.0.0.1:9991:9991
+      - 127.0.0.1:9990:9990
       - 127.0.0.1:1051:1044
     environment:
       - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=1044
@@ -56,7 +56,7 @@ services:
       context: ./eth-scan
       dockerfile: Dockerfile
     ports:
-      - 127.0.0.1:9992:9992
+      - 127.0.0.1:9991:9991
       - 127.0.0.1:1052:1044
     environment:
       - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=1044
