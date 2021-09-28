@@ -2,7 +2,7 @@ server.port: 8090
 
 spring:
   application:
-    name: chain-scan
+    name: eth-scan
   main:
     allow-bean-definition-overriding: false
   cloud:
