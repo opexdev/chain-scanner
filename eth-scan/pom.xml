@@ -18,10 +18,16 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-consul-all</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>org.web3j</groupId>
             <artifactId>core</artifactId>
             <version>4.8.4</version>
         </dependency>
+
         <dependency>
             <groupId>co.nilin.opex.chainscan.core</groupId>
             <artifactId>core</artifactId>
@@ -31,6 +37,12 @@
 
     <build>
         <sourceDirectory>/src/main/kotlin</sourceDirectory>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
     </build>
 
 </project>

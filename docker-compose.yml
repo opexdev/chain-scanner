@@ -1,0 +1,71 @@
+version: '3.8'
+services:
+  consul:
+    image: 'consul'
+    ports:
+      - '127.0.0.1:8500:8500'
+      - '127.0.0.1:8300:8300'
+      - '127.0.0.1:8600:8600'
+    environment:
+      - CONSUL_BIND_INTERFACE=eth0
+    networks:
+      - scanner
+    deploy:
+      restart_policy:
+        condition: on-failure
+
+  postgres-gateway:
+    image: "postgres"
+    ports:
+      - 127.0.0.1:5433:5432
+    environment:
+      - POSTGRES_USER=opex
+      - POSTGRES_PASSWORD=hiopex
+      - POSTGRES_DB=scanner_gateway
+    volumes:
+      - $DATA/gateway-data:/var/lib/postgresql/data/
+    networks:
+      - scanner
+
+  scanner-gateway:
+    container_name: scanner-gateway
+    build:
+      context: ./scan-gateway
+      dockerfile: Dockerfile
+    ports:
+      - 127.0.0.1:9991:9991
+      - 127.0.0.1:1051:1044
+    environment:
+      - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=1044
+      - SPRING_PROFILES_DEFAULT=docker
+      - CONSUL_HOST=consul
+      - DB_IP_PORT=postgres-gateway
+    networks:
+      - scanner
+    depends_on:
+      - consul
+      - postgres-gateway
+    deploy:
+      restart_policy:
+        condition: on-failure
+
+  scanner-eth:
+    container_name: scanner-eth
+    build:
+      context: ./eth-scan
+      dockerfile: Dockerfile
+    ports:
+      - 127.0.0.1:9992:9992
+      - 127.0.0.1:1052:1044
+    environment:
+      - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=1044
+      - SPRING_PROFILES_ACTIVE=docker
+      - CONSUL_HOST=consul
+    networks:
+      - scanner
+    depends_on:
+      - consul
+
+networks:
+  scanner:
+    driver: bridge
