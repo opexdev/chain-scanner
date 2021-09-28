@@ -1,10 +1,14 @@
-server.port: 8091
+server.port: 9990
 
 spring:
   application:
-    name: scanner-gateway
+    name: scan-gateway
   main:
     allow-bean-definition-overriding: false
+  r2dbc:
+    url: r2dbc:postgresql://127.0.0.1:5432/scanner_gateway
+    username: opex
+    password: hiopex
   cloud:
     bootstrap:
       enabled: true

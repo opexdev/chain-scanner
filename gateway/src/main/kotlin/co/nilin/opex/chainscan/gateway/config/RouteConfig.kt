@@ -19,7 +19,7 @@ class RouteConfig(private val scannerRepository: ScannerRepository) {
                     }
                     .uri(scanner.url)
             }
-        }
+        }.subscribe()
     }.build()
 
 }

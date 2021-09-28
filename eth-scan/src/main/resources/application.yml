@@ -1,8 +1,8 @@
-server.port: 8090
+server.port: 9991
 
 spring:
   application:
-    name: chain-scan
+    name: scan-eth
   main:
     allow-bean-definition-overriding: false
   cloud:
