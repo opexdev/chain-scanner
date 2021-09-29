@@ -2,7 +2,7 @@ server.port: 9991
 
 spring:
   application:
-    name: scan-eth
+    name: eth-scan
   main:
     allow-bean-definition-overriding: false
   cloud:

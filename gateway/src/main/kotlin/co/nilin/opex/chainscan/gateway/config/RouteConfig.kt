@@ -1,17 +1,16 @@
 package co.nilin.opex.chainscan.gateway.config
 
-import co.nilin.opex.chainscan.gateway.repository.ScannerRepository
+import co.nilin.opex.chainscan.gateway.repository.ScannerModuleRepository
 import org.springframework.cloud.gateway.route.RouteLocator
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-class RouteConfig(private val scannerRepository: ScannerRepository) {
-
+class RouteConfig(private val scannerModuleRepository: ScannerModuleRepository) {
     @Bean
     fun routes(builder: RouteLocatorBuilder): RouteLocator = builder.routes().apply {
-        scannerRepository.findAll().map { scanner ->
+        scannerModuleRepository.findAll().map { scanner ->
             route(scanner.name) {
                 it.path("/${scanner.name}/**")
                     .filters { f ->
@@ -21,5 +20,4 @@ class RouteConfig(private val scannerRepository: ScannerRepository) {
             }
         }.subscribe()
     }.build()
-
 }

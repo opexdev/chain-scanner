@@ -1,4 +1,4 @@
-package co.nilin.opex.chainscan.eth.interpreter
+package co.nilin.opex.chainscan.eth.impl
 
 import co.nilin.opex.chainscan.core.model.Transfer
 import co.nilin.opex.chainscan.core.spi.Interpreter

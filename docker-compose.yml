@@ -1,4 +1,5 @@
 version: '3.8'
+
 services:
   consul:
     image: 'consul'
@@ -9,7 +10,7 @@ services:
     environment:
       - CONSUL_BIND_INTERFACE=eth0
     networks:
-      - scanner
+      - chain-scan
     deploy:
       restart_policy:
         condition: on-failure
@@ -21,14 +22,14 @@ services:
     environment:
       - POSTGRES_USER=opex
       - POSTGRES_PASSWORD=hiopex
-      - POSTGRES_DB=scanner_gateway
+      - POSTGRES_DB=gateway
     volumes:
       - $DATA/scan-gateway-data:/var/lib/postgresql/data/
     networks:
-      - scanner
+      - chain-scan
 
-  scan-gateway:
-    container_name: scan-gateway
+  gateway:
+    container_name: gateway
     build:
       context: ./gateway
       dockerfile: Dockerfile
@@ -41,7 +42,7 @@ services:
       - CONSUL_HOST=consul
       - DB_IP_PORT=postgres-gateway
     networks:
-      - scanner
+      - chain-scan
     depends_on:
       - consul
       - postgres-gateway
@@ -49,8 +50,8 @@ services:
       restart_policy:
         condition: on-failure
 
-  scan-eth:
-    container_name: scan-eth
+  eth-scan:
+    container_name: eth-scan
     build:
       context: ./eth-scan
       dockerfile: Dockerfile
@@ -62,10 +63,10 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
       - CONSUL_HOST=consul
     networks:
-      - scanner
+      - chain-scan
     depends_on:
       - consul
 
 networks:
-  scanner:
+  chain-scan:
     driver: bridge

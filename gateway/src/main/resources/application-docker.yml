@@ -1,10 +1,10 @@
 spring:
   application:
-    name: scan-gateway
+    name: gateway
   main:
     allow-bean-definition-overriding: false
   r2dbc:
-    url: r2dbc:postgresql://${DB_IP_PORT}/scanner_gateway
+    url: r2dbc:postgresql://${DB_IP_PORT}/gateway
     username: opex
     password: hiopex
   cloud:

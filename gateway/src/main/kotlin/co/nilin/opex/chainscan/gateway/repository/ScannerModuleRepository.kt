@@ -5,4 +5,4 @@ import org.springframework.data.repository.reactive.ReactiveCrudRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface ScannerRepository : ReactiveCrudRepository<ScannerModule, Long>
+interface ScannerModuleRepository : ReactiveCrudRepository<ScannerModule, Long>
