@@ -67,6 +67,23 @@ services:
     depends_on:
       - consul
 
+  bitcoin-scan:
+    container_name: bitcoin-scan
+    build:
+      context: ./bitcoin-scan
+      dockerfile: Dockerfile
+    ports:
+      - 127.0.0.1:9992:9992
+      - 127.0.0.1:1053:1044
+    environment:
+      - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=1044
+      - SPRING_PROFILES_ACTIVE=docker
+      - CONSUL_HOST=consul
+    networks:
+      - chain-scan
+    depends_on:
+      - consul
+
 networks:
   chain-scan:
     driver: bridge
