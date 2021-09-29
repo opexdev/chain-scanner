@@ -18,7 +18,7 @@ class ChainService(private val interpreter: Interpreter<EthBlock.TransactionObje
     private lateinit var url: String
     private val web3j: Web3j by lazy { Web3j.build(HttpService(url)) }
 
-    override suspend fun getTransfers(startBlock: Long, endBlock: Long, addresses: List<String>): List<Transfer> {
+    override suspend fun getTransfers(startBlock: Long, endBlock: Long, addresses: List<String>?): List<Transfer> {
         val transfers = mutableListOf<Transfer>()
         coroutineScope {
             val times = (endBlock - startBlock).toInt()
@@ -30,7 +30,7 @@ class ChainService(private val interpreter: Interpreter<EthBlock.TransactionObje
                         val tx = it as EthBlock.TransactionObject
                         val transfer = interpreter.interpret(tx)
                         if (transfer != null) {
-                            if (transfer.isTokenTransfer && addresses.contains(transfer.token)) {
+                            if (transfer.isTokenTransfer && addresses?.contains(transfer.token) == true) {
                                 transfers.add(transfer)
                             }
                         }
