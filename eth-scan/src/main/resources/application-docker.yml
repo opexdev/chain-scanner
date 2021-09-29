@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: eth-scan
+  main:
+    allow-bean-definition-overriding: false
+  cloud:
+    consul:
+      host: ${CONSUL_HOST}
+      port: 8500
+
+blockchain:
+  url: https://sample.mainnet
+
+swagger.authUrl: https://api.opex.dev

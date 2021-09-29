@@ -1,0 +1,21 @@
+server.port: 9990
+
+spring:
+  application:
+    name: gateway
+  main:
+    allow-bean-definition-overriding: false
+  r2dbc:
+    url: r2dbc:postgresql://127.0.0.1:5432/gateway
+    username: opex
+    password: hiopex
+  cloud:
+    bootstrap:
+      enabled: true
+    consul:
+      port: 8500
+      discovery:
+        #healthCheckPath: ${management.context-path}/health
+        instance-id: ${spring.application.name}:${server.port}
+        healthCheckInterval: 20s
+        prefer-ip-address: true
