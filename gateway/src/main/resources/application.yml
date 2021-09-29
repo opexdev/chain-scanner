@@ -6,7 +6,7 @@ spring:
   main:
     allow-bean-definition-overriding: false
   r2dbc:
-    url: r2dbc:postgresql://127.0.0.1:5432/scanner_gateway
+    url: r2dbc:postgresql://127.0.0.1:5432/gateway
     username: opex
     password: hiopex
   cloud:
