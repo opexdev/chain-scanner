@@ -7,7 +7,6 @@ import org.springframework.r2dbc.core.DatabaseClient
 @Configuration
 @EnableR2dbcRepositories(basePackages = ["co.nilin.opex"])
 class PostgresConfig(db: DatabaseClient) {
-
     init {
         db.sql {
             """
@@ -17,9 +16,8 @@ class PostgresConfig(db: DatabaseClient) {
                     url VARCHAR(100) NOT NULL
                 );
                 
-                INSERT INTO scanner_module(name, url) VALUES('eth', 'lb://scan-eth') ON CONFLICT DO NOTHING; 
+                INSERT INTO scanner_module(name, url) VALUES('eth', 'lb://eth-scan') ON CONFLICT DO NOTHING; 
             """.trimIndent()
         }.then().subscribe()
     }
-
 }
