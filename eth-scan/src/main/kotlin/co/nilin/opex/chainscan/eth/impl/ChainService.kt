@@ -9,6 +9,7 @@ import kotlinx.coroutines.launch
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.web3j.protocol.Web3j
+import org.web3j.protocol.core.DefaultBlockParameterNumber
 import org.web3j.protocol.core.methods.response.EthBlock
 import org.web3j.protocol.http.HttpService
 
@@ -18,19 +19,19 @@ class ChainService(private val interpreter: Interpreter<EthBlock.TransactionObje
     private lateinit var url: String
     private val web3j: Web3j by lazy { Web3j.build(HttpService(url)) }
 
-    override suspend fun getTransfers(startBlock: Long, endBlock: Long, addresses: List<String>): List<Transfer> {
+    override suspend fun getTransfers(startBlock: Long, endBlock: Long, addresses: List<String>?): List<Transfer> {
         val transfers = mutableListOf<Transfer>()
         coroutineScope {
-            val times = (endBlock - startBlock).toInt()
+            val times = (endBlock - startBlock).toInt() + 1
             repeat(times) { i ->
                 launch(Dispatchers.IO) {
-                    val blockNumber = { (startBlock + i).toString() }
-                    val transactions = web3j.ethGetBlockByNumber(blockNumber, true).send().block.transactions
-                    transactions.forEach {
+                    val blockNumber = DefaultBlockParameterNumber(startBlock + i)
+                    val block = web3j.ethGetBlockByNumber(blockNumber, true).send().block
+                    block.transactions.forEach {
                         val tx = it as EthBlock.TransactionObject
                         val transfer = interpreter.interpret(tx)
                         if (transfer != null) {
-                            if (transfer.isTokenTransfer && addresses.contains(transfer.token)) {
+                            if (!transfer.isTokenTransfer || addresses?.contains(transfer.token) == true) {
                                 transfers.add(transfer)
                             }
                         }
