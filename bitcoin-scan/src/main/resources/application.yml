@@ -1,8 +1,10 @@
-server.port: 9991
+server.port: 9992
 
 spring:
   application:
-    name: eth-scan
+    name: bitcoin-scan
+  codec:
+    max-in-memory-size: 10MB
   main:
     allow-bean-definition-overriding: false
   cloud:
@@ -20,7 +22,8 @@ logging:
     co.nilin: DEBUG
     reactor.netty.http.client: DEBUG
 
-blockchain:
-  url: https://eth.getblock.io/mainnet/?api_key=ba9c5c13-9efa-4a39-8c00-c6aed570944f
-
-swagger.authUrl: https://api.opex.dev
+app:
+  blockchain:
+    rpc-url: https://btc.getblock.io/mainnet
+    rest-url: https://btc.getblock.io/rest
+    api-key: e0c0e8cd-d492-44f4-8309-11d6c41e77ae
