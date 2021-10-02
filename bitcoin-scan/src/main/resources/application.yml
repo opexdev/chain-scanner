@@ -17,6 +17,10 @@ spring:
         instance-id: ${spring.application.name}:${server.port}
         healthCheckInterval: 20s
         prefer-ip-address: true
+logging:
+  level:
+    co.nilin: DEBUG
+    reactor.netty.http.client: DEBUG
 
 app:
   blockchain:
