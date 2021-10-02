@@ -4,9 +4,9 @@ services:
   consul:
     image: 'consul'
     ports:
-      - '127.0.0.1:8500:8500'
-      - '127.0.0.1:8300:8300'
-      - '127.0.0.1:8600:8600'
+      - '8500'
+      - '8300'
+      - '8600'
     environment:
       - CONSUL_BIND_INTERFACE=eth0
     networks:
@@ -18,7 +18,7 @@ services:
   postgres-gateway:
     image: "postgres"
     ports:
-      - 127.0.0.1:5433:5432
+      - 127.0.0.1:5439:5432
     environment:
       - POSTGRES_USER=opex
       - POSTGRES_PASSWORD=hiopex
