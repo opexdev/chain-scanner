@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: bitcoin-scan
+  main:
+    allow-bean-definition-overriding: false
+  cloud:
+    consul:
+      host: ${CONSUL_HOST}
+      port: 8500
