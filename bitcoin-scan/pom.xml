@@ -7,12 +7,11 @@
     <parent>
         <artifactId>Chain-Scan</artifactId>
         <groupId>co.nilin.opex.chainscan</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0.0-beta-1</version>
     </parent>
 
     <groupId>co.nilin.opex.chainscan.bitcoin</groupId>
     <artifactId>bitcoin-scan</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
     <name>bitcoin-scan</name>
     <description>Chain scan bitcoin</description>
 
@@ -39,7 +38,7 @@
         <dependency>
             <groupId>co.nilin.opex.chainscan.core</groupId>
             <artifactId>core</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>[0,)</version>
         </dependency>
     </dependencies>
 
