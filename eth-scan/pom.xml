@@ -6,12 +6,11 @@
     <parent>
         <artifactId>Chain-Scan</artifactId>
         <groupId>co.nilin.opex.chainscan</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0.0-beta-1</version>
     </parent>
 
     <groupId>co.nilin.opex.chainscan.eth</groupId>
     <artifactId>eth-scan</artifactId>
-    <version>1.0-SNAPSHOT</version>
     <name>eth-scan</name>
     <description>Chain scan ethereum</description>
 
