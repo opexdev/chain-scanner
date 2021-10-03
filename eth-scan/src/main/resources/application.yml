@@ -1,0 +1,26 @@
+server.port: 9991
+
+spring:
+  application:
+    name: eth-scan
+  main:
+    allow-bean-definition-overriding: false
+  cloud:
+    bootstrap:
+      enabled: true
+    consul:
+      port: 8500
+      discovery:
+        #healthCheckPath: ${management.context-path}/health
+        instance-id: ${spring.application.name}:${server.port}
+        healthCheckInterval: 20s
+        prefer-ip-address: true
+logging:
+  level:
+    co.nilin: DEBUG
+    reactor.netty.http.client: DEBUG
+
+blockchain:
+  url: https://eth.getblock.io/mainnet/?api_key=ba9c5c13-9efa-4a39-8c00-c6aed570944f
+
+swagger.authUrl: https://api.opex.dev
