@@ -7,7 +7,6 @@ import co.nilin.opex.chainscan.core.spi.Interpreter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.web3j.protocol.Web3j
