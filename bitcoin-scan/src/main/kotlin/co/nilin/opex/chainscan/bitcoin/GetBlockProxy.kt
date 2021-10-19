@@ -2,6 +2,7 @@ package co.nilin.opex.chainscan.bitcoin
 
 import co.nilin.opex.chainscan.bitcoin.data.BlockHashResponse
 import co.nilin.opex.chainscan.bitcoin.data.BlockResponse
+import co.nilin.opex.chainscan.bitcoin.data.ChainInfoResponse
 import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import org.slf4j.LoggerFactory
@@ -21,6 +22,19 @@ class GetBlockProxy(private val webClient: WebClient) {
 
     @Value("\${app.blockchain.api-key}")
     private lateinit var apiKey: String
+
+    suspend fun getInfo(): ChainInfoResponse? {
+        logger.info("fetching chain info")
+        return webClient.get()
+            .uri("$url/blockhashbyheight/chaininfo.json")
+            .accept(MediaType.APPLICATION_JSON)
+            .header("x-api-key", apiKey)
+            .header(HttpHeaders.CONTENT_TYPE, "application/json")
+            .retrieve()
+            .onStatus({ t -> t.isError }, { it.createException() })
+            .bodyToMono(ChainInfoResponse::class.java)
+            .awaitSingleOrNull()
+    }
 
     suspend fun getBlockHash(height: Long): String {
         logger.info("fetching block hash of $height")
