@@ -1,11 +1,10 @@
 package co.nilin.opex.chainscan.core.controller
 
-import co.nilin.opex.chainscan.core.model.Transfer
 import co.nilin.opex.chainscan.core.model.TransfersRequest
+import co.nilin.opex.chainscan.core.model.TransfersResult
 import co.nilin.opex.chainscan.core.spi.Chain
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
@@ -19,7 +18,7 @@ class ChainController(private val chainService: Chain) {
     private lateinit var appName: String
 
     @PostMapping("/transfers")
-    suspend fun getTransfers(@RequestBody request: TransfersRequest): List<Transfer> {
+    suspend fun getTransfers(@RequestBody request: TransfersRequest): TransfersResult {
         logger.info("Calling '/transfers' for: $appName")
         return chainService.getTransfers(request.startBlock, request.endBlock, request.addresses)
     }

@@ -35,7 +35,7 @@ services:
       dockerfile: Dockerfile
     ports:
       - 127.0.0.1:9990:9990
-      - 127.0.0.1:1053:1044
+      - 127.0.0.1:1060:1044
     environment:
       - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=1044
       - SPRING_PROFILES_ACTIVE=docker
@@ -57,7 +57,7 @@ services:
       dockerfile: Dockerfile
     ports:
       - 127.0.0.1:9991:9991
-      - 127.0.0.1:1054:1044
+      - 127.0.0.1:1061:1044
     environment:
       - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=1044
       - SPRING_PROFILES_ACTIVE=docker
@@ -74,7 +74,7 @@ services:
       dockerfile: Dockerfile
     ports:
       - 127.0.0.1:9992:9992
-      - 127.0.0.1:1055:1044
+      - 127.0.0.1:1062:1044
     environment:
       - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=1044
       - SPRING_PROFILES_ACTIVE=docker
@@ -86,4 +86,5 @@ services:
 
 networks:
   chain-scan:
+    name: chain-scan
     driver: bridge

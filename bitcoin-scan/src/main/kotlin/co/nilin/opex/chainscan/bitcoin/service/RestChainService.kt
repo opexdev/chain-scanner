@@ -5,6 +5,7 @@ import co.nilin.opex.chainscan.bitcoin.data.TransactionResponse
 import co.nilin.opex.chainscan.bitcoin.utils.justTry
 import co.nilin.opex.chainscan.bitcoin.utils.justTryOrNull
 import co.nilin.opex.chainscan.core.model.Transfer
+import co.nilin.opex.chainscan.core.model.TransfersResult
 import co.nilin.opex.chainscan.core.spi.Chain
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
@@ -12,9 +13,11 @@ import java.math.BigDecimal
 @Service
 class RestChainService(private val proxy: GetBlockProxy) : Chain {
 
-    override suspend fun getTransfers(startBlock: Long, endBlock: Long, addresses: List<String>?): List<Transfer> {
+    override suspend fun getTransfers(startBlock: Long, endBlock: Long?, addresses: List<String>?): TransfersResult {
         val blockHash = ArrayList<String?>()
-        for (i in startBlock until endBlock + 1) {
+        val last = endBlock ?: proxy.getInfo()?.blocks ?: (startBlock + 10)
+
+        for (i in startBlock until last + 1) {
             justTry { blockHash.add(proxy.getBlockHash(i)) }
         }
 
@@ -30,20 +33,20 @@ class RestChainService(private val proxy: GetBlockProxy) : Chain {
 
         val transfers = ArrayList<Transfer>()
         transactions.forEach { tx ->
-            val s = tx.vout.find { addresses?.contains(it.scriptPubKey?.address) == true }
-            if (s != null)
+            tx.vout.forEach {
                 transfers.add(
                     Transfer(
                         tx.hash,
                         "",
-                        s.scriptPubKey?.address ?: "",
+                        it.scriptPubKey?.address ?: "",
                         false,
                         null,
-                        s.value
+                        it.value
                     )
                 )
+            }
         }
 
-        return transfers
+        return TransfersResult(last, transfers)
     }
 }

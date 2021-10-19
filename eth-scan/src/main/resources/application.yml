@@ -21,6 +21,6 @@ logging:
     reactor.netty.http.client: DEBUG
 
 blockchain:
-  url: https://eth.getblock.io/mainnet/?api_key=ba9c5c13-9efa-4a39-8c00-c6aed570944f
+  url: https://ropsten.infura.io/v3/bd4d52790cf34c209cfa51c437f9f844
 
 swagger.authUrl: https://api.opex.dev
