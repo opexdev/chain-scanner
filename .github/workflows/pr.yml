@@ -1,0 +1,26 @@
+name: Build Chain-Scan pull request
+
+on:
+  pull_request:
+    types: [ opened, synchronize, reopened ]
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        java: [ 13 ]
+    name: Chain-Scan with java ${{ matrix.java }} build
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v2
+      - name: Setup Java
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-package: jdk
+          java-version: ${{ matrix.java }}
+          cache: maven
+      - name: Build project
+        working-directory: .
+        run: mvn -B clean install
