@@ -17,14 +17,14 @@ class EthereumInterpreter : Interpreter<EthBlock.TransactionObject> {
 
     private fun parseAssetTransfer(tx: EthBlock.TransactionObject): Transfer {
         if (!isAssetTransfer(tx.input)) throw IllegalArgumentException()
-        val amount = BigDecimal(tx.value, 18)
+        val amount = BigDecimal(tx.value)
         return Transfer(tx.hash, tx.from, tx.to, false, null, amount)
     }
 
     private fun parseTokenTransfer(tx: EthBlock.TransactionObject): Transfer {
         if (!isTokenTransfer(tx.input)) throw IllegalArgumentException()
         val receiver = "0x${tx.input.substring(34, 74)}"
-        val amount = BigDecimal(BigInteger(tx.input.substring(74), 16), 18)
+        val amount = BigDecimal(BigInteger(tx.input.substring(74), 16))
         return Transfer(tx.hash, tx.from, receiver, true, tx.to, amount)
     }
 
