@@ -19,17 +19,18 @@ class ChainService(
     private val interpreter: Interpreter<EthBlock.TransactionObject>
 ) : Chain {
 
-    private val startBlockLimit = 11251897L
     private val logger = LoggerFactory.getLogger(ChainService::class.java)
 
     override suspend fun getTransfers(startBlock: Long, endBlock: Long?, addresses: List<String>?): TransfersResult {
-        logger.info("start fetching ethereum transfers: startBlock=$startBlock, endBlock=$endBlock")
+        logger.info("requested blocks: startBlock=$startBlock, endBlock=$endBlock")
         val transfers = mutableListOf<Transfer>()
         var last: Long
         coroutineScope {
-            val first = if (startBlock < startBlockLimit) startBlockLimit else startBlock
-            last = endBlock ?: web3j.ethBlockNumber().send().blockNumber.toLong()
+            val networkBlockHeight = web3j.ethBlockNumber().send().blockNumber.toLong()
+            last = endBlock ?: networkBlockHeight
+            val first = if (startBlock == 0L || startBlock >= last) last - 10 else startBlock
 
+            logger.info("start fetching ethereum transfers: startBlock=$first, endBlock=$last")
             for (i in first until last + 1) {
                 launch(Dispatchers.IO) {
                     val blockNumber = DefaultBlockParameterNumber(i)
