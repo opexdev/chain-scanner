@@ -24,6 +24,6 @@ logging:
 
 app:
   blockchain:
-    rpc-url: https://btc.getblock.io/mainnet
-    rest-url: https://btc.getblock.io/rest
+    rpc-url: https://btc.getblock.io/testnet
+    rest-url: https://btc.getblock.io/testnet/rest
     api-key: e0c0e8cd-d492-44f4-8309-11d6c41e77ae
