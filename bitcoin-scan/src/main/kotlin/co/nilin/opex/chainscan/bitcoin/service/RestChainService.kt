@@ -16,8 +16,9 @@ class RestChainService(private val proxy: GetBlockProxy) : Chain {
     override suspend fun getTransfers(startBlock: Long, endBlock: Long?, addresses: List<String>?): TransfersResult {
         val blockHash = ArrayList<String?>()
         val last = endBlock ?: proxy.getInfo()?.blocks ?: (startBlock + 10)
+        val first = if (startBlock == 0L || startBlock >= last) last - 3 else startBlock
 
-        for (i in startBlock until last + 1) {
+        for (i in first until last + 1) {
             justTry { blockHash.add(proxy.getBlockHash(i)) }
         }
 
@@ -36,7 +37,7 @@ class RestChainService(private val proxy: GetBlockProxy) : Chain {
             tx.vout.forEach {
                 transfers.add(
                     Transfer(
-                        tx.hash,
+                        "${tx.hash}_${it.scriptPubKey?.hex}",
                         "",
                         it.scriptPubKey?.address ?: "",
                         false,

@@ -26,7 +26,7 @@ class GetBlockProxy(private val webClient: WebClient) {
     suspend fun getInfo(): ChainInfoResponse? {
         logger.info("fetching chain info")
         return webClient.get()
-            .uri("$url/blockhashbyheight/chaininfo.json")
+            .uri("$url/chaininfo.json")
             .accept(MediaType.APPLICATION_JSON)
             .header("x-api-key", apiKey)
             .header(HttpHeaders.CONTENT_TYPE, "application/json")
