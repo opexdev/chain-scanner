@@ -7,3 +7,8 @@ spring:
     consul:
       host: ${CONSUL_HOST}
       port: 8500
+app:
+  blockchain:
+    rpc-url: ${RPC_ENDPOINT}
+    rest-url: ${REST_ENDPOINT}
+    api-key: ${API_KEY}

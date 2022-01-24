@@ -18,7 +18,7 @@ services:
   postgres-gateway:
     image: "postgres"
     ports:
-      - 127.0.0.1:5439:5432
+      - "127.0.0.1:5439:5432"
     environment:
       - POSTGRES_USER=opex
       - POSTGRES_PASSWORD=hiopex
@@ -34,8 +34,8 @@ services:
       context: ./gateway
       dockerfile: Dockerfile
     ports:
-      - 127.0.0.1:9990:9990
-      - 127.0.0.1:1060:1044
+      - "127.0.0.1:9990:9990"
+      - "127.0.0.1:1060:1044"
     environment:
       - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=1044
       - SPRING_PROFILES_ACTIVE=docker
@@ -50,39 +50,69 @@ services:
       restart_policy:
         condition: on-failure
 
-  eth-scan:
-    container_name: eth-scan
-    build:
-      context: ./eth-scan
-      dockerfile: Dockerfile
-    ports:
-      - 127.0.0.1:9991:9991
-      - 127.0.0.1:1061:1044
-    environment:
-      - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=1044
-      - SPRING_PROFILES_ACTIVE=docker
-      - CONSUL_HOST=consul
-    networks:
-      - chain-scan
-    depends_on:
-      - consul
-
   bitcoin-scan:
     container_name: bitcoin-scan
     build:
       context: ./bitcoin-scan
       dockerfile: Dockerfile
     ports:
-      - 127.0.0.1:9992:9992
-      - 127.0.0.1:1062:1044
+      - "127.0.0.1:9992:9992"
+      - "127.0.0.1:1062:1044"
     environment:
       - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=1044
       - SPRING_PROFILES_ACTIVE=docker
       - CONSUL_HOST=consul
+      - RPC_ENDPOINT=${BITCOIN_RPC_ENDPOINT}
+      - REST_ENDPOINT=${BITCOIN_REST_ENDPOINT}
+      - API_KEY=${BITCOIN_API_KEY}
     networks:
       - chain-scan
     depends_on:
       - consul
+    env_file:
+      - .env
+
+  eth-scan:
+    container_name: eth-scan
+    build:
+      context: ./eth-scan
+      dockerfile: Dockerfile
+    ports:
+      - "127.0.0.1:9991:9991"
+      - "127.0.0.1:1061:1044"
+    environment:
+      - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=1044
+      - SPRING_PROFILES_ACTIVE=docker
+      - CONSUL_HOST=consul
+      - APPLICATION_NAME=eth-scan
+      - RPC_ENDPOINT=${ETH_RPC_ENDPOINT}
+    networks:
+      - chain-scan
+    depends_on:
+      - consul
+    env_file:
+      - .env
+
+  bsc-scan:
+    container_name: bsc-scan
+    build:
+      context: ./eth-scan
+      dockerfile: Dockerfile
+    ports:
+      - "127.0.0.1:9993:9993"
+      - "127.0.0.1:1063:1044"
+    environment:
+      - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=1044
+      - SPRING_PROFILES_ACTIVE=docker
+      - CONSUL_HOST=consul
+      - APPLICATION_NAME=bsc-scan
+      - RPC_ENDPOINT=${BSC_RPC_ENDPOINT}
+    networks:
+      - chain-scan
+    depends_on:
+      - consul
+    env_file:
+      - .env
 
 networks:
   chain-scan:

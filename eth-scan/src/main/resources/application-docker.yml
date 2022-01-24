@@ -1,9 +1,13 @@
 spring:
   application:
-    name: eth-scan
+    name: ${APPLICATION_NAME}
   main:
     allow-bean-definition-overriding: false
   cloud:
     consul:
       host: ${CONSUL_HOST}
       port: 8500
+      discovery:
+        instance-id: ${APPLICATION_NAME}:${server.port}
+blockchain:
+  url: ${RPC_ENDPOINT}
