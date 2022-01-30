@@ -1,14 +1,5 @@
 version: '3.8'
 services:
-  consul:
-    image: 'consul'
-    environment:
-      - CONSUL_BIND_INTERFACE=eth0
-    networks:
-      - default
-    deploy:
-      restart_policy:
-        condition: on-failure
   postgres-gateway:
     image: "postgres"
     environment:
@@ -30,7 +21,6 @@ services:
     networks:
       - default
     depends_on:
-      - consul
       - postgres-gateway
     deploy:
       restart_policy:
@@ -44,8 +34,6 @@ services:
       - CONSUL_HOST=consul
     networks:
       - default
-    depends_on:
-      - consul
   bitcoin-scan:
     build:
       context: ./bitcoin-scan
@@ -55,8 +43,6 @@ services:
       - CONSUL_HOST=consul
     networks:
       - default
-    depends_on:
-      - consul
 networks:
   default:
     name: ${DEFAULT_NETWORK_NAME:-opex}
