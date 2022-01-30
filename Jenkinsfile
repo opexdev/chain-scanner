@@ -15,11 +15,11 @@ pipeline {
         stage('Deliver') {
             environment {
                 DATA = '/var/opex/chain-scan'
+                COMPOSE_PROJECT_NAME = 'chain-scan'
+                DEFAULT_NETWORK_NAME = 'demo-opex'
             }
             steps {
-                dir("Deployment") {
-                    sh 'docker-compose up -d --build --remove-orphans'
-                }
+                sh 'docker-compose up -d --build --remove-orphans'
             }
         }
     }
