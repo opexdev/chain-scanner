@@ -18,7 +18,7 @@ pipeline {
             }
             steps {
                 dir("Deployment") {
-                    sh 'docker-compose up -d --build'
+                    sh 'docker-compose up -d --build --remove-orphans'
                 }
             }
         }
