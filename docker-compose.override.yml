@@ -3,12 +3,3 @@ services:
   postgres-gateway:
     ports:
       - "127.0.0.1:5439:5432"
-  gateway:
-    ports:
-      - "127.0.0.1:9990:9990"
-  eth-scan:
-    ports:
-      - "127.0.0.1:9991:9991"
-  bitcoin-scan:
-    ports:
-      - "127.0.0.1:9992:9992"
