@@ -50,9 +50,6 @@ services:
   bsc-scan:
     build:
       context: ./eth-scan
-    ports:
-      - "127.0.0.1:9993:9993"
-      - "127.0.0.1:1063:1044"
     environment:
       - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=1044
       - SPRING_PROFILES_ACTIVE=docker
