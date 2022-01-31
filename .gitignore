@@ -34,3 +34,4 @@ build/
 !/.mvn/
 
 .DS_Store
+.env

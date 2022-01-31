@@ -47,6 +47,20 @@ services:
       - API_KEY=${BITCOIN_API_KEY}
     networks:
       - default
+  bsc-scan:
+    build:
+      context: ./eth-scan
+    ports:
+      - "127.0.0.1:9993:9993"
+      - "127.0.0.1:1063:1044"
+    environment:
+      - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=1044
+      - SPRING_PROFILES_ACTIVE=docker
+      - CONSUL_HOST=consul
+      - APPLICATION_NAME=bsc-scan
+      - RPC_ENDPOINT=${BSC_RPC_ENDPOINT}
+    networks:
+      - default
 networks:
   default:
     name: ${DEFAULT_NETWORK_NAME:-opex}
