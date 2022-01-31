@@ -1,5 +1,4 @@
 server.port: 9992
-
 spring:
   application:
     name: bitcoin-scan
@@ -21,9 +20,8 @@ logging:
   level:
     co.nilin: DEBUG
     reactor.netty.http.client: DEBUG
-
 app:
   blockchain:
-    rpc-url: https://btc.getblock.io/testnet
-    rest-url: https://btc.getblock.io/testnet/rest
-    api-key: e0c0e8cd-d492-44f4-8309-11d6c41e77ae
+    rpc-url: $RPC_URL
+    rest-url: $REST_URL
+    api-key: $API_KEY

@@ -1,5 +1,4 @@
 server.port: 9991
-
 spring:
   application:
     name: eth-scan
@@ -19,8 +18,6 @@ logging:
   level:
     co.nilin: DEBUG
     reactor.netty.http.client: DEBUG
-
 blockchain:
-  url: https://ropsten.infura.io/v3/fee0915a99f84c3c9971c253a9a9f6a2
-
+  url: $RPC_URL
 swagger.authUrl: https://api.opex.dev
