@@ -1,13 +1,14 @@
 server.port: 9991
 spring:
   application:
-    name: eth-scan
+    name: ${APPLICATION_NAME:eth-scan}
   main:
     allow-bean-definition-overriding: false
   cloud:
     bootstrap:
       enabled: true
     consul:
+      host: ${CONSUL_HOST}
       port: 8500
       discovery:
         #healthCheckPath: ${management.context-path}/health
