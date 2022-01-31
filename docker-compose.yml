@@ -32,7 +32,7 @@ services:
       - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=1044
       - SPRING_PROFILES_ACTIVE=docker
       - CONSUL_HOST=consul
-      - RPC_URL=${ETH_RPC_URL}
+      - RPC_ENDPOINT=${ETH_RPC_ENDPOINT}
     networks:
       - default
   bitcoin-scan:
@@ -42,8 +42,8 @@ services:
       - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=1044
       - SPRING_PROFILES_ACTIVE=docker
       - CONSUL_HOST=consul
-      - RPC_URL=${BITCOIN_RPC_URL}
-      - REST_URL=${BITCOIN_REST_URL}
+      - RPC_ENDPOINT=${BITCOIN_RPC_ENDPOINT}
+      - REST_ENDPOINT=${BITCOIN_REST_ENDPOINT}
       - API_KEY=${BITCOIN_API_KEY}
     networks:
       - default
