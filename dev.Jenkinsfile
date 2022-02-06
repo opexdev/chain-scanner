@@ -6,9 +6,9 @@ pipeline {
             steps {
                 setBuildStatus("?", "PENDING")
                 withMaven(
-                        maven: 'maven-latest'
+                        maven: 'maven-3.6.3'
                 ) {
-                    sh 'mvn -B  clean install'
+                    sh 'mvn -B clean install'
                 }
             }
         }
@@ -20,6 +20,8 @@ pipeline {
             }
             steps {
                 sh 'docker-compose up -d --build --remove-orphans'
+                sh 'docker image prune -f'
+                sh 'docker network prune -f'
             }
         }
     }
