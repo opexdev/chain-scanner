@@ -1,5 +1,4 @@
 server.port: 9992
-
 spring:
   application:
     name: bitcoin-scan
@@ -11,6 +10,7 @@ spring:
     bootstrap:
       enabled: true
     consul:
+      host: ${CONSUL_HOST}
       port: 8500
       discovery:
         #healthCheckPath: ${management.context-path}/health
@@ -21,4 +21,8 @@ logging:
   level:
     co.nilin: DEBUG
     reactor.netty.http.client: DEBUG
-
+app:
+  blockchain:
+    rpc-url: $RPC_ENDPOINT
+    rest-url: $REST_ENDPOINT
+    api-key: $API_KEY
