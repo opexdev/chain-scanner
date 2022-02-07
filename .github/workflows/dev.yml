@@ -1,8 +1,8 @@
-name: Deploy Chain-Scan - Demo
+name: Deploy Chain-Scan - Dev
 on:
   push:
     branches:
-      - main
+      - dev
 jobs:
   jenkinsJob:
     name: Deploy Chain-Scan
@@ -14,4 +14,4 @@ jobs:
           url: ${{ secrets.JENKINS_URL }}
           user: ${{ secrets.JENKINS_USER }}
           token: ${{ secrets.JENKINS_TOKEN }}
-          job: "opex-chain-scan-demo"
+          job: "opex-chain-scan-dev"
