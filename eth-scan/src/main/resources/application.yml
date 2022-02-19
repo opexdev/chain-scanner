@@ -1,13 +1,14 @@
-server:
-  port: 9991
-
+server.port: 9991
 spring:
+  application:
+    name: ${APPLICATION_NAME:eth-scan}
   main:
     allow-bean-definition-overriding: false
   cloud:
     bootstrap:
       enabled: true
     consul:
+      host: ${CONSUL_HOST}
       port: 8500
       discovery:
         #healthCheckPath: ${management.context-path}/health
@@ -18,3 +19,6 @@ logging:
   level:
     co.nilin: DEBUG
     reactor.netty.http.client: DEBUG
+blockchain:
+  url: $RPC_URL
+swagger.authUrl: https://api.opex.dev
