@@ -1,0 +1,5 @@
+version: '3.8'
+services:
+  postgres-gateway:
+    ports:
+      - "6440:5432"
