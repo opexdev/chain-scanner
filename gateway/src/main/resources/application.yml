@@ -7,8 +7,8 @@ spring:
     allow-bean-definition-overriding: false
   r2dbc:
     url: r2dbc:postgresql://${DB_IP_PORT:127.0.0.1:5432}/gateway
-    username: opex
-    password: hiopex
+    username: ${dbusername:opex}
+    password: ${dbpassword:hiopex}
   cloud:
     bootstrap:
       enabled: true
