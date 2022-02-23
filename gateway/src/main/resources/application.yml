@@ -2,7 +2,7 @@ server.port: 9990
 
 spring:
   application:
-    name: gateway
+    name: chain-scan-gateway
   main:
     allow-bean-definition-overriding: false
   r2dbc:
@@ -20,6 +20,21 @@ spring:
         instance-id: ${spring.application.name}:${server.port}
         healthCheckInterval: 20s
         prefer-ip-address: true
+    vault:
+      host: ${VAULT_HOST}
+      port: 8200
+      scheme: http
+      authentication: APPID
+      app-id:
+        user-id: co.nilin.opex.util.vault.VaultUserIdMechanism
+      fail-fast: true
+      kv:
+        enabled: true
+        backend: secret
+        profile-separator: '/'
+        application-name: ${spring.application.name}
+  config:
+    import: vault://secret/${spring.application.name}
 logging:
   level:
     co.nilin: DEBUG
