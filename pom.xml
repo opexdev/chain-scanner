@@ -2,6 +2,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.5.5</version>
+    </parent>
+
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>co.nilin.opex.chainscan</groupId>
@@ -19,17 +25,11 @@
     <properties>
         <java.version>11</java.version>
         <kotlin.version>1.5.21</kotlin.version>
-        <spring-cloud.version>2020.0.3</spring-cloud.version>
+        <spring-cloud.version>2020.0.4</spring-cloud.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <kotlin.code.style>official</kotlin.code.style>
         <kotlin.compiler.jvmTarget>1.8</kotlin.compiler.jvmTarget>
     </properties>
-
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.5.5</version>
-    </parent>
 
     <dependencies>
         <dependency>
@@ -165,5 +165,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>
