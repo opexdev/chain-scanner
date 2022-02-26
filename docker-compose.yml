@@ -17,6 +17,7 @@ services:
       - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=1044
       - CONSUL_HOST=consul
       - DB_IP_PORT=postgres-gateway
+      - VAULT_HOST=vault
     networks:
       - default
     depends_on:
