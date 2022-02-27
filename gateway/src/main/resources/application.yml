@@ -1,5 +1,4 @@
-server.port: 9990
-
+server.port: 8080
 spring:
   application:
     name: chain-scan-gateway
