@@ -16,6 +16,8 @@ pipeline {
             environment {
                 DATA = '/var/opex/demo-chain-scan'
                 BACKEND_USER = credentials("v-backend-secret")
+                DB_USER = 'opex'
+                DB_PASS = credentials("db-secret")
                 COMPOSE_PROJECT_NAME = 'demo-chain-scan'
                 DEFAULT_NETWORK_NAME = 'demo-opex'
             }
