@@ -22,6 +22,9 @@ services:
     networks:
       - default
     depends_on:
+      - eth-scan
+      - bsc-scan
+      - bitcoin-scan
       - postgres-gateway
     deploy:
       restart_policy:
