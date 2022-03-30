@@ -59,6 +59,17 @@ services:
       - RPC_ENDPOINT=${BSC_RPC_ENDPOINT}
     networks:
       - default
+  tron-scan:
+    build:
+      context: ./tron-scan
+    environment:
+      - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=1044
+      - CONSUL_HOST=consul
+      - APPLICATION_NAME=tron-scan
+      - REST_ENDPOINT=${TRON_REST_ENDPOINT}
+      - API_KEY=${TRON_API_KEY}
+    networks:
+      - default
 networks:
   default:
     name: ${DEFAULT_NETWORK_NAME:-opex}

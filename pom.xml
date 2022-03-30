@@ -20,6 +20,7 @@
         <module>gateway</module>
         <module>eth-scan</module>
         <module>bitcoin-scan</module>
+        <module>tron-scan</module>
     </modules>
 
     <properties>
