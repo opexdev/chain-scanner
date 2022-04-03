@@ -4,7 +4,6 @@ import co.nilin.opex.chainscan.tron.data.BlockResponse
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
@@ -28,10 +27,10 @@ class TronGridProxy(private val webClient: WebClient) {
         logger.info("fetching block data $number")
         return webClient.post()
             .uri("$url/wallet/getblockbynum")
-            .body(Mono.just(GetBlockRequest(number)))
             .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON)
             .header("TRON-PRO-API-KEY", apiKey)
-            .header(HttpHeaders.CONTENT_TYPE, "application/json")
+            .body(Mono.just(GetBlockRequest(number)))
             .retrieve()
             .onStatus({ t -> t.isError }, { it.createException() })
             .bodyToMono(BlockResponse::class.java)

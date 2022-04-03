@@ -7,8 +7,8 @@ import org.springframework.context.annotation.Import
 
 @SpringBootApplication
 @Import(ChainController::class)
-class BitcoinScanApplication
+class TronScanApplication
 
 fun main(args: Array<String>) {
-	runApplication<BitcoinScanApplication>(*args)
+	runApplication<TronScanApplication>(*args)
 }

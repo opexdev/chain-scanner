@@ -8,25 +8,7 @@ data class TransactionResponse(
     val rawData: TXRawData,
     @JsonProperty("raw_data_hex")
     val rawDataHex: String,
-) {
-
-    fun from(): String? {
-        return rawData.contract.find { it.type == TransactionType.TransferContract }?.parameter?.value?.from
-    }
-
-    fun to(): String? {
-        return rawData.contract.find { it.type == TransactionType.TransferContract }?.parameter?.value?.to
-    }
-
-    fun amount(): Long? {
-        return rawData.contract.find { it.type == TransactionType.TransferContract }?.parameter?.value?.amount
-    }
-
-    fun isTransfer(): Boolean {
-        return rawData.contract.find { it.type == TransactionType.TransferContract } != null
-    }
-
-}
+)
 
 data class TXRawData(
     val contract: List<Contract>,
@@ -35,7 +17,7 @@ data class TXRawData(
 
 data class Contract(
     val parameter: Parameter,
-    val type: TransactionType,
+    val type: String, //TransactionType
 )
 
 data class Parameter(
@@ -51,6 +33,6 @@ data class ParamValue(
     @JsonProperty("to_address")
     val to: String?,
     val data: String?,
-    @JsonProperty("owner_address")
+    @JsonProperty("contract_address")
     val contractAddress: String?,
 )

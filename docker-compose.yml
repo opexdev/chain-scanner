@@ -14,7 +14,7 @@ services:
     build:
       context: ./gateway
     environment:
-      - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=1044
+      - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
       - CONSUL_HOST=consul
       - DB_IP_PORT=postgres-gateway
       - BACKEND_USER=${BACKEND_USER}
@@ -33,7 +33,7 @@ services:
     build:
       context: ./eth-scan
     environment:
-      - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=1044
+      - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
       - CONSUL_HOST=consul
       - RPC_ENDPOINT=${ETH_RPC_ENDPOINT}
     networks:
@@ -42,7 +42,7 @@ services:
     build:
       context: ./bitcoin-scan
     environment:
-      - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=1044
+      - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
       - CONSUL_HOST=consul
       - RPC_ENDPOINT=${BITCOIN_RPC_ENDPOINT}
       - REST_ENDPOINT=${BITCOIN_REST_ENDPOINT}
@@ -53,7 +53,7 @@ services:
     build:
       context: ./eth-scan
     environment:
-      - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=1044
+      - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
       - CONSUL_HOST=consul
       - APPLICATION_NAME=bsc-scan
       - RPC_ENDPOINT=${BSC_RPC_ENDPOINT}
@@ -63,7 +63,7 @@ services:
     build:
       context: ./tron-scan
     environment:
-      - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=1044
+      - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
       - CONSUL_HOST=consul
       - APPLICATION_NAME=tron-scan
       - REST_ENDPOINT=${TRON_REST_ENDPOINT}
