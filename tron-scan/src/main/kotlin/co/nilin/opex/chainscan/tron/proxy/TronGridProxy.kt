@@ -37,4 +37,17 @@ class TronGridProxy(private val webClient: WebClient) {
             .awaitSingleOrNull()
     }
 
+    suspend fun getLatestBlock(): BlockResponse? {
+        logger.info("fetching latest block")
+        return webClient.post()
+            .uri("$url/wallet/getnowblock")
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON)
+            .header("TRON-PRO-API-KEY", apiKey)
+            .retrieve()
+            .onStatus({ t -> t.isError }, { it.createException() })
+            .bodyToMono(BlockResponse::class.java)
+            .awaitSingleOrNull()
+    }
+
 }

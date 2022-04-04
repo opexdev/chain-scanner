@@ -15,11 +15,17 @@ import org.springframework.stereotype.Service
 class RestChainService(private val proxy: TronGridProxy, private val interpreter: TronInterpreter) : Chain {
 
     override suspend fun getTransfers(startBlock: Long, endBlock: Long?, addresses: List<String>?): TransfersResult {
-        val last = endBlock ?: (startBlock + 10)
-        val first = if (startBlock == 0L || startBlock >= last) last - 3 else startBlock
+        var last = endBlock ?: (startBlock + 10)
+        val first = if (startBlock == 0L || startBlock > last || last - startBlock > 30) last - 30 else startBlock
         val transfers = mutableListOf<Transfer>()
 
         coroutineScope {
+            tryOrNull { proxy.getLatestBlock() }?.let {
+                val blockNumber = it.blockHeader?.rawData?.number
+                if (blockNumber != null && last > blockNumber)
+                    last = blockNumber
+            }
+
             val transactions = ArrayList<TransactionResponse>()
             for (i in first until last + 1) {
                 tryOrNull { proxy.getBlockByNumber(i) }?.let { d -> transactions.addAll(d.transactions) }
