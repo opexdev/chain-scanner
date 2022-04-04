@@ -1,10 +1,10 @@
 version: '3.8'
 services:
   postgres-gateway:
-    image: "postgres"
+    image: postgres:14-alpine
     environment:
-      - POSTGRES_USER=opex
-      - POSTGRES_PASSWORD=hiopex
+      - POSTGRES_USER=${DB_USER:-opex}
+      - POSTGRES_PASSWORD=${DB_PASS:-hiopex}
       - POSTGRES_DB=gateway
     volumes:
       - $DATA/scan-gateway-data:/var/lib/postgresql/data/
@@ -14,12 +14,17 @@ services:
     build:
       context: ./gateway
     environment:
-      - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=1044
+      - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
       - CONSUL_HOST=consul
       - DB_IP_PORT=postgres-gateway
+      - BACKEND_USER=${BACKEND_USER}
+      - VAULT_HOST=vault
     networks:
       - default
     depends_on:
+      - eth-scan
+      - bsc-scan
+      - bitcoin-scan
       - postgres-gateway
     deploy:
       restart_policy:
@@ -28,7 +33,7 @@ services:
     build:
       context: ./eth-scan
     environment:
-      - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=1044
+      - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
       - CONSUL_HOST=consul
       - RPC_ENDPOINT=${ETH_RPC_ENDPOINT}
     networks:
@@ -37,7 +42,7 @@ services:
     build:
       context: ./bitcoin-scan
     environment:
-      - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=1044
+      - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
       - CONSUL_HOST=consul
       - RPC_ENDPOINT=${BITCOIN_RPC_ENDPOINT}
       - REST_ENDPOINT=${BITCOIN_REST_ENDPOINT}
@@ -48,10 +53,21 @@ services:
     build:
       context: ./eth-scan
     environment:
-      - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=1044
+      - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
       - CONSUL_HOST=consul
       - APPLICATION_NAME=bsc-scan
       - RPC_ENDPOINT=${BSC_RPC_ENDPOINT}
+    networks:
+      - default
+  tron-scan:
+    build:
+      context: ./tron-scan
+    environment:
+      - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+      - CONSUL_HOST=consul
+      - APPLICATION_NAME=tron-scan
+      - REST_ENDPOINT=${TRON_REST_ENDPOINT}
+      - API_KEY=${TRON_API_KEY}
     networks:
       - default
 networks:
