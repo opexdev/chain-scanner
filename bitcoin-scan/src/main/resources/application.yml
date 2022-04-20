@@ -23,6 +23,6 @@ logging:
     reactor.netty.http.client: DEBUG
 app:
   blockchain:
-    rpc-url: $RPC_ENDPOINT
-    rest-url: $REST_ENDPOINT
-    api-key: $API_KEY
+    rpc-url: ${RPC_ENDPOINT}
+    rest-url: ${REST_ENDPOINT}
+    api-key: ${API_KEY}
