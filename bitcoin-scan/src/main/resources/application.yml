@@ -1,7 +1,7 @@
 server.port: 9992
 spring:
   application:
-    name: bitcoin-scan
+    name: ${APPLICATION_NAME:bitcoin-scan}
   codec:
     max-in-memory-size: 10MB
   main:

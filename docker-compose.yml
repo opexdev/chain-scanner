@@ -86,6 +86,7 @@ services:
     environment:
       - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
       - CONSUL_HOST=consul
+      - APPLICATION_NAME=test-bitcoin-scan
       - RPC_ENDPOINT=${TEST_BITCOIN_RPC_ENDPOINT}
       - REST_ENDPOINT=${TEST_BITCOIN_REST_ENDPOINT}
       - API_KEY=${TEST_BITCOIN_API_KEY}
