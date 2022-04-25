@@ -42,7 +42,7 @@ class ChainService(
                         val tx = it as EthBlock.TransactionObject
                         val transfer = interpreter.interpret(tx)
                         if (transfer != null) {
-                            if (!transfer.isTokenTransfer || addresses?.contains(transfer.token) == true) {
+                            if (!transfer.isTokenTransfer || addresses?.contains(transfer.token?.lowercase()) == true) {
                                 transfers.add(transfer)
                             }
                         }

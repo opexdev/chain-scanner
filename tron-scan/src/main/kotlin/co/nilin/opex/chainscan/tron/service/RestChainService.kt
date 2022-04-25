@@ -40,7 +40,7 @@ class RestChainService(private val proxy: TronGridProxy, private val interpreter
             transactions.forEach { tx ->
                 launch(Dispatchers.IO) {
                     interpreter.interpret(tx).onEach {
-                        if (!it.isTokenTransfer || addresses?.contains(it.token ?: "") == true)
+                        if (!it.isTokenTransfer || addresses?.contains(it.token?.lowercase() ?: "") == true)
                             transfers.add(it)
                     }
                 }
