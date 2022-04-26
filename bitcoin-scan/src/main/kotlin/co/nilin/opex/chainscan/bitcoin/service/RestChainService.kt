@@ -7,17 +7,22 @@ import co.nilin.opex.chainscan.bitcoin.utils.justTryOrNull
 import co.nilin.opex.chainscan.core.model.Transfer
 import co.nilin.opex.chainscan.core.model.TransfersResult
 import co.nilin.opex.chainscan.core.spi.Chain
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import java.math.BigDecimal
 
 @Service
 class RestChainService(private val proxy: GetBlockProxy) : Chain {
 
+    private val logger = LoggerFactory.getLogger(RestChainService::class.java)
+
     override suspend fun getTransfers(startBlock: Long, endBlock: Long?, addresses: List<String>?): TransfersResult {
+        logger.info("Requested blocks: startBlock=$startBlock, endBlock=$endBlock")
+
         val blockHash = ArrayList<String?>()
         val last = endBlock ?: proxy.getInfo()?.blocks ?: (startBlock + 10)
-        val first = if (startBlock == 0L || startBlock >= last) last - 3 else startBlock
+        val first = if (startBlock == 0L || startBlock > last || last - startBlock > 10) last - 10 else startBlock
 
+        logger.info("Start fetching bitcoin transfers: startBlock=$first, endBlock=$last")
         for (i in first until last + 1) {
             justTry { blockHash.add(proxy.getBlockHash(i)) }
         }
@@ -27,6 +32,7 @@ class RestChainService(private val proxy: GetBlockProxy) : Chain {
             if (!it.isNullOrEmpty()) {
                 val data = justTryOrNull { proxy.getBlockData(it) }
                 data?.let { d ->
+                    logger.info("Fetched block ${d.height} with ${d.tx.size} transactions")
                     transactions.addAll(d.tx)
                 }
             }
@@ -48,6 +54,7 @@ class RestChainService(private val proxy: GetBlockProxy) : Chain {
             }
         }
 
+        logger.info("Finished fetching transactions: lastBlock=$last transfers=${transfers.size}")
         return TransfersResult(last, transfers)
     }
 }

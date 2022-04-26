@@ -20,6 +20,9 @@ class ChainController(private val chainService: Chain) {
     @PostMapping("/transfers")
     suspend fun getTransfers(@RequestBody request: TransfersRequest): TransfersResult {
         logger.info("Calling '/transfers' for: $appName")
-        return chainService.getTransfers(request.startBlock, request.endBlock, request.addresses)
+        return chainService.getTransfers(
+            request.startBlock,
+            request.endBlock,
+            request.addresses?.map { it.lowercase() })
     }
 }

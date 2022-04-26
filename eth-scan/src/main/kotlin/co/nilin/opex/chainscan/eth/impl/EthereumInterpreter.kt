@@ -2,6 +2,7 @@ package co.nilin.opex.chainscan.eth.impl
 
 import co.nilin.opex.chainscan.core.model.Transfer
 import co.nilin.opex.chainscan.core.spi.Interpreter
+import co.nilin.opex.chainscan.eth.utils.checksumAddress
 import co.nilin.opex.chainscan.eth.utils.tryOrElse
 import org.springframework.stereotype.Component
 import org.web3j.protocol.core.methods.response.EthBlock
@@ -19,14 +20,14 @@ class EthereumInterpreter : Interpreter<EthBlock.TransactionObject> {
     private fun parseAssetTransfer(tx: EthBlock.TransactionObject): Transfer {
         if (!isAssetTransfer(tx.input)) throw IllegalArgumentException()
         val amount = tryOrElse(BigDecimal.ZERO) { BigDecimal(tx.value) }
-        return Transfer(tx.hash, tx.from, tx.to, false, null, amount)
+        return Transfer(tx.hash, tx.from.checksumAddress(), tx.to.checksumAddress(), false, null, amount)
     }
 
     private fun parseTokenTransfer(tx: EthBlock.TransactionObject): Transfer {
         if (!isTokenTransfer(tx.input)) throw IllegalArgumentException()
-        val receiver = tryOrElse("0x") { "0x${tx.input.substring(34, 74)}" }
+        val receiver = tryOrElse("0x") { "0x${tx.input.substring(34, 74)}" }.checksumAddress()
         val amount = tryOrElse(BigDecimal.ZERO) { BigDecimal(BigInteger(tx.input.substring(74), 16)) }
-        return Transfer(tx.hash, tx.from, receiver, true, tx.to, amount)
+        return Transfer(tx.hash, tx.from.checksumAddress(), receiver, true, tx.to.checksumAddress(), amount)
     }
 
     override fun interpret(tx: EthBlock.TransactionObject): Transfer? {

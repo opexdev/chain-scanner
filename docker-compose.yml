@@ -70,6 +70,38 @@ services:
       - API_KEY=${TRON_API_KEY}
     networks:
       - default
+  test-eth-scan:
+    build:
+      context: ./eth-scan
+    environment:
+      - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+      - CONSUL_HOST=consul
+      - APPLICATION_NAME=test-eth-scan
+      - RPC_ENDPOINT=${TEST_ETH_RPC_ENDPOINT}
+    networks:
+      - default
+  test-bitcoin-scan:
+    build:
+      context: ./bitcoin-scan
+    environment:
+      - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+      - CONSUL_HOST=consul
+      - APPLICATION_NAME=test-bitcoin-scan
+      - RPC_ENDPOINT=${TEST_BITCOIN_RPC_ENDPOINT}
+      - REST_ENDPOINT=${TEST_BITCOIN_REST_ENDPOINT}
+      - API_KEY=${TEST_BITCOIN_API_KEY}
+    networks:
+      - default
+  test-bsc-scan:
+    build:
+      context: ./eth-scan
+    environment:
+      - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+      - CONSUL_HOST=consul
+      - APPLICATION_NAME=test-bsc-scan
+      - RPC_ENDPOINT=${TEST_BSC_RPC_ENDPOINT}
+    networks:
+      - default
 networks:
   default:
     name: ${DEFAULT_NETWORK_NAME:-opex}
