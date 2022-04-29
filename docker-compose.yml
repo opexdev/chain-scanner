@@ -1,108 +1,14 @@
 version: '3.8'
 services:
-  postgres-gateway:
-    image: postgres:14-alpine
-    environment:
-      - POSTGRES_USER=${DB_USER:-opex}
-      - POSTGRES_PASSWORD=${DB_PASS:-hiopex}
-      - POSTGRES_DB=gateway
-    volumes:
-      - $DATA/scan-gateway-data:/var/lib/postgresql/data/
-    networks:
-      - default
   gateway:
-    build:
-      context: ./gateway
-    environment:
-      - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
-      - CONSUL_HOST=consul
-      - DB_IP_PORT=postgres-gateway
-      - BACKEND_USER=${BACKEND_USER}
-      - VAULT_HOST=vault
-    networks:
-      - default
-    depends_on:
-      - eth-scan
-      - bsc-scan
-      - bitcoin-scan
-      - postgres-gateway
-    deploy:
-      restart_policy:
-        condition: on-failure
+    image: ghcr.io/opexdev/gateway:$TAG
+    build: ./gateway
   eth-scan:
-    build:
-      context: ./eth-scan
-    environment:
-      - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
-      - CONSUL_HOST=consul
-      - RPC_ENDPOINT=${ETH_RPC_ENDPOINT}
-    networks:
-      - default
+    image: ghcr.io/opexdev/eth-scan:$TAG
+    build: ./eth-scan
   bitcoin-scan:
-    build:
-      context: ./bitcoin-scan
-    environment:
-      - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
-      - CONSUL_HOST=consul
-      - RPC_ENDPOINT=${BITCOIN_RPC_ENDPOINT}
-      - REST_ENDPOINT=${BITCOIN_REST_ENDPOINT}
-      - API_KEY=${BITCOIN_API_KEY}
-    networks:
-      - default
-  bsc-scan:
-    build:
-      context: ./eth-scan
-    environment:
-      - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
-      - CONSUL_HOST=consul
-      - APPLICATION_NAME=bsc-scan
-      - RPC_ENDPOINT=${BSC_RPC_ENDPOINT}
-    networks:
-      - default
+    image: ghcr.io/opexdev/bitcoin-scan:$TAG
+    build: ./bitcoin-scan
   tron-scan:
-    build:
-      context: ./tron-scan
-    environment:
-      - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
-      - CONSUL_HOST=consul
-      - APPLICATION_NAME=tron-scan
-      - REST_ENDPOINT=${TRON_REST_ENDPOINT}
-      - API_KEY=${TRON_API_KEY}
-    networks:
-      - default
-  test-eth-scan:
-    build:
-      context: ./eth-scan
-    environment:
-      - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
-      - CONSUL_HOST=consul
-      - APPLICATION_NAME=test-eth-scan
-      - RPC_ENDPOINT=${TEST_ETH_RPC_ENDPOINT}
-    networks:
-      - default
-  test-bitcoin-scan:
-    build:
-      context: ./bitcoin-scan
-    environment:
-      - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
-      - CONSUL_HOST=consul
-      - APPLICATION_NAME=test-bitcoin-scan
-      - RPC_ENDPOINT=${TEST_BITCOIN_RPC_ENDPOINT}
-      - REST_ENDPOINT=${TEST_BITCOIN_REST_ENDPOINT}
-      - API_KEY=${TEST_BITCOIN_API_KEY}
-    networks:
-      - default
-  test-bsc-scan:
-    build:
-      context: ./eth-scan
-    environment:
-      - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
-      - CONSUL_HOST=consul
-      - APPLICATION_NAME=test-bsc-scan
-      - RPC_ENDPOINT=${TEST_BSC_RPC_ENDPOINT}
-    networks:
-      - default
-networks:
-  default:
-    name: ${DEFAULT_NETWORK_NAME:-opex}
-    driver: bridge
+    image: ghcr.io/opexdev/tron-scan:$TAG
+    build: ./tron-scan
