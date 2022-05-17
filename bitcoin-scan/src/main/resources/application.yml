@@ -1,4 +1,4 @@
-server.port: 9992
+server.port: 8080
 spring:
   application:
     name: ${APPLICATION_NAME:bitcoin-scan}

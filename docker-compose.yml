@@ -1,18 +1,55 @@
 version: '3.8'
 services:
+  vault:
+    image: ghcr.io/opexdev/vault-opex
+    volumes:
+      - vault-data:/vault/file
+    environment:
+      - VAULT_ADDR=http://0.0.0.0:8200
+      - PANEL_PASS=${PANEL_PASS}
+      - BACKEND_USER=${BACKEND_USER}
+      - SMTP_PASS=${SMTP_PASS}
+      - DB_USER=${DB_USER:-opex}
+      - DB_PASS=${DB_PASS:-hiopex}
+      - DB_BACKUP_USER=${DB_BACKUP_USER:-opex_backup}
+      - DB_BACKUP_PASS=${DB_BACKUP_PASS:-hiopex}
+      - KEYCLOAK_ADMIN_USERNAME=${KEYCLOAK_ADMIN_USERNAME:-opex-admin}
+      - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD:-hiopex}
+      - OPEX_ADMIN_KEYCLOAK_CLIENT_SECRET=${OPEX_ADMIN_KEYCLOAK_CLIENT_SECRET}
+      - VANDAR_API_KEY=$VANDAR_API_KEY
+    cap_add:
+      - IPC_LOCK
+  vault-ui:
+    image: djenriquez/vault-ui
+    environment:
+      - VAULT_URL_DEFAULT=http://vault:8200
+      - VAULT_AUTH_DEFAULT=USERNAMEPASSWORD
+    depends_on:
+      - vault
+  consul:
+    image: consul
+    environment:
+      - CONSUL_BIND_INTERFACE=eth0
+    networks:
+      - default
+    deploy:
+      restart_policy:
+        condition: on-failure
   postgres-gateway:
-    image: postgres:14-alpine
+    image: ghcr.io/opexdev/postgres-opex
     environment:
       - POSTGRES_USER=${DB_USER:-opex}
       - POSTGRES_PASSWORD=${DB_PASS:-hiopex}
       - POSTGRES_DB=gateway
+      - POSTGRES_BACKUP_USER=${DB_BACKUP_USER:-opex_backup}
+      - POSTGRES_BACKUP_PASSWORD=${DB_BACKUP_PASS:-hiopex}
     volumes:
-      - $DATA/scan-gateway-data:/var/lib/postgresql/data/
+      - scan-gateway-data:/var/lib/postgresql/data/
     networks:
       - default
   gateway:
-    build:
-      context: ./gateway
+    image: ghcr.io/opexdev/gateway
+    build: gateway
     environment:
       - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
       - CONSUL_HOST=consul
@@ -30,8 +67,8 @@ services:
       restart_policy:
         condition: on-failure
   eth-scan:
-    build:
-      context: ./eth-scan
+    image: ghcr.io/opexdev/eth-scan
+    build: eth-scan
     environment:
       - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
       - CONSUL_HOST=consul
@@ -39,8 +76,8 @@ services:
     networks:
       - default
   bitcoin-scan:
-    build:
-      context: ./bitcoin-scan
+    image: ghcr.io/opexdev/bitcoin-scan
+    build: bitcoin-scan
     environment:
       - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
       - CONSUL_HOST=consul
@@ -50,8 +87,8 @@ services:
     networks:
       - default
   bsc-scan:
-    build:
-      context: ./eth-scan
+    image: ghcr.io/opexdev/eth-scan
+    build: eth-scan
     environment:
       - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
       - CONSUL_HOST=consul
@@ -60,8 +97,8 @@ services:
     networks:
       - default
   tron-scan:
-    build:
-      context: ./tron-scan
+    image: ghcr.io/opexdev/tron-scan
+    build: tron-scan
     environment:
       - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
       - CONSUL_HOST=consul
@@ -71,8 +108,8 @@ services:
     networks:
       - default
   test-eth-scan:
-    build:
-      context: ./eth-scan
+    image: ghcr.io/opexdev/eth-scan
+    build: eth-scan
     environment:
       - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
       - CONSUL_HOST=consul
@@ -81,8 +118,8 @@ services:
     networks:
       - default
   test-bitcoin-scan:
-    build:
-      context: ./bitcoin-scan
+    image: ghcr.io/opexdev/bitcoin-scan
+    build: bitcoin-scan
     environment:
       - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
       - CONSUL_HOST=consul
@@ -93,8 +130,8 @@ services:
     networks:
       - default
   test-bsc-scan:
-    build:
-      context: ./eth-scan
+    image: ghcr.io/opexdev/eth-scan
+    build: eth-scan
     environment:
       - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
       - CONSUL_HOST=consul
@@ -102,7 +139,9 @@ services:
       - RPC_ENDPOINT=${TEST_BSC_RPC_ENDPOINT}
     networks:
       - default
+volumes:
+  vault-data:
+  scan-gateway-data:
 networks:
   default:
-    name: ${DEFAULT_NETWORK_NAME:-opex}
     driver: bridge

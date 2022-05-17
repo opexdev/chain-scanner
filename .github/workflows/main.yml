@@ -1,9 +1,9 @@
-name: Push images on dev branch update
+name: Push images on main branch update
 
 on:
   push:
     branches:
-      - dev
+      - main
 
 jobs:
   build:
@@ -25,7 +25,7 @@ jobs:
       - name: Build
         run: mvn -B -T 1C clean install
       - name: Build Docker images
-        run: TAG=dev docker-compose -f docker-compose.build.yml build
+        run: TAG=latest docker-compose -f docker-compose.build.yml build
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v1
         with:
@@ -33,4 +33,4 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Push images to GitHub Container Registry
-        run: TAG=dev docker-compose -f docker-compose.build.yml push
+        run: TAG=latest docker-compose -f docker-compose.build.yml push
