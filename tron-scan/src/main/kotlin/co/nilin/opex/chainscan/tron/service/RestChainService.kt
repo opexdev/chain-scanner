@@ -20,9 +20,16 @@ class RestChainService(private val proxy: TronGridProxy, private val interpreter
     override suspend fun getTransfers(startBlock: Long, endBlock: Long?, addresses: List<String>?): TransfersResult {
         logger.info("Requested blocks: startBlock=$startBlock, endBlock=$endBlock")
 
-        var last = endBlock ?: (startBlock + 500)
-        val first = if (startBlock == 0L || startBlock > last || last - startBlock > 500) last - 500 else startBlock
         val transfers = mutableListOf<Transfer>()
+
+        //TODO fetch network height
+        var last = endBlock ?: (startBlock + 200)
+        val first = if (startBlock == 0L || startBlock > last)
+            last - 10
+        else if (last - startBlock > 300)
+            last - 300
+        else
+            startBlock
 
         logger.info("Start fetching tron transfers: startBlock=$first, endBlock=$last")
         coroutineScope {

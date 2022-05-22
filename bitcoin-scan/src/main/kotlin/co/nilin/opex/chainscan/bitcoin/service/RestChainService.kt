@@ -19,8 +19,14 @@ class RestChainService(private val proxy: GetBlockProxy) : Chain {
         logger.info("Requested blocks: startBlock=$startBlock, endBlock=$endBlock")
 
         val blockHash = ArrayList<String?>()
-        val last = endBlock ?: proxy.getInfo()?.blocks ?: (startBlock + 500)
-        val first = if (startBlock == 0L || startBlock > last || last - startBlock > 500) last - 500 else startBlock
+
+        val networkHeight = proxy.getInfo()?.blocks ?: throw IllegalStateException("Could not fetch latest block")
+        val last = if (endBlock == null || endBlock > networkHeight) networkHeight else endBlock
+        val first = if (startBlock == 0L || startBlock > last)
+            last - 10
+        else if (last - startBlock > 50)
+            last - 50
+        else startBlock
 
         logger.info("Start fetching bitcoin transfers: startBlock=$first, endBlock=$last")
         for (i in first until last + 1) {
