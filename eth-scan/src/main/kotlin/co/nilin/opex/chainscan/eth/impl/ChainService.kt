@@ -28,8 +28,13 @@ class ChainService(
         var last: Long
         coroutineScope {
             val networkBlockHeight = web3j.ethBlockNumber().send().blockNumber.toLong()
-            last = endBlock ?: networkBlockHeight
-            val first = if (startBlock == 0L || startBlock > last || last - startBlock > 500) last - 500 else startBlock
+            last = if (endBlock == null || endBlock > networkBlockHeight) networkBlockHeight else endBlock
+            val first = if (startBlock == 0L || startBlock > last)
+                last - 10
+            else if (last - startBlock > 300)
+                last - 300
+            else
+                startBlock
 
             logger.info("Start fetching ethereum transfers: startBlock=$first, endBlock=$last")
             for (i in first until last + 1) {
