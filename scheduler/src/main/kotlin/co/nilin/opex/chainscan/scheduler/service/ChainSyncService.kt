@@ -1,10 +1,6 @@
 package co.nilin.opex.chainscan.scheduler.service
 
-import co.nilin.opex.bcgateway.core.spi.ChainSyncRecordHandler
-import co.nilin.opex.chainscan.scheduler.spi.ChainEndpointHandler
-import co.nilin.opex.chainscan.scheduler.spi.ChainEndpointProxy
-import co.nilin.opex.chainscan.scheduler.spi.ChainSyncRetryHandler
-import co.nilin.opex.chainscan.scheduler.spi.ChainSyncSchedulerHandler
+import co.nilin.opex.chainscan.scheduler.spi.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.slf4j.LoggerFactory
@@ -18,6 +14,7 @@ open class ChainSyncService(
     private val chainEndpointHandler: ChainEndpointHandler,
     private val chainSyncRecordHandler: ChainSyncRecordHandler,
     private val chainSyncRetryHandler: ChainSyncRetryHandler,
+    private val tokenAddressHandler: TokenAddressHandler,
     private val operator: TransactionalOperator,
 ) {
     private val logger = LoggerFactory.getLogger(ChainSyncService::class.java)
@@ -28,13 +25,14 @@ open class ChainSyncService(
             launch {
                 val syncHandler = chainEndpointHandler.findChainEndpointProxy(syncSchedule.chainName)
                 val lastSync = chainSyncRecordHandler.loadLastSuccessRecord(syncSchedule.chainName)
+                val tokens = tokenAddressHandler.findTokenAddresses(syncSchedule.chainName)
+                    .map { impl -> impl.address }
+                    .toList()
 
                 logger.info("chain syncing for: ${syncSchedule.chainName} - block: ${lastSync?.latestBlock}")
                 val syncResult =
                     syncHandler.syncTransfers(
-                        ChainEndpointProxy.DepositFilter(
-                            lastSync?.latestBlock, null, emptyList()
-                        )
+                        ChainEndpointProxy.DepositFilter(lastSync?.latestBlock, null, tokens)
                     )
 
                 if (syncResult.success)

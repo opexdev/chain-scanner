@@ -7,13 +7,12 @@ import co.nilin.opex.chainscan.scheduler.spi.ChainEndpointHandler
 import co.nilin.opex.chainscan.scheduler.spi.ChainEndpointProxy
 import kotlinx.coroutines.reactive.awaitFirst
 import kotlinx.coroutines.reactive.awaitFirstOrNull
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
 
 @Component
 class ChainEndpointHandlerImpl(
-    @Qualifier("loadBalanced") private val webClient: WebClient,
+    private val webClient: WebClient,
     private val endpointRepository: ChainEndpointRepository
 ) : ChainEndpointHandler {
     override suspend fun addEndpoint(chainName: String, url: String, username: String?, password: String?) {

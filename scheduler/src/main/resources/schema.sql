@@ -42,3 +42,12 @@ CREATE TABLE IF NOT EXISTS chain_sync_records
     success      BOOLEAN     NOT NULL,
     error        VARCHAR(100)
 );
+
+CREATE TABLE IF NOT EXISTS token_addresses
+(
+    id SERIAL PRIMARY KEY,
+    symbol VARCHAR(72) NOT NULL,
+    chain_name VARCHAR(72) NOT NULL REFERENCES chains (name)
+    address VARCHAR(72) NOT NULL,
+    memo VARCHAR(72)
+);

@@ -1,4 +1,4 @@
-package co.nilin.opex.bcgateway.core.spi
+package co.nilin.opex.chainscan.scheduler.spi
 
 import co.nilin.opex.chainscan.scheduler.po.ChainSyncRecord
 
