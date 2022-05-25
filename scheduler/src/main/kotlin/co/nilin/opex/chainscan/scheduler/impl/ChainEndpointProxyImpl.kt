@@ -23,7 +23,6 @@ class ChainEndpointProxyImpl(
     private val endpoints: List<Endpoint>,
     private val webClient: WebClient
 ) : ChainEndpointProxy {
-
     data class TransfersRequest(
         val startBlock: Long?,
         val endBlock: Long?,

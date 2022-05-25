@@ -16,7 +16,6 @@ class ChainEndpointHandlerImpl(
     @Qualifier("loadBalanced") private val webClient: WebClient,
     private val endpointRepository: ChainEndpointRepository
 ) : ChainEndpointHandler {
-
     override suspend fun addEndpoint(chainName: String, url: String, username: String?, password: String?) {
         endpointRepository.save(ChainEndpointModel(null, chainName, url, username, password)).awaitFirstOrNull()
     }

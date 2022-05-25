@@ -16,7 +16,6 @@ import java.time.temporal.ChronoUnit
 @Component
 class ChainSyncSchedulerHandlerImpl(private val chainSyncScheduleRepository: ChainSyncScheduleRepository) :
     ChainSyncSchedulerHandler {
-
     override suspend fun fetchActiveSchedules(time: LocalDateTime): List<ChainSyncSchedule> {
         return chainSyncScheduleRepository.findActiveSchedule(time).map {
             ChainSyncSchedule(it.chain, it.retryTime, it.delay, it.errorDelay)

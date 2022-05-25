@@ -16,7 +16,6 @@ class ChainSyncRetryHandlerImpl(
     private val chainSyncRetryRepository: ChainSyncRetryRepository,
     private val chainSyncRecordRepository: ChainSyncRecordRepository,
 ) : ChainSyncRetryHandler {
-
     private val maxRetry = 5
 
     override suspend fun handleNextTry(syncSchedule: ChainSyncSchedule, records: ChainSyncRecord, sentBlock: Long) {

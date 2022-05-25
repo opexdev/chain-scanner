@@ -42,16 +42,3 @@ CREATE TABLE IF NOT EXISTS chain_sync_records
     success      BOOLEAN     NOT NULL,
     error        VARCHAR(100)
 );
-
-CREATE TABLE IF NOT EXISTS deposits
-(
-    id               SERIAL PRIMARY KEY,
-    hash             TEXT UNIQUE NOT NULL,
-    wallet_record_id INTEGER REFERENCES wallet_sync_records (id),
-    chain            VARCHAR(72) NOT NULL REFERENCES chains (name),
-    token            BOOLEAN     NOT NULL,
-    token_address    VARCHAR(72),
-    amount           DECIMAL     NOT NULL,
-    depositor        VARCHAR(72) NOT NULL,
-    depositor_memo   VARCHAR(72)
-);
