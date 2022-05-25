@@ -1,5 +1,14 @@
 version: '3.8'
 services:
+  scheduler:
+    image: ghcr.io/opexdev/eth-scan
+    build: scheduler
+    ports:
+      - "8080:8080"
+    environment:
+      - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+    networks:
+      - default
   vault:
     image: ghcr.io/opexdev/vault-opex
     volumes:

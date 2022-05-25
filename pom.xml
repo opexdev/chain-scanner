@@ -17,10 +17,10 @@
 
     <modules>
         <module>core</module>
-        <module>gateway</module>
         <module>eth-scan</module>
         <module>bitcoin-scan</module>
         <module>tron-scan</module>
+        <module>scheduler</module>
     </modules>
 
     <properties>
