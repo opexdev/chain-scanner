@@ -4,6 +4,7 @@ import co.nilin.opex.chainscan.scheduler.spi.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.transaction.reactive.TransactionalOperator
 import org.springframework.transaction.reactive.executeAndAwait
 import java.time.LocalDateTime
@@ -15,6 +16,8 @@ open class ChainSyncService(
     private val chainSyncRecordHandler: ChainSyncRecordHandler,
     private val chainSyncRetryHandler: ChainSyncRetryHandler,
     private val tokenAddressHandler: TokenAddressHandler,
+    private val webhookCaller: WebhookCaller,
+    @Value("\${webhook}") private val webhookBaseUrl: String,
     private val operator: TransactionalOperator,
 ) {
     private val logger = LoggerFactory.getLogger(ChainSyncService::class.java)
@@ -42,6 +45,7 @@ open class ChainSyncService(
 
                 operator.executeAndAwait {
                     chainSyncRecordHandler.saveSyncRecord(syncResult)
+                    webhookCaller.callWebhook(webhookBaseUrl, syncResult)
                     chainSyncSchedulerHandler.prepareScheduleForNextTry(syncSchedule, syncResult.success)
                     chainSyncRetryHandler.handleNextTry(syncSchedule, syncResult, lastSync?.latestBlock ?: 0)
                 }
