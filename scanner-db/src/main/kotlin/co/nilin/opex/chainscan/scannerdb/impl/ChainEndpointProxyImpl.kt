@@ -56,9 +56,9 @@ class ChainEndpointProxyImpl(
             .onStatus({ t -> t.isError }, { it.createException() })
             .bodyToMono(typeRef<TransferResponse>())
             .awaitFirstOrNull()
-
+        val blockNumber = response?.latestBlock ?: request.startBlock ?: BigInteger.ZERO
         return DepositResult(
-            response?.latestBlock ?: request.startBlock ?: BigInteger.ZERO,
+            ChainSyncRecord(null, LocalDateTime.now(), endpoint, blockNumber),
             response?.transfers
                 ?.map {
                     Deposit(
@@ -77,7 +77,7 @@ class ChainEndpointProxyImpl(
         )
     }
 
-    private suspend fun roundRobin(i: Int, request: TransfersRequest): ChainSyncRecord {
+    private suspend fun roundRobin(i: Int, request: TransfersRequest): DepositResult {
         return try {
             val response =
                 requestTransferList(
@@ -85,27 +85,33 @@ class ChainEndpointProxyImpl(
                     request
                 )
             logger.info("fetched transactions: ${response.deposits.size} transaction received")
-            ChainSyncRecord(
-                null,
-                LocalDateTime.now(),
-                endpoints[i].url,
-                response.latestBlock
+            DepositResult(
+                ChainSyncRecord(
+                    null,
+                    LocalDateTime.now(),
+                    endpoints[i].url,
+                    response.chainSyncRecord.blockNumber
+                ),
+                emptyList()
             )
         } catch (error: WebClientResponseException) {
             if (i < endpoints.size - 1) {
                 roundRobin(i + 1, request)
             } else {
-                ChainSyncRecord(
-                    null,
-                    LocalDateTime.now(),
-                    endpoints[i].url,
-                    request.endBlock ?: BigInteger.ZERO
+                DepositResult(
+                    ChainSyncRecord(
+                        null,
+                        LocalDateTime.now(),
+                        endpoints[i].url,
+                        request.endBlock ?: BigInteger.ZERO
+                    ),
+                    emptyList()
                 )
             }
         }
     }
 
-    override suspend fun syncTransfers(filter: ChainEndpointProxy.DepositFilter): ChainSyncRecord {
+    override suspend fun syncTransfers(filter: ChainEndpointProxy.DepositFilter): DepositResult {
         return roundRobin(0, TransfersRequest(filter.startBlock, filter.endBlock, filter.tokenAddresses))
     }
 }

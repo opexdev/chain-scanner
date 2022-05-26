@@ -1,8 +1,6 @@
 package co.nilin.opex.chainscan.core.model
 
-import java.math.BigInteger
-
 data class DepositResult(
-    val latestBlock: BigInteger,
+    val chainSyncRecord: ChainSyncRecord,
     val deposits: List<Deposit>
 )

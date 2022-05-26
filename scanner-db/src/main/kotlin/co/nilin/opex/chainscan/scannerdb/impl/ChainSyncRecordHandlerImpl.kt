@@ -1,6 +1,7 @@
 package co.nilin.opex.chainscan.scannerdb.impl
 
 import co.nilin.opex.chainscan.core.model.ChainSyncRecord
+import co.nilin.opex.chainscan.core.model.DepositResult
 import co.nilin.opex.chainscan.core.spi.ChainSyncRecordHandler
 import co.nilin.opex.chainscan.scannerdb.model.ChainSyncRecordModel
 import co.nilin.opex.chainscan.scannerdb.repository.ChainSyncRecordRepository
@@ -31,20 +32,24 @@ class ChainSyncRecordHandlerImpl(
     }
 
     @Transactional
-    override suspend fun saveSyncRecord(syncRecord: ChainSyncRecord) {
+    override suspend fun saveSyncRecord(syncRecord: DepositResult) {
         val currentRecord = chainSyncRecordRepository.findAll().awaitFirstOrNull()
         val chainSyncRecordDao =
             ChainSyncRecordModel(
-                syncRecord.id!!,
-                syncRecord.syncTime,
-                syncRecord.endpointUrl,
-                syncRecord.blockNumber
+                syncRecord.chainSyncRecord.id!!,
+                syncRecord.chainSyncRecord.syncTime,
+                syncRecord.chainSyncRecord.endpointUrl,
+                syncRecord.chainSyncRecord.blockNumber
             )
 
         if (currentRecord != null)
             chainSyncRecordRepository.save(chainSyncRecordDao).awaitFirst()
         else
-            chainSyncRecordRepository.insert(syncRecord.syncTime, syncRecord.endpointUrl, syncRecord.blockNumber)
+            chainSyncRecordRepository.insert(
+                syncRecord.chainSyncRecord.syncTime,
+                syncRecord.chainSyncRecord.endpointUrl,
+                syncRecord.chainSyncRecord.blockNumber
+            )
                 .awaitFirstOrNull()
     }
 }
