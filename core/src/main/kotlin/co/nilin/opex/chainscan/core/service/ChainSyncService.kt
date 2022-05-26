@@ -1,13 +1,10 @@
-package co.nilin.opex.chainscan.scannerdb.service
+package co.nilin.opex.chainscan.core.service
 
 import co.nilin.opex.chainscan.core.model.ChainSyncRecord
 import co.nilin.opex.chainscan.core.model.Transfer
-import co.nilin.opex.chainscan.core.service.ChainSyncService
 import co.nilin.opex.chainscan.core.spi.*
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.transaction.reactive.TransactionalOperator
-import org.springframework.transaction.reactive.executeAndAwait
 import java.math.BigInteger
 import java.time.LocalDateTime
 
@@ -18,15 +15,14 @@ class ChainSyncService(
     private val chainSyncRecordHandler: ChainSyncRecordHandler,
     private val tokenAddressHandler: TokenAddressHandler,
     private val transferCacheHandler: TransferCacheHandler,
-    private val operator: TransactionalOperator,
 ) {
     private val logger = LoggerFactory.getLogger(ChainSyncService::class.java)
 
-    suspend fun getTransfers(): List<Transfer> {
+    suspend fun getTransfers(batch: Int): List<Transfer> {
         val endpoint = chainEndpointHandler.findAll().first()
         val lastSync = chainSyncRecordHandler.lastSyncedBlockedNumber()
         val startBlock = lastSync + BigInteger.ONE
-        val endBlock = startBlock
+        val endBlock = startBlock + batch.toBigInteger()
         val tokens = tokenAddressHandler.findTokenAddresses().map { impl -> impl.address }.toList()
         logger.info("chain syncing for: $chainName - block: $lastSync")
         val cached = transferCacheHandler.getTransfers(tokens)
@@ -36,7 +32,7 @@ class ChainSyncService(
         return cached + transfers
     }
 
-    suspend fun clearCache(consumerId: Long, blockNumber: BigInteger) = operator.executeAndAwait {
+    suspend fun clearCache(consumerId: Long, blockNumber: BigInteger) {
         chainSyncRecordHandler.saveSyncRecord(ChainSyncRecord(LocalDateTime.now(), consumerId, blockNumber))
         transferCacheHandler.clearCache(blockNumber)
     }
