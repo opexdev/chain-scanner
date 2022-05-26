@@ -5,7 +5,6 @@ import co.nilin.opex.chainscan.core.model.DepositResult
 import co.nilin.opex.chainscan.core.spi.ChainSyncRecordHandler
 import co.nilin.opex.chainscan.scannerdb.model.ChainSyncRecordModel
 import co.nilin.opex.chainscan.scannerdb.repository.ChainSyncRecordRepository
-import co.nilin.opex.chainscan.scannerdb.repository.DepositRepository
 import kotlinx.coroutines.reactive.awaitFirst
 import kotlinx.coroutines.reactive.awaitFirstOrNull
 import org.springframework.stereotype.Component
@@ -13,10 +12,8 @@ import org.springframework.transaction.annotation.Transactional
 import java.math.BigInteger
 
 @Component
-class ChainSyncRecordHandlerImpl(
-    private val chainSyncRecordRepository: ChainSyncRecordRepository,
-    private val depositRepository: DepositRepository
-) : ChainSyncRecordHandler {
+class ChainSyncRecordHandlerImpl(private val chainSyncRecordRepository: ChainSyncRecordRepository) :
+    ChainSyncRecordHandler {
     override suspend fun loadLastSuccessRecord(): ChainSyncRecord? {
         val chainSyncRecordDao = chainSyncRecordRepository.findAll().awaitFirstOrNull()
         return if (chainSyncRecordDao != null) {
@@ -24,10 +21,19 @@ class ChainSyncRecordHandlerImpl(
                 chainSyncRecordDao.id,
                 chainSyncRecordDao.syncTime,
                 chainSyncRecordDao.endpointUrl,
-                chainSyncRecordDao.blockNumber + BigInteger.ONE
+                chainSyncRecordDao.blockNumber
             )
         } else {
             null
+        }
+    }
+
+    override suspend fun lastSyncedBlockedNumber(): BigInteger {
+        val chainSyncRecordDao = chainSyncRecordRepository.findAll().awaitFirstOrNull()
+        return if (chainSyncRecordDao != null) {
+            chainSyncRecordDao.blockNumber
+        } else {
+            TODO("Fetch chain's last blocknumber")
         }
     }
 

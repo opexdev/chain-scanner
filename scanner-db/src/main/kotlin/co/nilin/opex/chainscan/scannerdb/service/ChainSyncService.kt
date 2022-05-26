@@ -20,12 +20,12 @@ class ChainSyncService(
 
     suspend fun startSyncWithChain() {
         val chainEndpointProxy = chainEndpointHandler.findChainEndpointProxy()
-        val lastSync = chainSyncRecordHandler.loadLastSuccessRecord()
+        val lastSync = chainSyncRecordHandler.lastSyncedBlockedNumber()
         val tokens = tokenAddressHandler.findTokenAddresses().map { impl -> impl.address }.toList()
 
-        logger.info("chain syncing for: $chainName - block: ${lastSync?.blockNumber}")
+        logger.info("chain syncing for: $chainName - block: $lastSync")
         val syncResult = runCatching {
-            chainEndpointProxy.syncTransfers(ChainEndpointProxy.DepositFilter(lastSync?.blockNumber, null, tokens))
+            chainEndpointProxy.syncTransfers(ChainEndpointProxy.DepositFilter(lastSync, null, tokens))
         }.onFailure {
             logger.info("request failed - ${it.message}")
         }.onSuccess {
