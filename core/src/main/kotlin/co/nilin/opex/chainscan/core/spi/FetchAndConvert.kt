@@ -5,9 +5,8 @@ import java.math.BigInteger
 
 interface FetchAndConvert {
     suspend fun fetchAndConvert(
-        endpoint: String,
-        startBlock: BigInteger?,
-        endBlock: BigInteger?,
+        startBlock: BigInteger,
+        endBlock: BigInteger,
         tokenAddresses: List<String>
     ): List<Transfer>
 }

@@ -2,6 +2,7 @@ package co.nilin.opex.chainscan.scannerdb.impl
 
 import co.nilin.opex.chainscan.core.model.ChainSyncRecord
 import co.nilin.opex.chainscan.core.spi.ChainSyncRecordHandler
+import co.nilin.opex.chainscan.core.spi.GetBlockNumber
 import co.nilin.opex.chainscan.scannerdb.model.ChainSyncRecordModel
 import co.nilin.opex.chainscan.scannerdb.repository.ChainSyncRecordRepository
 import kotlinx.coroutines.reactive.awaitFirst
@@ -11,7 +12,10 @@ import org.springframework.transaction.annotation.Transactional
 import java.math.BigInteger
 
 @Component
-class ChainSyncRecordHandlerImpl(private val chainSyncRecordRepository: ChainSyncRecordRepository) :
+class ChainSyncRecordHandlerImpl(
+    private val chainSyncRecordRepository: ChainSyncRecordRepository,
+    private val getBlockNumber: GetBlockNumber
+) :
     ChainSyncRecordHandler {
     override suspend fun lastSyncRecord(): ChainSyncRecord? {
         return chainSyncRecordRepository.findAll().awaitFirstOrNull()?.let {
@@ -21,7 +25,7 @@ class ChainSyncRecordHandlerImpl(private val chainSyncRecordRepository: ChainSyn
 
     override suspend fun lastSyncedBlockedNumber(): BigInteger {
         val chainSyncRecordDao = chainSyncRecordRepository.findAll().awaitFirstOrNull()
-        return chainSyncRecordDao?.blockNumber ?: TODO("Fetch chain's last block number")
+        return chainSyncRecordDao?.blockNumber ?: getBlockNumber.invoke()
     }
 
     @Transactional

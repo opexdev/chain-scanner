@@ -19,7 +19,6 @@ class ChainSyncService(
     private val logger = LoggerFactory.getLogger(ChainSyncService::class.java)
 
     suspend fun getTransfers(batch: Int): List<Transfer> {
-        val endpoint = chainEndpointHandler.findAll().first()
         val lastSync = chainSyncRecordHandler.lastSyncedBlockedNumber()
         val startBlock = lastSync + BigInteger.ONE
         val endBlock = startBlock + batch.toBigInteger()
@@ -27,7 +26,7 @@ class ChainSyncService(
         logger.info("chain syncing for: $chainName - block: $lastSync")
         val cached = transferCacheHandler.getTransfers(tokens)
         val notCachedStartBlock = cached.maxOfOrNull { it.blockNumber }?.plus(BigInteger.ONE) ?: startBlock
-        val transfers = fetchAndConvert.fetchAndConvert(endpoint.url, notCachedStartBlock, endBlock, tokens)
+        val transfers = fetchAndConvert.fetchAndConvert(notCachedStartBlock, endBlock, tokens)
         transferCacheHandler.saveTransfers(transfers)
         return cached + transfers
     }
