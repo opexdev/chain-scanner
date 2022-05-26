@@ -7,7 +7,6 @@ import org.springframework.data.relational.core.mapping.Table
 data class TokenAddressModel(
     @Id val id: Long?,
     val symbol: String,
-    val chainName: String,
     val address: String,
     val memo: String?
 )
