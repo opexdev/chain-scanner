@@ -18,9 +18,9 @@ class ChainSyncService(
 ) {
     private val logger = LoggerFactory.getLogger(ChainSyncService::class.java)
 
-    suspend fun getTransfers(consumerId: Long, batch: Int): List<Transfer> {
+    suspend fun getTransfers(batch: Int): List<Transfer> {
         val endpoint = chainEndpointHandler.findAll().first()
-        val lastSync = chainSyncRecordHandler.lastSyncedBlockedNumber(consumerId)
+        val lastSync = chainSyncRecordHandler.lastSyncedBlockedNumber()
         val startBlock = lastSync + BigInteger.ONE
         val endBlock = startBlock + batch.toBigInteger()
         val tokens = tokenAddressHandler.findTokenAddresses().map { impl -> impl.address }.toList()
@@ -32,8 +32,8 @@ class ChainSyncService(
         return cached + transfers
     }
 
-    suspend fun clearCache(consumerId: Long, blockNumber: BigInteger) {
-        chainSyncRecordHandler.saveSyncRecord(ChainSyncRecord(consumerId, LocalDateTime.now(), blockNumber))
+    suspend fun clearCache(blockNumber: BigInteger) {
+        chainSyncRecordHandler.saveSyncRecord(ChainSyncRecord(LocalDateTime.now(), blockNumber))
         transferCacheHandler.clearCache(blockNumber)
     }
 }
