@@ -1,11 +1,8 @@
 package co.nilin.opex.bcgateway.ports.postgres.impl
 
 import co.nilin.opex.chainscan.scheduler.po.Chain
-import co.nilin.opex.chainscan.scheduler.po.Endpoint
 import co.nilin.opex.chainscan.scheduler.repository.ChainRepository
 import co.nilin.opex.chainscan.scheduler.spi.ChainLoader
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.reactive.awaitFirst
 import kotlinx.coroutines.reactive.awaitFirstOrElse
 import kotlinx.coroutines.reactive.awaitFirstOrNull
@@ -19,22 +16,18 @@ class ChainHandler(private val chainRepository: ChainRepository) : ChainLoader {
         assert(chain == null)
         chainRepository.insert(name).awaitFirstOrNull()
         val model = chainRepository.findByName(name).awaitFirst()
-        return Chain(model.name, emptyList())
+        return Chain(model.name)
     }
 
     override suspend fun fetchAllChains(): List<Chain> {
         return chainRepository.findAll()
             .collectList()
             .awaitFirstOrElse { emptyList() }
-            .map { c ->
-                val endpoints = chainRepository.findEndpointsByName(c.name).map { Endpoint(it.url) }.toList()
-                Chain(c.name, endpoints)
-            }
+            .map { c -> Chain(c.name) }
     }
 
     override suspend fun fetchChainInfo(chain: String): Chain {
         val chainDao = chainRepository.findByName(chain).awaitSingle()
-        val endpoints = chainRepository.findEndpointsByName(chain).map { Endpoint(it.url) }.toList()
-        return Chain(chainDao.name, endpoints)
+        return Chain(chainDao.name)
     }
 }

@@ -4,7 +4,7 @@ import co.nilin.opex.chainscan.scheduler.spi.WebhookCaller
 import org.slf4j.LoggerFactory
 
 class WebhookCallerImpl : WebhookCaller {
-    private val logger = LoggerFactory.getLogger(ChainEndpointProxyImpl::class.java)
+    private val logger = LoggerFactory.getLogger(WebhookCallerImpl::class.java)
 
     override suspend fun callWebhook(url: String, data: Any) {
         logger.info("Trigger {}", url)

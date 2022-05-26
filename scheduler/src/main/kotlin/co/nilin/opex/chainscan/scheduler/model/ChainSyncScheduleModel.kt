@@ -12,13 +12,3 @@ data class ChainSyncScheduleModel(
     var delay: Long,
     @Column("error_delay") var errorDelay: Long
 )
-
-@Table("chain_sync_records")
-data class ChainSyncRecordModel(
-    @Id @Column("chain") val chain: String,
-    val time: LocalDateTime,
-    @Column("endpoint_url") val endpointUrl: String,
-    @Column("latest_block") val latestBlock: Long?,
-    val success: Boolean,
-    val error: String?
-)
