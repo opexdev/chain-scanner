@@ -17,14 +17,13 @@ class ChainSyncService(
     private val logger = LoggerFactory.getLogger(ChainSyncService::class.java)
 
     suspend fun startSyncWithChain() {
-        val chainName = ""
-        val syncHandler = chainEndpointHandler.findChainEndpointProxy()
+        val chainEndpointProxy = chainEndpointHandler.findChainEndpointProxy()
         val lastSync = chainSyncRecordHandler.loadLastSuccessRecord()
         val tokens = tokenAddressHandler.findTokenAddresses().map { impl -> impl.address }.toList()
 
-        logger.info("chain syncing for: $chainName - block: ${lastSync?.blockNumber}")
+//        logger.info("chain syncing for: $chainName - block: ${lastSync?.blockNumber}")
         val syncResult =
-            syncHandler.syncTransfers(ChainEndpointProxy.DepositFilter(lastSync?.blockNumber, null, tokens))
+            chainEndpointProxy.syncTransfers(ChainEndpointProxy.DepositFilter(lastSync?.blockNumber, null, tokens))
 
 //        if (syncResult.success)
 //            logger.info("request successful - synced $chainName until ${syncResult.blockNumber}")
