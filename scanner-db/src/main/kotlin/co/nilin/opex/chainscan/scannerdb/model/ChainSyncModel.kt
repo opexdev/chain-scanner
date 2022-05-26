@@ -10,6 +10,5 @@ data class ChainSyncRecordModel(
     @Id val id: Long,
     val syncTime: LocalDateTime,
     val endpointUrl: String,
-    val blockNumber: BigInteger,
-    val blockHash: String
+    val blockNumber: BigInteger
 )

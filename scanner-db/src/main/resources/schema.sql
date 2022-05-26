@@ -11,8 +11,7 @@ CREATE TABLE IF NOT EXISTS chain_sync_records
     id           SERIAL       PRIMARY KEY,
     sync_time    TIMESTAMP    NOT NULL,
     endpoint_url VARCHAR(72)  NOT NULL,
-    block_number INTEGER      NOT NULL,
-    block_hash   VARCHAR(100) NOT NULL
+    block_number INTEGER      NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS token_addresses

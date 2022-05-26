@@ -13,6 +13,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import org.springframework.web.reactive.function.client.body
 import reactor.core.publisher.Mono
 import java.math.BigDecimal
+import java.math.BigInteger
 import java.net.URI
 import java.time.LocalDateTime
 
@@ -24,13 +25,14 @@ class ChainEndpointProxyImpl(
     private val webClient: WebClient
 ) : ChainEndpointProxy {
     data class TransfersRequest(
-        val startBlock: Long?,
-        val endBlock: Long?,
+        val startBlock: BigInteger?,
+        val endBlock: BigInteger?,
         val addresses: List<String>?
     )
 
     data class Transfer(
-        var txHash: String?,
+        var txHash: String,
+        var blockNumber: BigInteger,
         var from: String?,
         var to: String?,
         var isTokenTransfer: Boolean,
@@ -39,7 +41,7 @@ class ChainEndpointProxyImpl(
     )
 
     data class TransferResponse(
-        val latestBlock: Long,
+        val latestBlock: BigInteger,
         val transfers: List<Transfer>
     )
 
@@ -56,12 +58,13 @@ class ChainEndpointProxyImpl(
             .awaitFirstOrNull()
 
         return DepositResult(
-            response?.latestBlock ?: request.startBlock ?: 0,
+            response?.latestBlock ?: request.startBlock ?: BigInteger.ZERO,
             response?.transfers
                 ?.map {
                     Deposit(
                         null,
-                        it.txHash ?: "",
+                        it.txHash,
+                        it.blockNumber,
                         it.to ?: "",
                         null,
                         it.amount,
@@ -83,26 +86,20 @@ class ChainEndpointProxyImpl(
                 )
             logger.info("fetched transactions: ${response.deposits.size} transaction received")
             ChainSyncRecord(
-                chain,
-                LocalDateTime.now(),
-                endpoints[i],
-                response.latestBlock,
-                true,
                 null,
-                response.deposits
+                LocalDateTime.now(),
+                endpoints[i].url,
+                response.latestBlock
             )
         } catch (error: WebClientResponseException) {
             if (i < endpoints.size - 1) {
                 roundRobin(i + 1, request)
             } else {
                 ChainSyncRecord(
-                    chain,
+                    null,
                     LocalDateTime.now(),
-                    endpoints[i],
-                    request.endBlock,
-                    false,
-                    error.message,
-                    emptyList()
+                    endpoints[i].url,
+                    request.endBlock ?: BigInteger.ZERO
                 )
             }
         }

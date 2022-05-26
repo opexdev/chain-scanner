@@ -18,18 +18,18 @@ class ChainSyncService(
 
     suspend fun startSyncWithChain() {
         val chainName = ""
-        val syncHandler = chainEndpointHandler.findChainEndpointProxy(chainName)
-        val lastSync = chainSyncRecordHandler.loadLastSuccessRecord(chainName)
-        val tokens = tokenAddressHandler.findTokenAddresses(chainName).map { impl -> impl.address }.toList()
+        val syncHandler = chainEndpointHandler.findChainEndpointProxy()
+        val lastSync = chainSyncRecordHandler.loadLastSuccessRecord()
+        val tokens = tokenAddressHandler.findTokenAddresses().map { impl -> impl.address }.toList()
 
-        logger.info("chain syncing for: $chainName - block: ${lastSync?.latestBlock}")
+        logger.info("chain syncing for: $chainName - block: ${lastSync?.blockNumber}")
         val syncResult =
-            syncHandler.syncTransfers(ChainEndpointProxy.DepositFilter(lastSync?.latestBlock, null, tokens))
+            syncHandler.syncTransfers(ChainEndpointProxy.DepositFilter(lastSync?.blockNumber, null, tokens))
 
-        if (syncResult.success)
-            logger.info("request successful - synced $chainName until ${syncResult.latestBlock}")
-        else
-            logger.info("request failed - ${syncResult.error}")
+//        if (syncResult.success)
+//            logger.info("request successful - synced $chainName until ${syncResult.blockNumber}")
+//        else
+//            logger.info("request failed - ${syncResult.error}")
 
         operator.executeAndAwait {
             chainSyncRecordHandler.saveSyncRecord(syncResult)

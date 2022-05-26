@@ -9,11 +9,8 @@ import reactor.core.publisher.Mono
 
 @Repository
 interface TokenAddressRepository : ReactiveCrudRepository<TokenAddressModel, String> {
-    fun findBySymbol(symbol: String): Flux<TokenAddressModel>
+    @Query("insert into token_addresses values (:symbol, :address, :memo) on conflict do nothing")
+    fun insert(symbol: String, address: String, memo: String?): Mono<TokenAddressModel>
 
-    @Query("insert into token_addresses values (:symbol, :chain_name, :address, :memo) on conflict do nothing")
-    fun insert(symbol: String, chainName: String, address: String, memo: String?): Mono<TokenAddressModel>
-
-    @Query("delete from token_addresses where name = :name")
-    fun deleteByName(symbol: String): Mono<Int>
+    fun deleteBySymbol(symbol: String): Mono<Int>
 }

@@ -8,6 +8,6 @@ import reactor.core.publisher.Mono
 
 @Repository
 interface ChainEndpointRepository : ReactiveCrudRepository<ChainEndpointModel, Long> {
-    fun deleteByChainNameAndUrl(chainName: String, url: String): Mono<Int>
-    fun findEndpointsByName(chainName: String): Flux<ChainEndpointModel>
+    fun deleteByChainNameAndUrl(url: String): Mono<Int>
+    fun findEndpointsByName(): Flux<ChainEndpointModel>
 }
