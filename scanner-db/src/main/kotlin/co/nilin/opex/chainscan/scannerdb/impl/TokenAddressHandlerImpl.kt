@@ -2,6 +2,7 @@ package co.nilin.opex.chainscan.scannerdb.impl
 
 import co.nilin.opex.chainscan.core.model.TokenAddress
 import co.nilin.opex.chainscan.core.spi.TokenAddressHandler
+import co.nilin.opex.chainscan.scannerdb.model.TokenAddressModel
 import co.nilin.opex.chainscan.scannerdb.repository.TokenAddressRepository
 import kotlinx.coroutines.reactive.awaitFirstOrNull
 import kotlinx.coroutines.reactor.awaitSingle
@@ -15,7 +16,7 @@ class TokenAddressHandlerImpl(private val tokenAddressRepository: TokenAddressRe
 
     override suspend fun addTokenAddress(symbol: String, address: String) {
         try {
-            tokenAddressRepository.insert(symbol, address).awaitSingleOrNull()
+            tokenAddressRepository.save(TokenAddressModel(symbol, address)).awaitSingleOrNull()
         } catch (e: Exception) {
             logger.error("Could not insert new currency $symbol", e)
         }
