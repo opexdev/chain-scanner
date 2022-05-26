@@ -8,7 +8,6 @@ CREATE TABLE IF NOT EXISTS chain_endpoints
 CREATE TABLE IF NOT EXISTS chain_sync_records
 (
     id           SERIAL       PRIMARY KEY,
-    consumer_id  INTEGER      NOT NULL UNIQUE,
     sync_time    TIMESTAMP    NOT NULL,
     block_number INTEGER      NOT NULL
 );

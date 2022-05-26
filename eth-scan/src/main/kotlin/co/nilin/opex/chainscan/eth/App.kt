@@ -10,5 +10,5 @@ import org.springframework.context.annotation.Import
 class EthScanApplication
 
 fun main(args: Array<String>) {
-	runApplication<EthScanApplication>(*args)
+    runApplication<EthScanApplication>(*args)
 }
