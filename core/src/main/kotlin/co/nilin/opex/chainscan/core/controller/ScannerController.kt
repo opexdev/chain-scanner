@@ -15,7 +15,7 @@ class ScannerController(private val chainSyncService: ChainSyncService) {
 
     @PostMapping("/transfers/{consumerId}")
     suspend fun getTransfers(@PathVariable consumerId: Long, batch: Int?): List<Transfer> {
-        return chainSyncService.getTransfers(batch ?: 30)
+        return chainSyncService.getTransfers(consumerId, batch ?: 30)
     }
 
     @DeleteMapping("/clear-cache/{consumerId}")

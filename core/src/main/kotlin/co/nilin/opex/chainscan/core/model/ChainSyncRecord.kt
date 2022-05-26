@@ -4,8 +4,8 @@ import java.math.BigInteger
 import java.time.LocalDateTime
 
 data class ChainSyncRecord(
-    val syncTime: LocalDateTime,
     val consumerId: Long,
+    val syncTime: LocalDateTime,
     val blockNumber: BigInteger,
     val id: Long? = null
 )

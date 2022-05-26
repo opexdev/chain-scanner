@@ -10,6 +10,5 @@ import java.time.LocalDateTime
 
 @Repository
 interface ChainSyncRecordRepository : ReactiveCrudRepository<ChainSyncRecordModel, String> {
-    @Query("insert into chain_sync_records values(:syncTime, :endpointUrl, :blockNumber)")
-    fun insert(syncTime: LocalDateTime, endpointUrl: String, blockNumber: BigInteger): Mono<ChainSyncRecordModel>
+    fun findByConsumerId(consumerId: Long): Mono<ChainSyncRecordModel>
 }
