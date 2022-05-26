@@ -3,10 +3,11 @@ package co.nilin.opex.chainscan.scannerdb.impl
 import co.nilin.opex.chainscan.core.model.ChainSyncRecord
 import co.nilin.opex.chainscan.core.model.DepositResult
 import co.nilin.opex.chainscan.core.model.Endpoint
+import co.nilin.opex.chainscan.core.model.TransfersRequest
 import co.nilin.opex.chainscan.core.spi.ChainEndpointProxy
+import co.nilin.opex.chainscan.core.spi.FetchAndConvert
 import org.slf4j.LoggerFactory
 import org.springframework.core.ParameterizedTypeReference
-import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -15,16 +16,9 @@ import java.time.LocalDateTime
 inline fun <reified T : Any> typeRef(): ParameterizedTypeReference<T> = object : ParameterizedTypeReference<T>() {}
 
 class ChainEndpointProxyImpl(
-    private val chain: String,
-    private val endpoints: List<Endpoint>,
-    private val webClient: WebClient
+    private val fetchAndConvert: FetchAndConvert,
+    private val endpoints: List<Endpoint>
 ) : ChainEndpointProxy {
-    data class TransfersRequest(
-        val startBlock: BigInteger?,
-        val endBlock: BigInteger?,
-        val addresses: List<String>?
-    )
-
     data class Transfer(
         var txHash: String,
         var blockNumber: BigInteger,
@@ -35,15 +29,10 @@ class ChainEndpointProxyImpl(
         var amount: BigDecimal
     )
 
-    data class TransferResponse(
-        val latestBlock: BigInteger,
-        val transfers: List<Transfer>
-    )
-
     private val logger = LoggerFactory.getLogger(ChainEndpointProxyImpl::class.java)
 
     private suspend fun requestTransferList(endpoint: String, request: TransfersRequest): DepositResult {
-        TODO("Get transactions directly from blockchain in deployed service")
+        return fetchAndConvert.fetchAndConvert(endpoint, request)
     }
 
     private suspend fun roundRobin(i: Int, request: TransfersRequest): DepositResult {
