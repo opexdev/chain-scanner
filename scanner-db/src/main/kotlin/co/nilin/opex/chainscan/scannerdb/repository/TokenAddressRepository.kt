@@ -9,8 +9,8 @@ import reactor.core.publisher.Mono
 
 @Repository
 interface TokenAddressRepository : ReactiveCrudRepository<TokenAddressModel, String> {
-    @Query("insert into token_addresses values (:symbol, :address, :memo) on conflict do nothing")
-    fun insert(symbol: String, address: String, memo: String?): Mono<TokenAddressModel>
+    @Query("insert into token_addresses values (:symbol, :address) on conflict do nothing")
+    fun insert(symbol: String, address: String): Mono<TokenAddressModel>
 
     fun deleteBySymbol(symbol: String): Mono<Int>
 }

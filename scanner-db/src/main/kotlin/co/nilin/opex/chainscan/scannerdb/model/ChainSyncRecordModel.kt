@@ -7,8 +7,8 @@ import java.time.LocalDateTime
 
 @Table("chain_sync_records")
 data class ChainSyncRecordModel(
-    @Id val id: Long,
     val syncTime: LocalDateTime,
     val endpointUrl: String,
-    val blockNumber: BigInteger
+    val blockNumber: BigInteger,
+    @Id var id: Long? = null
 )

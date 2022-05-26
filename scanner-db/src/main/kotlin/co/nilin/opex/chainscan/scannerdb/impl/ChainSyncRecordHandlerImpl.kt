@@ -1,7 +1,7 @@
 package co.nilin.opex.chainscan.scannerdb.impl
 
 import co.nilin.opex.chainscan.core.model.ChainSyncRecord
-import co.nilin.opex.chainscan.core.model.DepositResult
+import co.nilin.opex.chainscan.core.model.TransferResult
 import co.nilin.opex.chainscan.core.spi.ChainSyncRecordHandler
 import co.nilin.opex.chainscan.scannerdb.model.ChainSyncRecordModel
 import co.nilin.opex.chainscan.scannerdb.repository.ChainSyncRecordRepository
@@ -14,14 +14,14 @@ import java.math.BigInteger
 @Component
 class ChainSyncRecordHandlerImpl(private val chainSyncRecordRepository: ChainSyncRecordRepository) :
     ChainSyncRecordHandler {
-    override suspend fun loadLastSuccessRecord(): ChainSyncRecord? {
+    override suspend fun lastSyncRecord(): ChainSyncRecord? {
         val chainSyncRecordDao = chainSyncRecordRepository.findAll().awaitFirstOrNull()
         return if (chainSyncRecordDao != null) {
             ChainSyncRecord(
-                chainSyncRecordDao.id,
                 chainSyncRecordDao.syncTime,
                 chainSyncRecordDao.endpointUrl,
-                chainSyncRecordDao.blockNumber
+                chainSyncRecordDao.blockNumber,
+                chainSyncRecordDao.id
             )
         } else {
             null
@@ -30,15 +30,11 @@ class ChainSyncRecordHandlerImpl(private val chainSyncRecordRepository: ChainSyn
 
     override suspend fun lastSyncedBlockedNumber(): BigInteger {
         val chainSyncRecordDao = chainSyncRecordRepository.findAll().awaitFirstOrNull()
-        return if (chainSyncRecordDao != null) {
-            chainSyncRecordDao.blockNumber
-        } else {
-            TODO("Fetch chain's last blocknumber")
-        }
+        return chainSyncRecordDao?.blockNumber ?: TODO("Fetch chain's last block number")
     }
 
     @Transactional
-    override suspend fun saveSyncRecord(syncRecord: DepositResult) {
+    override suspend fun saveSyncRecord(syncRecord: TransferResult) {
         val currentRecord = chainSyncRecordRepository.findAll().awaitFirstOrNull()
         val chainSyncRecordDao =
             ChainSyncRecordModel(

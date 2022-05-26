@@ -1,6 +1,6 @@
 package co.nilin.opex.chainscan.core.model
 
-data class DepositResult(
+data class TransferResult(
     val chainSyncRecord: ChainSyncRecord,
-    val deposits: List<Deposit>
+    val transfers: List<Transfer>
 )

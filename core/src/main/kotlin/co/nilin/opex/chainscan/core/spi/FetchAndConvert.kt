@@ -1,8 +1,13 @@
 package co.nilin.opex.chainscan.core.spi
 
-import co.nilin.opex.chainscan.core.model.DepositResult
-import co.nilin.opex.chainscan.core.model.TransfersRequest
+import co.nilin.opex.chainscan.core.model.Transfer
+import java.math.BigInteger
 
 interface FetchAndConvert {
-    suspend fun fetchAndConvert(endpoint: String, request: TransfersRequest): DepositResult
+    suspend fun fetchAndConvert(
+        endpoint: String,
+        startBlock: BigInteger?,
+        endBlock: BigInteger?,
+        tokenAddresses: List<String> = emptyList()
+    ): List<Transfer>
 }

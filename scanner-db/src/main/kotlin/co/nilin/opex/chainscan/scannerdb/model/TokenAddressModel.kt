@@ -5,8 +5,7 @@ import org.springframework.data.relational.core.mapping.Table
 
 @Table("token_addresses")
 data class TokenAddressModel(
-    @Id val id: Long?,
     val symbol: String,
     val address: String,
-    val memo: String?
+    @Id val id: Long? = null
 )

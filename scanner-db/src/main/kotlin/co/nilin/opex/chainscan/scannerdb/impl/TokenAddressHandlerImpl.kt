@@ -13,9 +13,9 @@ import org.springframework.stereotype.Component
 class TokenAddressHandlerImpl(private val tokenAddressRepository: TokenAddressRepository) : TokenAddressHandler {
     private val logger = LoggerFactory.getLogger(TokenAddressHandler::class.java)
 
-    override suspend fun addTokenAddress(symbol: String, address: String, memo: String?) {
+    override suspend fun addTokenAddress(symbol: String, address: String) {
         try {
-            tokenAddressRepository.insert(symbol, address, memo).awaitSingleOrNull()
+            tokenAddressRepository.insert(symbol, address).awaitSingleOrNull()
         } catch (e: Exception) {
             logger.error("Could not insert new currency $symbol", e)
         }
@@ -30,8 +30,6 @@ class TokenAddressHandlerImpl(private val tokenAddressRepository: TokenAddressRe
     }
 
     override suspend fun findTokenAddresses(): List<TokenAddress> {
-        return tokenAddressRepository.findAll().collectList().awaitSingle().map {
-            TokenAddress(it.symbol, it.address, it.memo)
-        }
+        return tokenAddressRepository.findAll().collectList().awaitSingle().map { TokenAddress(it.symbol, it.address) }
     }
 }
