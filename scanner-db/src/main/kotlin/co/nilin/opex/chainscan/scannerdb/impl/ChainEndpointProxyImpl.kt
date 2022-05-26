@@ -1,20 +1,15 @@
 package co.nilin.opex.chainscan.scannerdb.impl
 
 import co.nilin.opex.chainscan.core.model.ChainSyncRecord
-import co.nilin.opex.chainscan.core.model.Deposit
 import co.nilin.opex.chainscan.core.model.DepositResult
 import co.nilin.opex.chainscan.core.model.Endpoint
 import co.nilin.opex.chainscan.core.spi.ChainEndpointProxy
-import kotlinx.coroutines.reactive.awaitFirstOrNull
 import org.slf4j.LoggerFactory
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
-import org.springframework.web.reactive.function.client.body
-import reactor.core.publisher.Mono
 import java.math.BigDecimal
 import java.math.BigInteger
-import java.net.URI
 import java.time.LocalDateTime
 
 inline fun <reified T : Any> typeRef(): ParameterizedTypeReference<T> = object : ParameterizedTypeReference<T>() {}
@@ -48,33 +43,7 @@ class ChainEndpointProxyImpl(
     private val logger = LoggerFactory.getLogger(ChainEndpointProxyImpl::class.java)
 
     private suspend fun requestTransferList(endpoint: String, request: TransfersRequest): DepositResult {
-        val response = webClient.post()
-            .uri(URI.create(endpoint))
-            .header("Content-Type", "application/json")
-            .body(Mono.just(request))
-            .retrieve()
-            .onStatus({ t -> t.isError }, { it.createException() })
-            .bodyToMono(typeRef<TransferResponse>())
-            .awaitFirstOrNull()
-        val blockNumber = response?.latestBlock ?: request.startBlock ?: BigInteger.ZERO
-        return DepositResult(
-            ChainSyncRecord(null, LocalDateTime.now(), endpoint, blockNumber),
-            response?.transfers
-                ?.map {
-                    Deposit(
-                        null,
-                        it.txHash,
-                        it.blockNumber,
-                        it.to ?: "",
-                        null,
-                        it.amount,
-                        chain,
-                        it.isTokenTransfer,
-                        it.token
-                    )
-                }
-                ?: emptyList()
-        )
+        TODO("Get transactions directly from blockchain in deployed service")
     }
 
     private suspend fun roundRobin(i: Int, request: TransfersRequest): DepositResult {
