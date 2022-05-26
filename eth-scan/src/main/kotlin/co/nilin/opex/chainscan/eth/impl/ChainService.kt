@@ -2,7 +2,7 @@ package co.nilin.opex.chainscan.eth.impl
 
 import co.nilin.opex.chainscan.core.model.Transfer
 import co.nilin.opex.chainscan.core.model.TransfersResult
-import co.nilin.opex.chainscan.core.spi.Chain
+import co.nilin.opex.chainscan.core.spi.ChainTransferHandler
 import co.nilin.opex.chainscan.core.spi.Interpreter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
@@ -17,7 +17,7 @@ import org.web3j.protocol.core.methods.response.EthBlock
 class ChainService(
     private val web3j: Web3j,
     private val interpreter: Interpreter<EthBlock.TransactionObject>
-) : Chain {
+) : ChainTransferHandler {
 
     private val logger = LoggerFactory.getLogger(ChainService::class.java)
 

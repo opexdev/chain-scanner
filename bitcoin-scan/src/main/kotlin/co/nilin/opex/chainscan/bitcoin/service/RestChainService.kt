@@ -6,12 +6,12 @@ import co.nilin.opex.chainscan.bitcoin.utils.justTry
 import co.nilin.opex.chainscan.bitcoin.utils.justTryOrNull
 import co.nilin.opex.chainscan.core.model.Transfer
 import co.nilin.opex.chainscan.core.model.TransfersResult
-import co.nilin.opex.chainscan.core.spi.Chain
+import co.nilin.opex.chainscan.core.spi.ChainTransferHandler
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
 @Service
-class RestChainService(private val proxy: GetBlockProxy) : Chain {
+class RestChainService(private val proxy: GetBlockProxy) : ChainTransferHandler {
 
     private val logger = LoggerFactory.getLogger(RestChainService::class.java)
 

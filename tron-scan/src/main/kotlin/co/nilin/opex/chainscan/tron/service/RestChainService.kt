@@ -2,7 +2,7 @@ package co.nilin.opex.chainscan.tron.service
 
 import co.nilin.opex.chainscan.core.model.Transfer
 import co.nilin.opex.chainscan.core.model.TransfersResult
-import co.nilin.opex.chainscan.core.spi.Chain
+import co.nilin.opex.chainscan.core.spi.ChainTransferHandler
 import co.nilin.opex.chainscan.tron.data.TransactionResponse
 import co.nilin.opex.chainscan.tron.proxy.TronGridProxy
 import co.nilin.opex.chainscan.tron.utils.tryOrNull
@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
 @Service
-class RestChainService(private val proxy: TronGridProxy, private val interpreter: TronInterpreter) : Chain {
+class RestChainService(private val proxy: TronGridProxy, private val interpreter: TronInterpreter) : ChainTransferHandler {
 
     private val logger = LoggerFactory.getLogger(RestChainService::class.java)
 

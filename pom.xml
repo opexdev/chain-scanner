@@ -21,6 +21,7 @@
         <module>bitcoin-scan</module>
         <module>tron-scan</module>
         <module>scheduler</module>
+        <module>scanner-db</module>
     </modules>
 
     <properties>
