@@ -1,9 +1,8 @@
 package co.nilin.opex.chainscan.eth.impl
 
 import co.nilin.opex.chainscan.core.model.Transfer
-import co.nilin.opex.chainscan.core.model.TransfersRequest
-import co.nilin.opex.chainscan.core.spi.FetchAndConvert
 import co.nilin.opex.chainscan.core.spi.Decoder
+import co.nilin.opex.chainscan.core.spi.FetchAndConvert
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -21,10 +20,12 @@ class ChainService(
 ) : FetchAndConvert {
     private val logger = LoggerFactory.getLogger(ChainService::class.java)
 
-    override suspend fun fetchAndConvert(endpoint: String, request: TransfersRequest): List<Transfer> {
-        val startBlock = request.startBlock!!
-        val endBlock = request.endBlock
-
+    override suspend fun fetchAndConvert(
+        endpoint: String,
+        startBlock: BigInteger?,
+        endBlock: BigInteger?,
+        tokenAddresses: List<String>
+    ): List<Transfer> {
         logger.info("Requested blocks: startBlock=$startBlock, endBlock=$endBlock")
 
         val transfers = mutableListOf<Transfer>()
@@ -32,7 +33,7 @@ class ChainService(
         coroutineScope {
             val networkBlockHeight = web3j.ethBlockNumber().send().blockNumber
             last = if (endBlock == null || endBlock > networkBlockHeight) networkBlockHeight else endBlock
-            val first = if (startBlock == BigInteger.valueOf(0L) || startBlock > last)
+            val first = if (startBlock == BigInteger.valueOf(0L) || startBlock!! > last)
                 last - BigInteger.valueOf(10)
             else if (last - startBlock > BigInteger.valueOf(300))
                 last - BigInteger.valueOf(300)
@@ -48,11 +49,9 @@ class ChainService(
 
                     block?.transactions?.forEach {
                         val tx = it as EthBlock.TransactionObject
-                        val transfer = decoder.interpret(tx)
-                        if (transfer != null) {
-                            if (!transfer.isTokenTransfer || request.addresses?.contains(transfer.token?.lowercase()) == true) {
-                                transfers.add(transfer)
-                            }
+                        val transfer = decoder.invoke(tx)
+                        if (!transfer.isTokenTransfer || tokenAddresses.contains(transfer.tokenAddress)) {
+                            transfers.add(transfer)
                         }
                     }
                 }
