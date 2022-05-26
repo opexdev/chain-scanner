@@ -1,9 +1,8 @@
 CREATE TABLE IF NOT EXISTS chain_endpoints
 (
     id                SERIAL PRIMARY KEY,
-    endpoint_url      VARCHAR(255) NOT NULL UNIQUE,
-    endpoint_user     VARCHAR(72),
-    endpoint_password VARCHAR(72)
+    endpoint_url      VARCHAR(255) NOT NULL,
+    api_key           VARCHAR(72)
 );
 
 CREATE TABLE IF NOT EXISTS chain_sync_records

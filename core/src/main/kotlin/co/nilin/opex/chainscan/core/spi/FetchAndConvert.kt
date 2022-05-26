@@ -8,6 +8,6 @@ interface FetchAndConvert {
         endpoint: String,
         startBlock: BigInteger?,
         endBlock: BigInteger?,
-        tokenAddresses: List<String> = emptyList()
+        tokenAddresses: List<String>
     ): List<Transfer>
 }

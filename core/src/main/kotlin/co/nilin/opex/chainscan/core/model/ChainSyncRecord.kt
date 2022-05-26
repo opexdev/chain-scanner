@@ -5,7 +5,7 @@ import java.time.LocalDateTime
 
 data class ChainSyncRecord(
     val syncTime: LocalDateTime,
-    val endpointUrl: String,
+    val consumerId: Long,
     val blockNumber: BigInteger,
     val id: Long? = null
 )
