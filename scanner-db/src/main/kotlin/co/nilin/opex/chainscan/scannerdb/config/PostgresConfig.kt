@@ -1,4 +1,4 @@
-package co.nilin.opex.bcgateway.ports.postgres.config
+package co.nilin.opex.chainscan.scannerdb.config
 
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Configuration
