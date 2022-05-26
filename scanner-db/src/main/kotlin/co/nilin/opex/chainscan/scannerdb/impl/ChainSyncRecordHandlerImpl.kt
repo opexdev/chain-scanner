@@ -13,13 +13,13 @@ import java.math.BigInteger
 @Component
 class ChainSyncRecordHandlerImpl(private val chainSyncRecordRepository: ChainSyncRecordRepository) :
     ChainSyncRecordHandler {
-    override suspend fun lastSyncRecord(consumerId: Long): ChainSyncRecord? {
+    override suspend fun lastSyncRecord(): ChainSyncRecord? {
         return chainSyncRecordRepository.findAll().awaitFirstOrNull()?.let {
             ChainSyncRecord(it.syncTime, it.blockNumber, it.id)
         }
     }
 
-    override suspend fun lastSyncedBlockedNumber(consumerId: Long): BigInteger {
+    override suspend fun lastSyncedBlockedNumber(): BigInteger {
         val chainSyncRecordDao = chainSyncRecordRepository.findAll().awaitFirstOrNull()
         return chainSyncRecordDao?.blockNumber ?: TODO("Fetch chain's last block number")
     }
