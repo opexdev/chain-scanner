@@ -22,3 +22,11 @@ CREATE TABLE IF NOT EXISTS chain_sync_retry
     error   TEXT,
     UNIQUE (chain, block)
 );
+
+CREATE TABLE IF NOT EXISTS chain_sync_records
+(
+    id           SERIAL       PRIMARY KEY,
+    chain        VARCHAR(72)  REFERENCES chains (name),
+    sync_time    TIMESTAMP    NOT NULL,
+    block_number INTEGER      NOT NULL
+);

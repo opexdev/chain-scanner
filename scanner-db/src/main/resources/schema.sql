@@ -5,13 +5,6 @@ CREATE TABLE IF NOT EXISTS chain_endpoints
     api_key           VARCHAR(72)
 );
 
-CREATE TABLE IF NOT EXISTS chain_sync_records
-(
-    id           SERIAL       PRIMARY KEY,
-    sync_time    TIMESTAMP    NOT NULL,
-    block_number INTEGER      NOT NULL
-);
-
 CREATE TABLE IF NOT EXISTS token_addresses
 (
     id         SERIAL      PRIMARY KEY,
