@@ -10,6 +10,6 @@ import java.time.LocalDateTime
 
 @Repository
 interface ChainSyncScheduleRepository : ReactiveCrudRepository<ChainSyncScheduleModel, String> {
-    @Query("select * from chain_sync_schedules where retry_time <= :time")
+    @Query("select * from chain_sync_schedules where retry_time <= :time and enabled")
     fun findActiveSchedule(time: LocalDateTime): Flow<ChainSyncScheduleModel>
 }
