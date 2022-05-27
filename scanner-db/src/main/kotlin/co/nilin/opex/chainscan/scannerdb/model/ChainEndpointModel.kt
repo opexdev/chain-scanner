@@ -7,5 +7,6 @@ import org.springframework.data.relational.core.mapping.Table
 data class ChainEndpointModel(
     val endpoint_url: String,
     val apiKey: String?,
+    val requestPerSec: Int = 0,
     @Id var id: Long? = null
 )
