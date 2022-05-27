@@ -1,4 +1,4 @@
-package co.nilin.opex.chainscan.core.model
+package co.nilin.opex.chainscan.scheduler.po
 
 import java.math.BigInteger
 
