@@ -3,7 +3,7 @@ package co.nilin.opex.chainscan.scheduler.impl
 import co.nilin.opex.chainscan.scheduler.model.ChainSyncScheduleModel
 import co.nilin.opex.chainscan.scheduler.po.ChainSyncSchedule
 import co.nilin.opex.chainscan.scheduler.repository.ChainSyncScheduleRepository
-import co.nilin.opex.chainscan.scheduler.spi.ChainSyncSchedulerHandler
+import co.nilin.opex.chainscan.scheduler.api.ChainSyncSchedulerHandler
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.reactive.awaitFirst

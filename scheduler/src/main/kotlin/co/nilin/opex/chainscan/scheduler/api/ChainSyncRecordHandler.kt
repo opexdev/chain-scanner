@@ -1,4 +1,4 @@
-package co.nilin.opex.chainscan.scheduler.spi
+package co.nilin.opex.chainscan.scheduler.api
 
 import co.nilin.opex.chainscan.scheduler.po.ChainSyncRecord
 import java.math.BigInteger

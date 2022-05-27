@@ -2,7 +2,7 @@ package co.nilin.opex.chainscan.scheduler.impl
 
 import co.nilin.opex.chainscan.scheduler.po.ChainSyncSchedule
 import co.nilin.opex.chainscan.scheduler.repository.ChainSyncRetryRepository
-import co.nilin.opex.chainscan.scheduler.spi.ChainSyncRetryHandler
+import co.nilin.opex.chainscan.scheduler.api.ChainSyncRetryHandler
 import org.springframework.stereotype.Component
 
 @Component

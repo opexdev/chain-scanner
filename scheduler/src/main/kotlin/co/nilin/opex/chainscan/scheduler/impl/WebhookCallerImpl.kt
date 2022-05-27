@@ -1,6 +1,6 @@
 package co.nilin.opex.chainscan.scheduler.impl
 
-import co.nilin.opex.chainscan.scheduler.spi.WebhookCaller
+import co.nilin.opex.chainscan.scheduler.api.WebhookCaller
 import org.slf4j.LoggerFactory
 
 class WebhookCallerImpl : WebhookCaller {

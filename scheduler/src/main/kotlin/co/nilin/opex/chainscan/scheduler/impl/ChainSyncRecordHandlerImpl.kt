@@ -3,7 +3,7 @@ package co.nilin.opex.chainscan.scheduler.impl
 import co.nilin.opex.chainscan.scheduler.model.ChainSyncRecordModel
 import co.nilin.opex.chainscan.scheduler.po.ChainSyncRecord
 import co.nilin.opex.chainscan.scheduler.repository.ChainSyncRecordRepository
-import co.nilin.opex.chainscan.scheduler.spi.ChainSyncRecordHandler
+import co.nilin.opex.chainscan.scheduler.api.ChainSyncRecordHandler
 import kotlinx.coroutines.reactive.awaitFirst
 import kotlinx.coroutines.reactive.awaitFirstOrNull
 import org.springframework.stereotype.Component
