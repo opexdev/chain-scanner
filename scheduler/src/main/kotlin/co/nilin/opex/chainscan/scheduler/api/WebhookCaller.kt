@@ -1,5 +1,7 @@
 package co.nilin.opex.chainscan.scheduler.api
 
+import co.nilin.opex.chainscan.scheduler.po.Transfer
+
 interface WebhookCaller {
-    suspend fun callWebhook(url: String, data: Any)
+    suspend fun callWebhook(url: String, data: Map<String, List<Transfer>>)
 }
