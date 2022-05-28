@@ -21,7 +21,3 @@ logging:
   level:
     co.nilin: DEBUG
     reactor.netty.http.client: DEBUG
-app:
-  blockchain:
-    rest-url: ${REST_ENDPOINT}
-    api-key: ${API_KEY}

@@ -19,6 +19,4 @@ logging:
   level:
     co.nilin: DEBUG
     reactor.netty.http.client: DEBUG
-blockchain:
-  url: ${RPC_ENDPOINT}
 swagger.authUrl: https://api.opex.dev
