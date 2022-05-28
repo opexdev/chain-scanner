@@ -14,14 +14,14 @@ import java.math.BigInteger
 class ChainSyncRecordHandlerImpl(
     private val chainSyncRecordRepository: ChainSyncRecordRepository
 ) : ChainSyncRecordHandler {
-    override suspend fun lastSyncRecord(): ChainSyncRecord? {
-        return chainSyncRecordRepository.findAll().awaitFirstOrNull()?.let {
+    override suspend fun lastSyncRecord(chainName: String): ChainSyncRecord? {
+        return chainSyncRecordRepository.findByChain(chainName).awaitFirstOrNull()?.let {
             ChainSyncRecord(it.chain, it.syncTime, it.blockNumber, it.id)
         }
     }
 
-    override suspend fun lastSyncedBlockedNumber(): BigInteger? {
-        val chainSyncRecordDao = chainSyncRecordRepository.findAll().awaitFirstOrNull()
+    override suspend fun lastSyncedBlockedNumber(chainName: String): BigInteger? {
+        val chainSyncRecordDao = chainSyncRecordRepository.findByChain(chainName).awaitFirstOrNull()
         return chainSyncRecordDao?.blockNumber
     }
 

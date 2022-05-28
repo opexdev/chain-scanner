@@ -1,7 +1,9 @@
 package co.nilin.opex.chainscan.scheduler.service
 
+import co.nilin.opex.chainscan.scheduler.api.ChainSyncRecordHandler
 import co.nilin.opex.chainscan.scheduler.api.ChainSyncSchedulerHandler
 import co.nilin.opex.chainscan.scheduler.api.WebhookCaller
+import co.nilin.opex.chainscan.scheduler.po.ChainSyncRecord
 import co.nilin.opex.chainscan.scheduler.po.TransferResult
 import kotlinx.coroutines.reactive.awaitFirst
 import kotlinx.coroutines.runBlocking
@@ -17,13 +19,14 @@ inline fun <reified T : Any> typeRef(): ParameterizedTypeReference<T> = object :
 
 @Service
 class ScheduleService(
+    private val chainSyncRecordHandler: ChainSyncRecordHandler,
     private val chainSyncSchedulerHandler: ChainSyncSchedulerHandler,
     private val webClient: WebClient,
     private val webhookCaller: WebhookCaller,
     @Value("\$webhook") private val webhook: String,
 ) {
     @Scheduled(fixedDelay = 1000)
-    fun start(): Nothing = runBlocking {
+    fun start(): Unit = runBlocking {
         val schedules = chainSyncSchedulerHandler.fetchActiveSchedules(LocalDateTime.now())
         val map = schedules.associate {
             val response = webClient.post()
@@ -36,6 +39,12 @@ class ScheduleService(
         }
         val map2 = map.mapValues { it.value.transfers }
         webhookCaller.callWebhook(webhook, map2)
-        TODO("Update sync records")
+        map.forEach { (k, v) ->
+            val record = chainSyncRecordHandler.lastSyncRecord(k)
+            chainSyncRecordHandler.saveSyncRecord(
+                record?.copy(syncTime = LocalDateTime.now(), blockNumber = v.toBlockNumber)
+                    ?: ChainSyncRecord(k, LocalDateTime.now(), v.toBlockNumber)
+            )
+        }
     }
 }
