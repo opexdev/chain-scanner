@@ -22,17 +22,13 @@ class ScheduleService(
     @Scheduled(fixedDelay = 1000)
     fun start(): Unit = runBlocking {
         val schedules = chainSyncSchedulerHandler.fetchActiveSchedules(LocalDateTime.now())
-        val map = schedules.associate {
+        schedules.forEach {
             val response = scannerProxy.getTransfers(it.chainName)
-            it.chainName to response
-        }
-        val map2 = map.mapValues { it.value.transfers }
-        webhookCaller.callWebhook(webhook, map2)
-        map.forEach { (k, v) ->
-            val record = chainSyncRecordHandler.lastSyncRecord(k)
+            webhookCaller.callWebhook(webhook, response.transfers)
+            val record = chainSyncRecordHandler.lastSyncRecord(it.chainName)
             chainSyncRecordHandler.saveSyncRecord(
-                record?.copy(syncTime = LocalDateTime.now(), blockNumber = v.toBlockNumber)
-                    ?: ChainSyncRecord(k, LocalDateTime.now(), v.toBlockNumber)
+                record?.copy(syncTime = LocalDateTime.now(), blockNumber = response.toBlockNumber)
+                    ?: ChainSyncRecord(it.chainName, LocalDateTime.now(), response.toBlockNumber)
             )
         }
     }

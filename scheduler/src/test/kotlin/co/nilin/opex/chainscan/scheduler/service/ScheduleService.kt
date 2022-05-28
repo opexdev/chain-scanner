@@ -34,7 +34,7 @@ class ScheduleServiceTest {
             scannerProxy.getTransfers(VALID.SCHEDULE.chainName)
         } returns TransferResult(BigInteger.ZERO, BigInteger.ZERO, emptyList())
         coEvery {
-            webhookCaller.callWebhook(webhook, mapOf(VALID.SCHEDULE.chainName to emptyList()))
+            webhookCaller.callWebhook(webhook, emptyList())
         } returns Unit
         coEvery {
             chainSyncRecordHandler.lastSyncRecord(VALID.SCHEDULE.chainName)

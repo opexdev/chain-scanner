@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory
 class WebhookCallerImpl : WebhookCaller {
     private val logger = LoggerFactory.getLogger(WebhookCallerImpl::class.java)
 
-    override suspend fun callWebhook(url: String, data: Map<String, List<Transfer>>) {
+    override suspend fun callWebhook(url: String, data: List<Transfer>) {
         logger.info("Trigger {}", url)
     }
 }
