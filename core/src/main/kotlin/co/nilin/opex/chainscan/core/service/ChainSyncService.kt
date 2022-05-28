@@ -26,7 +26,7 @@ class ChainSyncService<T>(
             cached.filter { it.blockNumber >= actualStart }.maxOfOrNull { it.blockNumber }?.plus(BigInteger.ONE)
                 ?: actualStart
         val response = fetchTransaction.getTransactions(notCachedStartBlock, actualEnd)
-        val transfers = response.map { decoder.invoke(it) }.filter {
+        val transfers = response.flatMap { decoder.invoke(it) }.filter {
             !it.isTokenTransfer || tokens.contains(it.tokenAddress)
         }
         transferCacheHandler.saveTransfers(transfers)
