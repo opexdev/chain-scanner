@@ -61,8 +61,4 @@
             <artifactId>kotlinx-coroutines-core</artifactId>
         </dependency>
     </dependencies>
-
-    <build>
-        <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
-    </build>
 </project>
