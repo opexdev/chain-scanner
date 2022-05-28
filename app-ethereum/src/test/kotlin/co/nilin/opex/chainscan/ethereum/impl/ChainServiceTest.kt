@@ -1,4 +1,4 @@
-package co.nilin.opex.chainscan.eth.impl
+package co.nilin.opex.chainscan.ethereum.impl
 
 import io.mockk.every
 import io.mockk.mockk

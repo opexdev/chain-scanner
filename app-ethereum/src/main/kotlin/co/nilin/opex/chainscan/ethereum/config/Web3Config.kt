@@ -1,14 +1,11 @@
-package co.nilin.opex.chainscan.eth.config
+package co.nilin.opex.chainscan.ethereum.config
 
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.web3j.protocol.Web3j
 import org.web3j.protocol.http.HttpService
-import java.util.concurrent.TimeUnit
 
 @Configuration
 class Web3Config {

@@ -1,10 +1,10 @@
-package co.nilin.opex.chainscan.eth.impl
+package co.nilin.opex.chainscan.ethereum.impl
 
 import co.nilin.opex.chainscan.core.model.Transfer
 import co.nilin.opex.chainscan.core.model.Wallet
 import co.nilin.opex.chainscan.core.spi.Decoder
-import co.nilin.opex.chainscan.eth.utils.checksumAddress
-import co.nilin.opex.chainscan.eth.utils.tryOrElse
+import co.nilin.opex.chainscan.ethereum.utils.checksumAddress
+import co.nilin.opex.chainscan.ethereum.utils.tryOrElse
 import org.springframework.stereotype.Component
 import org.web3j.protocol.core.methods.response.EthBlock
 import java.math.BigDecimal

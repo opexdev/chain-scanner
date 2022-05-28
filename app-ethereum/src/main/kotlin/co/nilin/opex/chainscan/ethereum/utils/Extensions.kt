@@ -1,4 +1,4 @@
-package co.nilin.opex.chainscan.eth.utils
+package co.nilin.opex.chainscan.ethereum.utils
 
 import org.web3j.crypto.Keys
 

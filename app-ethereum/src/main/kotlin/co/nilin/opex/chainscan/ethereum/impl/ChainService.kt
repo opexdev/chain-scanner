@@ -1,4 +1,4 @@
-package co.nilin.opex.chainscan.eth.impl
+package co.nilin.opex.chainscan.ethereum.impl
 
 import co.nilin.opex.chainscan.core.spi.FetchTransaction
 import kotlinx.coroutines.Dispatchers

@@ -1,4 +1,4 @@
-package co.nilin.opex.chainscan.eth.config
+package co.nilin.opex.chainscan.ethereum.config
 
 import org.springframework.context.annotation.Configuration
 

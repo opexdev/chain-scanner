@@ -1,4 +1,4 @@
-package co.nilin.opex.chainscan.eth.impl
+package co.nilin.opex.chainscan.ethereum.impl
 
 import co.nilin.opex.chainscan.core.spi.GetBlockNumber
 import org.web3j.protocol.Web3j

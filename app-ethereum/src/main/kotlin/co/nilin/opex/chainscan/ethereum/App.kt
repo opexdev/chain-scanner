@@ -1,4 +1,4 @@
-package co.nilin.opex.chainscan.eth
+package co.nilin.opex.chainscan.ethereum
 
 import co.nilin.opex.chainscan.core.controller.ScannerController
 import org.springframework.boot.autoconfigure.SpringBootApplication

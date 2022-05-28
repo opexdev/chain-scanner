@@ -10,7 +10,7 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>co.nilin.opex.chainscan.eth</groupId>
+    <groupId>co.nilin.opex.chainscan.ethereum</groupId>
     <artifactId>app-ethereum</artifactId>
 
     <dependencies>
