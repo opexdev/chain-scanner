@@ -1,10 +1,10 @@
-package co.nilin.opex.chainscan.scannerdb.impl
+package co.nilin.opex.chainscan.database.impl
 
 import co.nilin.opex.chainscan.core.model.Transfer
 import co.nilin.opex.chainscan.core.model.Wallet
 import co.nilin.opex.chainscan.core.spi.TransferCacheHandler
-import co.nilin.opex.chainscan.scannerdb.model.TransferModel
-import co.nilin.opex.chainscan.scannerdb.repository.TransferRepository
+import co.nilin.opex.chainscan.database.model.TransferModel
+import co.nilin.opex.chainscan.database.repository.TransferRepository
 import kotlinx.coroutines.reactor.awaitSingle
 import java.math.BigInteger
 

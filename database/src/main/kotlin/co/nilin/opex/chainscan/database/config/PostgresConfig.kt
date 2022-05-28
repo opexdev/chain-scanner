@@ -1,4 +1,4 @@
-package co.nilin.opex.chainscan.scannerdb.config
+package co.nilin.opex.chainscan.database.config
 
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Configuration

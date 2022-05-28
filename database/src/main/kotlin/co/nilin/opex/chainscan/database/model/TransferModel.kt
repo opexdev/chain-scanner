@@ -1,4 +1,4 @@
-package co.nilin.opex.chainscan.scannerdb.model
+package co.nilin.opex.chainscan.database.model
 
 import org.springframework.data.relational.core.mapping.Table
 import java.math.BigDecimal

@@ -1,9 +1,9 @@
-package co.nilin.opex.chainscan.scannerdb.impl
+package co.nilin.opex.chainscan.database.impl
 
 import co.nilin.opex.chainscan.core.model.WatchList
 import co.nilin.opex.chainscan.core.spi.WatchListHandler
-import co.nilin.opex.chainscan.scannerdb.model.WatchListModel
-import co.nilin.opex.chainscan.scannerdb.repository.WatchListRepository
+import co.nilin.opex.chainscan.database.model.WatchListModel
+import co.nilin.opex.chainscan.database.repository.WatchListRepository
 import kotlinx.coroutines.reactive.awaitFirstOrNull
 import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull

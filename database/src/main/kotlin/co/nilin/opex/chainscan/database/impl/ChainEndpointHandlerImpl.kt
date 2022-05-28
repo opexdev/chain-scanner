@@ -1,9 +1,9 @@
-package co.nilin.opex.chainscan.scannerdb.impl
+package co.nilin.opex.chainscan.database.impl
 
 import co.nilin.opex.chainscan.core.model.Endpoint
 import co.nilin.opex.chainscan.core.spi.ChainEndpointHandler
-import co.nilin.opex.chainscan.scannerdb.model.ChainEndpointModel
-import co.nilin.opex.chainscan.scannerdb.repository.ChainEndpointRepository
+import co.nilin.opex.chainscan.database.model.ChainEndpointModel
+import co.nilin.opex.chainscan.database.repository.ChainEndpointRepository
 import kotlinx.coroutines.reactive.awaitFirstOrNull
 import kotlinx.coroutines.reactive.awaitSingle
 import org.springframework.stereotype.Component

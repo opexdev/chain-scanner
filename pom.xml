@@ -10,12 +10,12 @@
     <version>1.0.0-beta-3</version>
 
     <modules>
-        <module>app-bitcoin</module>
-        <module>app-ethereum</module>
-        <module>app-tron</module>
+        <module>bitcoin-app</module>
+        <module>ethereum-app</module>
+        <module>tron-app</module>
         <module>core</module>
         <module>database</module>
-        <module>scheduler</module>
+        <module>scheduler-app</module>
     </modules>
 
     <properties>

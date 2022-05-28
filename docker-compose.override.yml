@@ -2,16 +2,16 @@ version: '3.8'
 services:
   scanner-scheduler:
     image: ghcr.io/opexdev/scanner-scheduler
-    build: scheduler
+    build: scheduler-app
   eth-scanner:
     image: ghcr.io/opexdev/ethereum-scanner
-    build: app-ethereum
+    build: ethereum-app
   bitcoin-scanner:
     image: ghcr.io/opexdev/bitcoin-scanner
-    build: app-bitcoin
+    build: bitcoin-app
   bsc-scanner:
     image: ghcr.io/opexdev/bsc-scanner
-    build: app-ethereum
+    build: ethereum-app
   tron-scanner:
     image: ghcr.io/opexdev/tron-scanner
-    build: app-tron
+    build: tron-app
