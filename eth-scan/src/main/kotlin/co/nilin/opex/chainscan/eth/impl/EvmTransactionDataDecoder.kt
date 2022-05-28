@@ -47,9 +47,9 @@ class EvmTransactionDataDecoder : Decoder<EthBlock.TransactionObject> {
         )
     }
 
-    override fun invoke(tx: EthBlock.TransactionObject): Transfer = when {
-        isAssetTransfer(tx.input) -> parseAssetTransfer(tx)
-        isTokenTransfer(tx.input) -> parseTokenTransfer(tx)
+    override fun invoke(input: EthBlock.TransactionObject): List<Transfer> = when {
+        isAssetTransfer(input.input) -> listOf(parseAssetTransfer(input))
+        isTokenTransfer(input.input) -> listOf(parseTokenTransfer(input))
         else -> throw IllegalStateException()
     }
 }
