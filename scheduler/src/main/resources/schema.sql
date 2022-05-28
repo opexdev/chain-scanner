@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS chain_sync_retry
 CREATE TABLE IF NOT EXISTS chain_sync_records
 (
     id           SERIAL      PRIMARY KEY,
-    chain        VARCHAR(72) REFERENCES chains (name),
-    sync_time    TIMESTAMP   NOT NULL,
+    chain        VARCHAR(72) NOT NULL UNIQUE REFERENCES chains (name),
+    sync_time    TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
     block_number INTEGER     NOT NULL
 );
