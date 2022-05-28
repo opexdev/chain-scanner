@@ -63,7 +63,7 @@ services:
   postgres-tron-scanner:
     <<: *postgres-db
     volumes:
-      - tron-scan-data:/var/lib/postgresql/data/
+      - tron-scanner-data:/var/lib/postgresql/data/
   scanner-scheduler:
     image: ghcr.io/opexdev/scanner-scheduler
     environment:
@@ -76,7 +76,7 @@ services:
       - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
       - CONSUL_HOST=consul
     depends_on:
-      - postgres-ethereum-scan
+      - postgres-ethereum-scanner
     networks:
       - default
   bitcoin-scanner:
