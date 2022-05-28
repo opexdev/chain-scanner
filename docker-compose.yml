@@ -48,19 +48,19 @@ services:
     <<: *postgres-db
     volumes:
       - scanner-scheduler-data:/var/lib/postgresql/data/
-  postgres-eth-scan:
+  postgres-ethereum-scanner:
     <<: *postgres-db
     volumes:
-      - eth-scan-data:/var/lib/postgresql/data/
-  postgres-bitcoin-scan:
+      - ethereum-scanner-data:/var/lib/postgresql/data/
+  postgres-bitcoin-scanner:
     <<: *postgres-db
     volumes:
-      - bitcoin-scan-data:/var/lib/postgresql/data/
-  postgres-bsc-scan:
+      - bitcoin-scanner-data:/var/lib/postgresql/data/
+  postgres-bsc-scanner:
     <<: *postgres-db
     volumes:
-      - bsc-scan-data:/var/lib/postgresql/data/
-  postgres-tron-scan:
+      - bsc-scanner-data:/var/lib/postgresql/data/
+  postgres-tron-scanner:
     <<: *postgres-db
     volumes:
       - tron-scan-data:/var/lib/postgresql/data/
@@ -70,49 +70,49 @@ services:
       - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
     networks:
       - default
-  eth-scan:
-    image: ghcr.io/opexdev/eth-scan
+  ethereum-scanner:
+    image: ghcr.io/opexdev/ethereum-scanner
     environment:
       - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
       - CONSUL_HOST=consul
     depends_on:
-      - postgres-eth-scan
+      - postgres-ethereum-scan
     networks:
       - default
-  bitcoin-scan:
-    image: ghcr.io/opexdev/bitcoin-scan
+  bitcoin-scanner:
+    image: ghcr.io/opexdev/bitcoin-scanner
     environment:
       - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
       - CONSUL_HOST=consul
     depends_on:
-      - postgres-bitcoin-scan
+      - postgres-bitcoin-scanner
     networks:
       - default
-  bsc-scan:
-    image: ghcr.io/opexdev/eth-scan
+  bsc-scanner:
+    image: ghcr.io/opexdev/ethereum-scanner
     environment:
       - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
       - CONSUL_HOST=consul
     depends_on:
-      - postgres-bsc-scan
+      - postgres-bsc-scanner
     networks:
       - default
-  tron-scan:
-    image: ghcr.io/opexdev/tron-scan
+  tron-scanner:
+    image: ghcr.io/opexdev/tron-scanner
     environment:
       - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
       - CONSUL_HOST=consul
     depends_on:
-      - postgres-tron-scan
+      - postgres-tron-scanner
     networks:
       - default
 volumes:
   vault-data:
   scanner-scheduler-data:
-  eth-scan-data:
-  bitcoin-scan-data:
-  bsc-scan-data:
-  tron-scan-data:
+  ethereum-scanner-data:
+  bitcoin-scanner-data:
+  bsc-scanner-data:
+  tron-scanner-data:
 networks:
   default:
     driver: bridge

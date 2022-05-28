@@ -3,15 +3,15 @@ services:
   scanner-scheduler:
     image: ghcr.io/opexdev/scanner-scheduler
     build: scheduler
-  eth-scan:
-    image: ghcr.io/opexdev/eth-scan
-    build: eth-scan
-  bitcoin-scan:
-    image: ghcr.io/opexdev/bitcoin-scan
+  eth-scanner:
+    image: ghcr.io/opexdev/ethereum-scanner
+    build: app-ethereum
+  bitcoin-scanner:
+    image: ghcr.io/opexdev/bitcoin-scanner
     build: bitcoin-scan
-  bsc-scan:
-    image: ghcr.io/opexdev/bsc-scan
-    build: eth-scan
-  tron-scan:
-    image: ghcr.io/opexdev/tron-scan
-    build: tron-scan
+  bsc-scanner:
+    image: ghcr.io/opexdev/bsc-scanner
+    build: app-ethereum
+  tron-scanner:
+    image: ghcr.io/opexdev/tron-scanner
+    build: app-tron

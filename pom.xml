@@ -10,12 +10,12 @@
     <version>1.0.0-beta-3</version>
 
     <modules>
+        <module>app-bitcoin</module>
+        <module>app-ethereum</module>
+        <module>app-tron</module>
         <module>core</module>
-        <module>eth-scan</module>
-        <module>bitcoin-scan</module>
-        <module>tron-scan</module>
+        <module>database</module>
         <module>scheduler</module>
-        <module>scanner-db</module>
     </modules>
 
     <properties>

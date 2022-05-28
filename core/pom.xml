@@ -12,7 +12,6 @@
 
     <groupId>co.nilin.opex.chainscan.core</groupId>
     <artifactId>core</artifactId>
-    <description>Chain scan core</description>
 
     <properties>
         <spring-boot.repackage.skip>true</spring-boot.repackage.skip>
