@@ -1,7 +1,8 @@
 package co.nilin.opex.chainscan.scheduler.api
 
-import co.nilin.opex.chainscan.scheduler.po.ChainSyncSchedule
+import co.nilin.opex.chainscan.scheduler.po.ChainSyncRetry
 
 interface ChainSyncRetryHandler {
-    suspend fun handleNextTry(syncSchedule: ChainSyncSchedule, sentBlock: Long) {}
+    suspend fun save(chainSyncRetry: ChainSyncRetry)
+    suspend fun findAllActive(chainName: String): List<ChainSyncRetry>
 }

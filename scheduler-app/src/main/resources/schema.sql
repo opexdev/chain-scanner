@@ -24,13 +24,14 @@ CREATE TABLE IF NOT EXISTS chain_scanners
 
 CREATE TABLE IF NOT EXISTS chain_sync_retry
 (
-    id      SERIAL      PRIMARY KEY,
-    chain   VARCHAR(72) NOT NULL REFERENCES chains (name),
-    block   INTEGER     NOT NULL,
-    retries INTEGER     NOT NULL DEFAULT 1,
-    synced  BOOLEAN     NOT NULL DEFAULT false,
-    give_up BOOLEAN     NOT NULL DEFAULT false,
-    error   TEXT,
+    id          SERIAL      PRIMARY KEY,
+    chain       VARCHAR(72) NOT NULL REFERENCES chains (name),
+    start_block INTEGER     NOT NULL,
+    end_block   INTEGER     NOT NULL,
+    retries     INTEGER     NOT NULL DEFAULT 0,
+    synced      BOOLEAN     NOT NULL DEFAULT FALSE,
+    give_up     BOOLEAN     NOT NULL DEFAULT FALSE,
+    error       TEXT,
     UNIQUE (chain, block)
 );
 
