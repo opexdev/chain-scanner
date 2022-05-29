@@ -9,7 +9,7 @@ import java.math.BigInteger
 
 @Service
 class ChainSyncService<T>(
-    @Value("\$chain-name") private val chainName: String,
+    @Value("\${app.chain-name}") private val chainName: String,
     private val fetchTransaction: FetchTransaction<T>,
     private val decoder: Decoder<T>,
     private val getBlockNumber: GetBlockNumber,

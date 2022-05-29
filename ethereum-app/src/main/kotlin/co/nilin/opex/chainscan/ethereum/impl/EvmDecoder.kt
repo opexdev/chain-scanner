@@ -15,7 +15,7 @@ const val ERC20_TRANSFER_METHOD_SIG = "0xa9059cbb000000000000000000000000"
 const val ETH_TRANSFER_METHOD_SIG = "0x"
 
 @Component
-class EvmDecoder(@Value("\$chain-name") private val chainName: String) :
+class EvmDecoder(@Value("\${app.chain-name}") private val chainName: String) :
     Decoder<EthBlock.TransactionObject> {
     private fun isAssetTransfer(input: String) = input == ETH_TRANSFER_METHOD_SIG
     private fun isTokenTransfer(input: String) = input.length == 138 && input.startsWith(ERC20_TRANSFER_METHOD_SIG)

@@ -1,7 +1,7 @@
 server.port: 8080
 spring:
   application:
-    name: ${APPLICATION_NAME:eth-scan}
+    name: ethereum-scanner
   main:
     allow-bean-definition-overriding: false
   r2dbc:
@@ -25,3 +25,5 @@ logging:
     co.nilin: DEBUG
     reactor.netty.http.client: DEBUG
 swagger.authUrl: https://api.opex.dev
+app:
+  chain-name: ${CHAIN_NAME}

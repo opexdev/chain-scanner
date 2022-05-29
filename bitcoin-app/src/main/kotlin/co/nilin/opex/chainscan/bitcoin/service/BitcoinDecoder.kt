@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 
 @Component
-class BitcoinDecoder(@Value("\$chain-name") private val chainName: String) : Decoder<BlockResponse> {
+class BitcoinDecoder(@Value("\${app.chain-name}") private val chainName: String) : Decoder<BlockResponse> {
     override fun invoke(input: BlockResponse): List<Transfer> {
         return input.tx.flatMap { tx ->
             tx.vout.map { v ->

@@ -80,6 +80,7 @@ services:
       - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
       - CONSUL_HOST=consul
       - DB_IP_PORT=postgres-ethereum-scanner
+      - CHAIN_NAME=ethereum
     depends_on:
       - vault
       - consul
@@ -104,6 +105,7 @@ services:
       - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
       - CONSUL_HOST=consul
       - DB_IP_PORT=postgres-bsc-scanner
+      - CHAIN_NAME=bsc
     depends_on:
       - vault
       - consul
