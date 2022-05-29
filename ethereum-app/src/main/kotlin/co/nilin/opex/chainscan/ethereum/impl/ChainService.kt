@@ -19,22 +19,24 @@ class ChainService(private val web3ClientBuilder: Web3ClientBuilder) : FetchTran
     override suspend fun getTransactions(
         startBlock: BigInteger,
         endBlock: BigInteger
-    ): List<EthBlock.TransactionObject> = coroutineScope {
+    ): List<EthBlock.TransactionObject> {
         logger.info("Requested blocks: startBlock=$startBlock, endBlock=$endBlock")
         val web3j = web3ClientBuilder.getWeb3Client()
         val transactions = LinkedBlockingQueue<EthBlock.TransactionObject>()
         logger.info("Start fetching ethereum transfers: startBlock=$startBlock, endBlock=$endBlock")
-        for (i in startBlock.toLong()..endBlock.toLong()) {
-            launch(Dispatchers.IO) {
-                val blockNumber = DefaultBlockParameterNumber(i)
-                val block = web3j.ethGetBlockByNumber(blockNumber, true).send().block
-                logger.info("Fetched block $i with ${block.transactions.size} transactions")
-                block?.transactions?.forEach {
-                    transactions.add(it as EthBlock.TransactionObject)
+        coroutineScope {
+            for (i in startBlock.toLong()..endBlock.toLong()) {
+                launch(Dispatchers.IO) {
+                    val blockNumber = DefaultBlockParameterNumber(i)
+                    val block = web3j.ethGetBlockByNumber(blockNumber, true).send().block
+                    logger.info("Fetched block $i with ${block.transactions.size} transactions")
+                    block?.transactions?.forEach {
+                        transactions.add(it as EthBlock.TransactionObject)
+                    }
                 }
             }
         }
         logger.info("Finished fetching transactions: lastBlock=$endBlock transfers=${transactions.size}")
-        return@coroutineScope transactions.toList()
+        return transactions.toList()
     }
 }
