@@ -2,8 +2,6 @@ server.port: 8080
 spring:
   application:
     name: ${APPLICATION_NAME:bitcoin-scan}
-  codec:
-    max-in-memory-size: 10MB
   main:
     allow-bean-definition-overriding: false
   r2dbc:
