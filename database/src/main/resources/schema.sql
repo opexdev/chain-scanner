@@ -1,11 +1,3 @@
-CREATE TABLE IF NOT EXISTS chain_endpoints
-(
-    id              SERIAL PRIMARY KEY,
-    endpoint_url    VARCHAR(255) NOT NULL,
-    api_key         VARCHAR(72),
-    request_per_sec INTEGER     NOT NULL DEFAULT 0
-);
-
 CREATE TABLE IF NOT EXISTS watch_list
 (
     id      SERIAL      PRIMARY KEY,
