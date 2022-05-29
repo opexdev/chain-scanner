@@ -1,9 +1,8 @@
-package co.nilin.opex.chainscan.bitcoin
+package co.nilin.opex.chainscan.bitcoin.proxy
 
 import co.nilin.opex.chainscan.bitcoin.data.BlockHashResponse
 import co.nilin.opex.chainscan.bitcoin.data.BlockResponse
 import co.nilin.opex.chainscan.bitcoin.data.ChainInfoResponse
-import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value

@@ -1,6 +1,6 @@
 package co.nilin.opex.chainscan.bitcoin.service
 
-import co.nilin.opex.chainscan.bitcoin.GetBlockProxy
+import co.nilin.opex.chainscan.bitcoin.proxy.GetBlockProxy
 import co.nilin.opex.chainscan.bitcoin.data.BlockResponse
 import co.nilin.opex.chainscan.core.spi.FetchTransaction
 import org.slf4j.LoggerFactory

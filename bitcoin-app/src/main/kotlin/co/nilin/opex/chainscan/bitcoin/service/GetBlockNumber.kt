@@ -1,6 +1,6 @@
 package co.nilin.opex.chainscan.bitcoin.service
 
-import co.nilin.opex.chainscan.bitcoin.GetBlockProxy
+import co.nilin.opex.chainscan.bitcoin.proxy.GetBlockProxy
 import co.nilin.opex.chainscan.core.spi.GetBlockNumber
 import java.math.BigInteger
 
