@@ -3,7 +3,7 @@ services:
   scanner-scheduler:
     image: ghcr.io/opexdev/scanner-scheduler
     build: scheduler-app
-  eth-scanner:
+  ethereum-scanner:
     image: ghcr.io/opexdev/ethereum-scanner
     build: ethereum-app
   bitcoin-scanner:
