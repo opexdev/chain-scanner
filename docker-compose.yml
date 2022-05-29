@@ -69,6 +69,9 @@ services:
     environment:
       - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
       - DB_IP_PORT=postgres-scanner-scheduler
+    depends_on:
+      - vault
+      - postgres-scanner-scheduler
     networks:
       - default
   ethereum-scanner:
@@ -78,6 +81,8 @@ services:
       - CONSUL_HOST=consul
       - DB_IP_PORT=postgres-ethereum-scanner
     depends_on:
+      - vault
+      - consul
       - postgres-ethereum-scanner
     networks:
       - default
@@ -88,6 +93,8 @@ services:
       - CONSUL_HOST=consul
       - DB_IP_PORT=postgres-bitcoin-scanner
     depends_on:
+      - vault
+      - consul
       - postgres-bitcoin-scanner
     networks:
       - default
@@ -98,6 +105,8 @@ services:
       - CONSUL_HOST=consul
       - DB_IP_PORT=postgres-bsc-scanner
     depends_on:
+      - vault
+      - consul
       - postgres-bsc-scanner
     networks:
       - default
@@ -108,6 +117,8 @@ services:
       - CONSUL_HOST=consul
       - DB_IP_PORT=postgres-tron-scanner
     depends_on:
+      - vault
+      - consul
       - postgres-tron-scanner
     networks:
       - default

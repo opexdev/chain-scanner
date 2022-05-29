@@ -4,8 +4,10 @@ import co.nilin.opex.chainscan.core.model.Transfer
 import co.nilin.opex.chainscan.core.spi.*
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.stereotype.Service
 import java.math.BigInteger
 
+@Service
 class ChainSyncService<T>(
     @Value("\$chain-name") private val chainName: String,
     private val fetchTransaction: FetchTransaction<T>,

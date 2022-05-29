@@ -6,8 +6,10 @@ import co.nilin.opex.chainscan.core.spi.TransferCacheHandler
 import co.nilin.opex.chainscan.database.model.TransferModel
 import co.nilin.opex.chainscan.database.repository.TransferRepository
 import kotlinx.coroutines.reactor.awaitSingle
+import org.springframework.stereotype.Service
 import java.math.BigInteger
 
+@Service
 class TransferCacheHandlerImpl(
     private val transferRepository: TransferRepository
 ) : TransferCacheHandler {

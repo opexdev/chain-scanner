@@ -1,15 +1,21 @@
 package co.nilin.opex.chainscan.ethereum.impl
 
 import co.nilin.opex.chainscan.core.spi.GetBlockNumber
-import org.web3j.protocol.Web3j
+import co.nilin.opex.chainscan.ethereum.api.Web3ClientBuilder
+import kotlinx.coroutines.coroutineScope
+import org.springframework.stereotype.Component
 import java.math.BigInteger
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-class GetBlockNumberImpl(private val web3j: Web3j) : GetBlockNumber {
-    override suspend fun invoke(): BigInteger = suspendCoroutine {
-        web3j.ethBlockNumber().sendAsync().thenAccept { blockNumber ->
-            it.resume(blockNumber.blockNumber)
+@Component
+class GetBlockNumberImpl(private val web3ClientBuilder: Web3ClientBuilder) : GetBlockNumber {
+    override suspend fun invoke(): BigInteger = coroutineScope {
+        val web3j = web3ClientBuilder.getWeb3Client()
+        suspendCoroutine {
+            web3j.ethBlockNumber().sendAsync().thenAccept { blockNumber ->
+                it.resume(blockNumber.blockNumber)
+            }
         }
     }
 }

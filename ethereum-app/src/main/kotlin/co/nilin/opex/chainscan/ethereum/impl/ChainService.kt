@@ -1,6 +1,5 @@
 package co.nilin.opex.chainscan.ethereum.impl
 
-import co.nilin.opex.chainscan.core.spi.ChainEndpointHandler
 import co.nilin.opex.chainscan.core.spi.FetchTransaction
 import co.nilin.opex.chainscan.ethereum.api.Web3ClientBuilder
 import kotlinx.coroutines.Dispatchers
@@ -14,10 +13,7 @@ import java.math.BigInteger
 import java.util.concurrent.LinkedBlockingQueue
 
 @Service
-class ChainService(
-    private val chainEndpointHandler: ChainEndpointHandler,
-    private val web3ClientBuilder: Web3ClientBuilder
-) : FetchTransaction<EthBlock.TransactionObject> {
+class ChainService(private val web3ClientBuilder: Web3ClientBuilder) : FetchTransaction<EthBlock.TransactionObject> {
     private val logger = LoggerFactory.getLogger(ChainService::class.java)
 
     override suspend fun getTransactions(
