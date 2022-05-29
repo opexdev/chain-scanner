@@ -15,13 +15,14 @@ class ChainSyncService<T>(
     private val getBlockNumber: GetBlockNumber,
     private val watchListHandler: WatchListHandler,
     private val transferCacheHandler: TransferCacheHandler,
+    private val addressAdapter: AddressAdapter
 ) {
     private val logger = LoggerFactory.getLogger(ChainSyncService::class.java)
 
     suspend fun getTransfers(start: BigInteger?, end: BigInteger?): List<Transfer> {
         val actualStart = start ?: getBlockNumber.invoke()
         val actualEnd = (end ?: getBlockNumber.invoke()).takeIf { it > actualStart } ?: actualStart
-        val tokens = watchListHandler.findAll().map { impl -> impl.address }.toList()
+        val tokens = watchListHandler.findAll().map { addressAdapter.makeValid(it.address) }
         logger.info("Syncing for: $chainName - Block: $actualStart")
         val cached = transferCacheHandler.getTransfers(tokens)
         val notCachedStartBlock =
