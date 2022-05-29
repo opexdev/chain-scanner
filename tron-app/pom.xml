@@ -44,5 +44,10 @@
             <groupId>org.jetbrains.kotlinx</groupId>
             <artifactId>kotlinx-coroutines-reactor</artifactId>
         </dependency>
+        <dependency>
+            <groupId>co.nilin.opex.chainscan.database</groupId>
+            <artifactId>database</artifactId>
+            <version>[0,)</version>
+        </dependency>
     </dependencies>
 </project>
