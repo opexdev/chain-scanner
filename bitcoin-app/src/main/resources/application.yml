@@ -6,6 +6,11 @@ spring:
     max-in-memory-size: 10MB
   main:
     allow-bean-definition-overriding: false
+  r2dbc:
+    url: r2dbc:postgresql://${DB_IP_PORT:localhost}/opex_scanner
+    username: ${dbusername:opex}
+    password: ${dbpassword:hiopex}
+    initialization-mode: always
   cloud:
     bootstrap:
       enabled: true
