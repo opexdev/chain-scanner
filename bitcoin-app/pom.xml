@@ -30,7 +30,6 @@
         <dependency>
             <groupId>co.nilin.opex.chainscan.core</groupId>
             <artifactId>core</artifactId>
-            <version>[0,)</version>
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlinx</groupId>
@@ -47,7 +46,6 @@
         <dependency>
             <groupId>co.nilin.opex.chainscan.database</groupId>
             <artifactId>database</artifactId>
-            <version>[0,)</version>
         </dependency>
     </dependencies>
 </project>
