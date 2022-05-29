@@ -129,5 +129,6 @@ public final class Base58Check {
 
     /*---- Miscellaneous ----*/
 
-    private Base58Check() {} // Not instantiable
+    private Base58Check() {
+    } // Not instantiable
 }

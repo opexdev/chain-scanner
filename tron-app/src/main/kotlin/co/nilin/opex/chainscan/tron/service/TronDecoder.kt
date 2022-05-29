@@ -6,7 +6,6 @@ import co.nilin.opex.chainscan.core.spi.Decoder
 import co.nilin.opex.chainscan.tron.data.BlockResponse
 import co.nilin.opex.chainscan.tron.data.Contract
 import co.nilin.opex.chainscan.tron.utils.asTronAddress
-import co.nilin.opex.chainscan.tron.utils.tryOrElse
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.math.BigDecimal
@@ -23,7 +22,7 @@ class TronDecoder(@Value("\${app.chain-name}") private val chainName: String) : 
         val data = params.data ?: return null
         if (!data.startsWith(TRC20_TRANSFER_METHOD_SIG)) return null
         val toAddress = data.substring(30, 72).asTronAddress()
-        val amount = tryOrElse(BigDecimal.ZERO) { BigInteger(data.substring(72), 16).toBigDecimal() }
+        val amount = runCatching { BigInteger(data.substring(72), 16).toBigDecimal() }.getOrElse { BigDecimal.ZERO }
         return Transfer(
             hash,
             blockNumber,

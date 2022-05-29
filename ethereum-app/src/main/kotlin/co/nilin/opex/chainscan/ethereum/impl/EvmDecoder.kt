@@ -4,7 +4,6 @@ import co.nilin.opex.chainscan.core.model.Transfer
 import co.nilin.opex.chainscan.core.model.Wallet
 import co.nilin.opex.chainscan.core.spi.Decoder
 import co.nilin.opex.chainscan.ethereum.utils.checksumAddress
-import co.nilin.opex.chainscan.ethereum.utils.tryOrElse
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import org.web3j.protocol.core.methods.response.EthBlock
@@ -22,7 +21,7 @@ class EvmDecoder(@Value("\${app.chain-name}") private val chainName: String) :
 
     private fun decodeAssetTransfer(tx: EthBlock.TransactionObject): Transfer {
         require(isAssetTransfer(tx.input))
-        val amount = tryOrElse(BigDecimal.ZERO) { BigDecimal(tx.value) }
+        val amount = runCatching { tx.value.toBigDecimal() }.getOrElse { BigDecimal.ZERO }
         return Transfer(
             tx.hash,
             tx.blockNumber,
@@ -36,8 +35,9 @@ class EvmDecoder(@Value("\${app.chain-name}") private val chainName: String) :
 
     private fun decodeTokenTransfer(tx: EthBlock.TransactionObject): Transfer {
         require(isTokenTransfer(tx.input))
-        val receiver = Wallet(tryOrElse("0x") { "0x${tx.input.substring(34, 74)}" }.checksumAddress())
-        val amount = tryOrElse(BigDecimal.ZERO) { BigInteger(tx.input.substring(74), 16).toBigDecimal() }
+        val address = runCatching { "0x${tx.input.substring(34, 74)}" }.getOrElse { "0x" }.checksumAddress()
+        val receiver = Wallet(address)
+        val amount = runCatching { BigInteger(tx.input.substring(74), 16).toBigDecimal() }.getOrElse { BigDecimal.ZERO }
         return Transfer(
             tx.hash,
             tx.blockNumber,
