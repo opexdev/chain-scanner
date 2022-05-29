@@ -12,20 +12,19 @@ import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
 
 @Component
-class GetBlockProxy(private val webClient: WebClient) {
-
+class GetBlockProxy(
+    private val webClient: WebClient,
+    @Value("\${app.rest-endpoint}")
+    private val endpoint: String,
+    @Value("\${app.api-key}")
+    private val apiKey: String
+) {
     private val logger = LoggerFactory.getLogger(GetBlockProxy::class.java)
-
-    @Value("\${app.blockchain.rest-url}")
-    private lateinit var url: String
-
-    @Value("\${app.blockchain.api-key}")
-    private lateinit var apiKey: String
-
+    
     suspend fun getInfo(): ChainInfoResponse? {
         logger.info("fetching chain info")
         return webClient.get()
-            .uri("$url/chaininfo.json")
+            .uri("$endpoint/chaininfo.json")
             .accept(MediaType.APPLICATION_JSON)
             .header("x-api-key", apiKey)
             .header(HttpHeaders.CONTENT_TYPE, "application/json")
@@ -38,7 +37,7 @@ class GetBlockProxy(private val webClient: WebClient) {
     suspend fun getBlockHash(height: Long): String {
         logger.info("fetching block hash of $height")
         return webClient.get()
-            .uri("$url/blockhashbyheight/${height}.json")
+            .uri("$endpoint/blockhashbyheight/${height}.json")
             .accept(MediaType.APPLICATION_JSON)
             .header("x-api-key", apiKey)
             .header(HttpHeaders.CONTENT_TYPE, "application/json")
@@ -52,7 +51,7 @@ class GetBlockProxy(private val webClient: WebClient) {
     suspend fun getBlockData(hash: String): BlockResponse? {
         logger.info("fetching block data of $hash")
         return webClient.get()
-            .uri("$url/block/${hash}.json")
+            .uri("$endpoint/block/${hash}.json")
             .accept(MediaType.APPLICATION_JSON)
             .header("x-api-key", apiKey)
             .header(HttpHeaders.CONTENT_TYPE, "application/json")
@@ -61,5 +60,4 @@ class GetBlockProxy(private val webClient: WebClient) {
             .bodyToMono(BlockResponse::class.java)
             .awaitSingleOrNull()
     }
-
 }

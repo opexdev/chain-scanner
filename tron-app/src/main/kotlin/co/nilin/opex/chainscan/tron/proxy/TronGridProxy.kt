@@ -11,15 +11,14 @@ import org.springframework.web.reactive.function.client.body
 import reactor.core.publisher.Mono
 
 @Component
-class TronGridProxy(private val webClient: WebClient) {
-
+class TronGridProxy(
+    private val webClient: WebClient,
+    @Value("\${app.rest-endpoint}")
+    private val url: String,
+    @Value("\${app.api-key}")
+    private val apiKey: String
+) {
     private val logger = LoggerFactory.getLogger(TronGridProxy::class.java)
-
-    @Value("\${app.blockchain.rest-url}")
-    private lateinit var url: String
-
-    @Value("\${app.blockchain.api-key}")
-    private lateinit var apiKey: String
 
     data class GetBlockRequest(val num: Long)
 
@@ -49,5 +48,4 @@ class TronGridProxy(private val webClient: WebClient) {
             .bodyToMono(BlockResponse::class.java)
             .awaitSingleOrNull()
     }
-
 }

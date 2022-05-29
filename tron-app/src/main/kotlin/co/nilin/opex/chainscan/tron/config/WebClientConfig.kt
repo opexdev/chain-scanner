@@ -10,16 +10,11 @@ import org.springframework.web.reactive.function.client.WebClient
 
 @Configuration
 class WebClientConfig {
-
     @Bean
     fun webClient(loadBalancerFactory: ReactiveLoadBalancer.Factory<ServiceInstance>): WebClient {
-        return WebClient.builder()
-            .exchangeStrategies(
-                ExchangeStrategies.builder()
-                    .codecs { it.defaultCodecs().maxInMemorySize(20 * 1024 * 1024) }
-                    .build()
-            )
+        val strategy = ExchangeStrategies.builder()
+            .codecs { it.defaultCodecs().maxInMemorySize(20 * 1024 * 1024) }
             .build()
+        return WebClient.builder().exchangeStrategies(strategy).build()
     }
-
 }

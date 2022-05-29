@@ -21,3 +21,7 @@ logging:
   level:
     co.nilin: DEBUG
     reactor.netty.http.client: DEBUG
+app:
+  chain-name: tron
+  rest-endpoint: ${REST_ENDPOINT}
+  api-key: ${API_KEY}

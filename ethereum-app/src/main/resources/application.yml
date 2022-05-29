@@ -26,4 +26,4 @@ logging:
     reactor.netty.http.client: DEBUG
 swagger.authUrl: https://api.opex.dev
 app:
-  chain-name: ${CHAIN_NAME}
+  rpc-endpoint: ${RPC_ENDPOINT}
