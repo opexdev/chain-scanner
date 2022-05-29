@@ -1,10 +1,11 @@
 package co.nilin.opex.chainscan.ethereum.impl
 
 import co.nilin.opex.chainscan.core.spi.FetchTransaction
+import co.nilin.opex.chainscan.core.utils.LoggerDelegate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import org.slf4j.LoggerFactory
+import org.slf4j.Logger
 import org.springframework.stereotype.Service
 import org.web3j.protocol.Web3j
 import org.web3j.protocol.core.DefaultBlockParameterNumber
@@ -14,7 +15,7 @@ import java.util.concurrent.LinkedBlockingQueue
 
 @Service
 class ChainService(private val web3j: Web3j) : FetchTransaction<EthBlock.TransactionObject> {
-    private val logger = LoggerFactory.getLogger(ChainService::class.java)
+    private val logger: Logger by LoggerDelegate()
 
     override suspend fun getTransactions(
         startBlock: BigInteger,

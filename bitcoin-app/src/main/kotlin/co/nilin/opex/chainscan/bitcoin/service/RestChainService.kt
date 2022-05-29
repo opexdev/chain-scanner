@@ -1,15 +1,16 @@
 package co.nilin.opex.chainscan.bitcoin.service
 
-import co.nilin.opex.chainscan.bitcoin.proxy.GetBlockProxy
 import co.nilin.opex.chainscan.bitcoin.data.BlockResponse
+import co.nilin.opex.chainscan.bitcoin.proxy.GetBlockProxy
 import co.nilin.opex.chainscan.core.spi.FetchTransaction
-import org.slf4j.LoggerFactory
+import co.nilin.opex.chainscan.core.utils.LoggerDelegate
+import org.slf4j.Logger
 import org.springframework.stereotype.Service
 import java.math.BigInteger
 
 @Service
 class RestChainService(private val proxy: GetBlockProxy) : FetchTransaction<BlockResponse> {
-    private val logger = LoggerFactory.getLogger(RestChainService::class.java)
+    private val logger: Logger by LoggerDelegate()
 
     override suspend fun getTransactions(
         startBlock: BigInteger,

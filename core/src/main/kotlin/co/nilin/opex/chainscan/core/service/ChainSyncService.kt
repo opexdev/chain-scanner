@@ -2,7 +2,8 @@ package co.nilin.opex.chainscan.core.service
 
 import co.nilin.opex.chainscan.core.model.Transfer
 import co.nilin.opex.chainscan.core.spi.*
-import org.slf4j.LoggerFactory
+import co.nilin.opex.chainscan.core.utils.LoggerDelegate
+import org.slf4j.Logger
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.math.BigInteger
@@ -17,7 +18,7 @@ class ChainSyncService<T>(
     private val transferCacheHandler: TransferCacheHandler,
     private val addressAdapter: AddressAdapter
 ) {
-    private val logger = LoggerFactory.getLogger(ChainSyncService::class.java)
+    private val logger: Logger by LoggerDelegate()
 
     suspend fun getTransfers(start: BigInteger?, end: BigInteger?): List<Transfer> {
         val actualStart = start ?: getBlockNumber.invoke()

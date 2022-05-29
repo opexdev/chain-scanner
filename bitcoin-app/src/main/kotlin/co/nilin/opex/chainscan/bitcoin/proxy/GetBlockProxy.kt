@@ -3,8 +3,9 @@ package co.nilin.opex.chainscan.bitcoin.proxy
 import co.nilin.opex.chainscan.bitcoin.data.BlockHashResponse
 import co.nilin.opex.chainscan.bitcoin.data.BlockResponse
 import co.nilin.opex.chainscan.bitcoin.data.ChainInfoResponse
+import co.nilin.opex.chainscan.core.utils.LoggerDelegate
 import kotlinx.coroutines.reactor.awaitSingleOrNull
-import org.slf4j.LoggerFactory
+import org.slf4j.Logger
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
@@ -19,8 +20,8 @@ class GetBlockProxy(
     @Value("\${app.api-key}")
     private val apiKey: String
 ) {
-    private val logger = LoggerFactory.getLogger(GetBlockProxy::class.java)
-    
+    private val logger: Logger by LoggerDelegate()
+
     suspend fun getInfo(): ChainInfoResponse? {
         logger.info("fetching chain info")
         return webClient.get()

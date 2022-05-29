@@ -1,15 +1,16 @@
 package co.nilin.opex.chainscan.tron.service
 
 import co.nilin.opex.chainscan.core.spi.FetchTransaction
+import co.nilin.opex.chainscan.core.utils.LoggerDelegate
 import co.nilin.opex.chainscan.tron.data.BlockResponse
 import co.nilin.opex.chainscan.tron.proxy.TronGridProxy
-import org.slf4j.LoggerFactory
+import org.slf4j.Logger
 import org.springframework.stereotype.Service
 import java.math.BigInteger
 
 @Service
 class RestChainService(private val proxy: TronGridProxy) : FetchTransaction<BlockResponse> {
-    private val logger = LoggerFactory.getLogger(RestChainService::class.java)
+    private val logger: Logger by LoggerDelegate()
 
     override suspend fun getTransactions(startBlock: BigInteger, endBlock: BigInteger): List<BlockResponse> {
         logger.info("Requested blocks: startBlock=$startBlock, endBlock=$endBlock")
