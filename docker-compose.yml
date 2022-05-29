@@ -81,6 +81,7 @@ services:
       - CONSUL_HOST=consul
       - DB_IP_PORT=postgres-ethereum-scanner
       - CHAIN_NAME=ethereum
+      - RPC_ENDPOINT=${ETH_RPC_ENDPOINT}
     depends_on:
       - vault
       - consul
@@ -93,6 +94,8 @@ services:
       - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
       - CONSUL_HOST=consul
       - DB_IP_PORT=postgres-bitcoin-scanner
+      - REST_ENDPOINT=${BITCOIN_REST_ENDPOINT}
+      - API_KEY=${BITCOIN_API_KEY}
     depends_on:
       - vault
       - consul
@@ -119,6 +122,8 @@ services:
       - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
       - CONSUL_HOST=consul
       - DB_IP_PORT=postgres-tron-scanner
+      - REST_ENDPOINT=${TRON_REST_ENDPOINT}
+      - API_KEY=${TRON_API_KEY}
     depends_on:
       - vault
       - consul
