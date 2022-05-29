@@ -106,6 +106,7 @@ services:
       - CONSUL_HOST=consul
       - DB_IP_PORT=postgres-bsc-scanner
       - CHAIN_NAME=bsc
+      - RPC_ENDPOINT=${BSC_RPC_ENDPOINT}
     depends_on:
       - vault
       - consul
