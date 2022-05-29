@@ -38,8 +38,8 @@
             <version>[0,)</version>
         </dependency>
         <dependency>
-            <groupId>co.nilin.opex.chainscan.scanner-db</groupId>
-            <artifactId>scanner-db</artifactId>
+            <groupId>co.nilin.opex.chainscan.database</groupId>
+            <artifactId>database</artifactId>
             <version>[0,)</version>
         </dependency>
         <dependency>

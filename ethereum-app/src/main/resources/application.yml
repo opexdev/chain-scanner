@@ -4,6 +4,11 @@ spring:
     name: ${APPLICATION_NAME:eth-scan}
   main:
     allow-bean-definition-overriding: false
+  r2dbc:
+    url: r2dbc:postgresql://${DB_IP_PORT:localhost}/opex_ethereum_scanner
+    username: ${dbusername:opex}
+    password: ${dbpassword:hiopex}
+    initialization-mode: always
   cloud:
     bootstrap:
       enabled: true

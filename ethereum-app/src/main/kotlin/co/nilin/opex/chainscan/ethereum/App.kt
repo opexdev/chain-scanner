@@ -1,14 +1,13 @@
 package co.nilin.opex.chainscan.ethereum
 
-import co.nilin.opex.chainscan.core.controller.ScannerController
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
-import org.springframework.context.annotation.Import
+import org.springframework.context.annotation.ComponentScan
 
 @SpringBootApplication
-@Import(ScannerController::class)
-class EthScanApplication
+@ComponentScan("co.nilin.opex.chainscan")
+class App
 
 fun main(args: Array<String>) {
-    runApplication<EthScanApplication>(*args)
+    runApplication<App>(*args)
 }
