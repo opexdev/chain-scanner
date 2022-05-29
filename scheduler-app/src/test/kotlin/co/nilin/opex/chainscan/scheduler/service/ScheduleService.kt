@@ -1,9 +1,6 @@
 package co.nilin.opex.chainscan.scheduler.service
 
-import co.nilin.opex.chainscan.scheduler.api.ChainSyncRecordHandler
-import co.nilin.opex.chainscan.scheduler.api.ChainSyncSchedulerHandler
-import co.nilin.opex.chainscan.scheduler.api.ScannerProxy
-import co.nilin.opex.chainscan.scheduler.api.WebhookCaller
+import co.nilin.opex.chainscan.scheduler.api.*
 import co.nilin.opex.chainscan.scheduler.po.TransferResult
 import co.nilin.opex.chainscan.scheduler.sample.VALID
 import io.mockk.coEvery
@@ -21,10 +18,17 @@ class ScheduleServiceTest {
     private val chainSyncRecordHandler: ChainSyncRecordHandler = mockk()
     private val chainSyncSchedulerHandler: ChainSyncSchedulerHandler = mockk()
     private val scannerProxy: ScannerProxy = mockk()
+    private val chainScannerHandler: ChainScannerHandler = mockk()
     private val webhookCaller: WebhookCaller = mockk()
     private val webhook: String = "http://bc-gateway"
-    private val scheduleService: ScheduleService =
-        ScheduleService(scannerProxy, chainSyncRecordHandler, chainSyncSchedulerHandler, webhookCaller, webhook)
+    private val scheduleService: ScheduleService = ScheduleService(
+        scannerProxy,
+        chainSyncRecordHandler,
+        chainSyncSchedulerHandler,
+        webhookCaller,
+        chainScannerHandler,
+        webhook
+    )
 
     @Test
     fun givenSchedule_whenRunSync_thenSuccess(): Unit = runBlocking {
