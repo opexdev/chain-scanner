@@ -3,7 +3,7 @@ x-postgres-db: &postgres-db
   environment:
     - POSTGRES_USER=${DB_USER:-opex}
     - POSTGRES_PASSWORD=${DB_PASS:-hiopex}
-    - POSTGRES_DB=opex_accountant
+    - POSTGRES_DB=opex_scanner
     - POSTGRES_BACKUP_USER=${DB_BACKUP_USER:-opex_backup}
     - POSTGRES_BACKUP_PASSWORD=${DB_BACKUP_PASS:-hiopex}
   networks:
