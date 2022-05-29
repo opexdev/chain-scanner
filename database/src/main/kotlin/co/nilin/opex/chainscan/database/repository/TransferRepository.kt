@@ -9,8 +9,11 @@ import java.math.BigInteger
 
 @Repository
 interface TransferRepository : ReactiveCrudRepository<TransferModel, Long> {
-    @Query("select * from transfers where token_address in (:tokenAddresses)")
+    @Query("select * from transfers where is_token_transfer and token_address in (:tokenAddresses)")
     fun findByTokenAddress(tokenAddresses: List<String>): Flux<TransferModel>
+
+    @Query("select * from transfers where not is_token_transfer")
+    fun findAllNotTokenTransfers(): Flux<TransferModel>
 
     @Query("delete from transfers where block_number <= :blockNumber")
     fun clearCache(blockNumber: BigInteger): Flux<TransferModel>

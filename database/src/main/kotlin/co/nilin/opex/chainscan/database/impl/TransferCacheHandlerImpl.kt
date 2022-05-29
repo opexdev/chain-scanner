@@ -31,7 +31,10 @@ class TransferCacheHandlerImpl(
     }
 
     override suspend fun getTransfers(tokenAddresses: List<String>): List<Transfer> {
-        return transferRepository.findByTokenAddress(tokenAddresses).map {
+        val transfers =
+            if (tokenAddresses.isEmpty()) transferRepository.findAllNotTokenTransfers()
+            else transferRepository.findByTokenAddress(tokenAddresses)
+        return transfers.map {
             Transfer(
                 it.txHash,
                 it.blockNumber,
