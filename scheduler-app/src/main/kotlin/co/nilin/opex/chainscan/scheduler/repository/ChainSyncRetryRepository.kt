@@ -7,5 +7,5 @@ import reactor.core.publisher.Flux
 
 @Repository
 interface ChainSyncRetryRepository : ReactiveCrudRepository<ChainSyncRetryModel, Long> {
-    fun finByChainNameWhereNoGiveUp(chainName: String): Flux<ChainSyncRetryModel>
+    fun findByGiveUpIsFalseAndSyncedIsFalseAndChain(chain: String): Flux<ChainSyncRetryModel>
 }

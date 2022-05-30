@@ -27,7 +27,7 @@ class ChainSyncRetryHandlerImpl(
     }
 
     override suspend fun findAllActive(chainName: String): List<ChainSyncRetry> {
-        return chainSyncRetryRepository.finByChainNameWhereNoGiveUp(chainName).map {
+        return chainSyncRetryRepository.findByGiveUpIsFalseAndSyncedIsFalseAndChain(chainName).map {
             ChainSyncRetry(
                 it.chain,
                 it.startBlock,
