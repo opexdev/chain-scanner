@@ -21,7 +21,7 @@ class ScheduleServiceTest {
     private val scannerProxy: ScannerProxy = mockk()
     private val chainScannerHandler: ChainScannerHandler = mockk()
     private val webhookCaller: WebhookCaller = mockk()
-    private val webhook: String = "http://bc-gateway"
+    private val onSyncWebhookUrl: String = "http://bc-gateway"
     private val scheduleService: ScheduleService = ScheduleService(
         scannerProxy,
         chainSyncRecordHandler,
@@ -29,7 +29,7 @@ class ScheduleServiceTest {
         chainSyncRetryHandler,
         webhookCaller,
         chainScannerHandler,
-        webhook
+        onSyncWebhookUrl
     )
 
     @Test
@@ -40,7 +40,7 @@ class ScheduleServiceTest {
             scannerProxy.getTransfers(VALID.SCHEDULE.chainName)
         } returns TransferResult(BigInteger.ZERO, BigInteger.ZERO, emptyList())
         coEvery {
-            webhookCaller.callWebhook(webhook, emptyList())
+            webhookCaller.callWebhook(onSyncWebhookUrl, VALID.TRANSFER_RESULT.transfers)
         } returns Unit
         coEvery {
             chainSyncRecordHandler.lastSyncRecord(VALID.SCHEDULE.chainName)
@@ -51,6 +51,15 @@ class ScheduleServiceTest {
         coEvery {
             chainSyncSchedulerHandler.fetchActiveSchedules(VALID.CURRENT_LOCAL_DATE_TIME)
         } returns listOf(VALID.SCHEDULE)
+        coEvery {
+            chainScannerHandler.getScannersByName(VALID.BITCOIN)
+        } returns listOf(VALID.CHAIN_SCANNER)
+        coEvery {
+            chainSyncRetryHandler.save(VALID.NEW_CHAIN_SYNC_RETRY)
+        } returns Unit
+        coEvery {
+            scannerProxy.getTransfers(VALID.CHAIN_SCANNER.url)
+        } returns VALID.TRANSFER_RESULT
         scheduleService.start()
     }
 }
