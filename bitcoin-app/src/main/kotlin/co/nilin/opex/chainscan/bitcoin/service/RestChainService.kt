@@ -10,18 +10,12 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.*
 import org.slf4j.Logger
 import org.springframework.stereotype.Service
-import java.math.BigInteger
 
 @Service
 class RestChainService(private val proxy: GetBlockProxy) : FetchTransaction<BlockResponse> {
     private val logger: Logger by LoggerDelegate()
 
-    override suspend fun getTransactions(
-        startBlock: BigInteger,
-        endBlock: BigInteger
-    ): List<BlockResponse> {
-        logger.info("Start fetching bitcoin transfers: startBlock=$startBlock, endBlock=$endBlock")
-        val blockRange = startBlock.toLong()..endBlock.toLong()
+    override suspend fun getTransactions(blockRange: LongRange): List<BlockResponse> {
         return coroutineScope {
             blockRange.asFlow().flowOn(Dispatchers.SYNC).map {
                 async { runCatching { proxy.getBlockHash(it) }.getOrNull() }
@@ -29,8 +23,6 @@ class RestChainService(private val proxy: GetBlockProxy) : FetchTransaction<Bloc
                 logger.info("Fetching block $it")
                 proxy.getBlockData(it)
             }.toList()
-        }.also {
-            logger.info("Finished fetching transactions: lastBlock=$endBlock transfers=${it.size}")
         }
     }
 }

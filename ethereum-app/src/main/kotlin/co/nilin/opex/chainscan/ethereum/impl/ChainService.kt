@@ -13,18 +13,12 @@ import org.web3j.protocol.Web3j
 import org.web3j.protocol.core.DefaultBlockParameterNumber
 import org.web3j.protocol.core.methods.response.EthBlock
 import reactor.kotlin.core.publisher.toMono
-import java.math.BigInteger
 
 @Service
 class ChainService(private val web3j: Web3j) : FetchTransaction<EthBlock.TransactionObject> {
     private val logger: Logger by LoggerDelegate()
 
-    override suspend fun getTransactions(
-        startBlock: BigInteger,
-        endBlock: BigInteger
-    ): List<EthBlock.TransactionObject> {
-        logger.info("Start fetching ethereum transfers: startBlock=$startBlock, endBlock=$endBlock")
-        val blockRange = startBlock.toLong()..endBlock.toLong()
+    override suspend fun getTransactions(blockRange: LongRange): List<EthBlock.TransactionObject> {
         return coroutineScope {
             blockRange.asFlow().flowOn(Dispatchers.SYNC).map {
                 val blockNumber = DefaultBlockParameterNumber(it)
@@ -32,8 +26,6 @@ class ChainService(private val web3j: Web3j) : FetchTransaction<EthBlock.Transac
             }.buffer().map { it.await() }.map {
                 it.transactions.filterIsInstance<EthBlock.TransactionObject>()
             }.toList().flatten()
-        }.also {
-            logger.info("Finished fetching transactions: lastBlock=$endBlock transfers=${it.size}")
         }
     }
 }

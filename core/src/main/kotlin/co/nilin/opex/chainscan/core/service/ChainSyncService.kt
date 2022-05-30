@@ -29,7 +29,10 @@ class ChainSyncService<T>(
         val notCachedStartBlock =
             cached.filter { it.blockNumber >= actualStart }.maxOfOrNull { it.blockNumber }?.plus(BigInteger.ONE)
                 ?: actualStart
-        val response = fetchTransaction.getTransactions(notCachedStartBlock, actualEnd)
+        logger.info("Start fetching bitcoin transfers: startBlock=$actualStart, endBlock=$actualEnd")
+        val blockRange = notCachedStartBlock.toLong()..actualEnd.toLong()
+        val response = fetchTransaction.getTransactions(blockRange)
+        logger.info("Finished fetching transactions: lastBlock=$actualStart transfers=${response.size}")
         val transfers =
             response.flatMap { decoder.invoke(it) }.filter { !it.isTokenTransfer || tokens.contains(it.tokenAddress) }
         transferCacheHandler.saveTransfers(transfers)
