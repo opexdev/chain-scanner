@@ -3,10 +3,7 @@ package co.nilin.opex.chainscan.scheduler.service
 import co.nilin.opex.chainscan.scheduler.api.*
 import co.nilin.opex.chainscan.scheduler.po.TransferResult
 import co.nilin.opex.chainscan.scheduler.sample.VALID
-import io.mockk.coEvery
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.mockkStatic
+import io.mockk.*
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
 import org.springframework.stereotype.Service
@@ -60,6 +57,11 @@ class ScheduleServiceTest {
         coEvery {
             scannerProxy.getTransfers(VALID.CHAIN_SCANNER.url)
         } returns VALID.TRANSFER_RESULT
+
         scheduleService.start()
+
+        coVerify(exactly = 1) {
+            webhookCaller.callWebhook(onSyncWebhookUrl, VALID.TRANSFER_RESULT.transfers)
+        }
     }
 }
