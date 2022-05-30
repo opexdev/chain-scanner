@@ -4,12 +4,14 @@ import co.nilin.opex.chainscan.scheduler.api.ScannerProxy
 import co.nilin.opex.chainscan.scheduler.po.TransferResult
 import kotlinx.coroutines.reactive.awaitFirst
 import org.springframework.core.ParameterizedTypeReference
+import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import java.net.URI
 
 private inline fun <reified T : Any> typeRef(): ParameterizedTypeReference<T> =
     object : ParameterizedTypeReference<T>() {}
 
+@Service
 class ScannerProxyImpl(
     private val webClient: WebClient,
 ) : ScannerProxy {

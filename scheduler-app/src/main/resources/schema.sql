@@ -18,8 +18,7 @@ CREATE TABLE IF NOT EXISTS chain_scanners
     id              SERIAL      PRIMARY KEY,
     chain_name      VARCHAR(72) NOT NULL REFERENCES chains (name),
     url             VARCHAR(72) NOT NULL,
-    max_block_range INTEGER     NOT NULL DEFAULT 10,
-    UNIQUE(name, url)
+    max_block_range INTEGER     NOT NULL DEFAULT 10
 );
 
 CREATE TABLE IF NOT EXISTS chain_sync_retry
@@ -32,7 +31,7 @@ CREATE TABLE IF NOT EXISTS chain_sync_retry
     synced      BOOLEAN     NOT NULL DEFAULT FALSE,
     give_up     BOOLEAN     NOT NULL DEFAULT FALSE,
     error       TEXT,
-    UNIQUE (chain, block)
+    UNIQUE (chain, start_block, end_block)
 );
 
 CREATE TABLE IF NOT EXISTS chain_sync_records
