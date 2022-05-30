@@ -18,7 +18,7 @@ class ScheduleService(
     private val chainSyncRetryHandler: ChainSyncRetryHandler,
     private val webhookCaller: WebhookCaller,
     private val chainScannerHandler: ChainScannerHandler,
-    @Value("\$webhook") private val webhook: String,
+    @Value("\${app.on-sync-webhook-url}") private val onSyncWebhookUrl: String,
 ) {
     @Scheduled(fixedDelay = 1000)
     fun start(): Unit = runBlocking {
@@ -27,7 +27,7 @@ class ScheduleService(
             val chain = chainScannerHandler.getScannersByName(sch.chainName).first()
             runCatching {
                 val response = scannerProxy.getTransfers(chain.url)
-                webhookCaller.callWebhook(webhook, response.transfers)
+                webhookCaller.callWebhook(onSyncWebhookUrl, response.transfers)
                 val record = chainSyncRecordHandler.lastSyncRecord(sch.chainName)
                 chainSyncRecordHandler.saveSyncRecord(
                     record?.copy(syncTime = LocalDateTime.now(), blockNumber = response.toBlockNumber)
@@ -48,7 +48,7 @@ class ScheduleService(
             chainSyncRetries.forEach { retry ->
                 runCatching {
                     val response = scannerProxy.getTransfers(chain.url)
-                    webhookCaller.callWebhook(webhook, response.transfers)
+                    webhookCaller.callWebhook(onSyncWebhookUrl, response.transfers)
                     chainSyncRecordHandler.lastSyncRecord(sch.chainName)
                 }.onFailure {
                     val retries = retry.retries + 1

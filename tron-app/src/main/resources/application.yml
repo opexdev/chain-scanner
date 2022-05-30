@@ -1,7 +1,5 @@
 server.port: 8080
 spring:
-  application:
-    name: tron-scan
   main:
     allow-bean-definition-overriding: false
   r2dbc:
@@ -9,17 +7,6 @@ spring:
     username: ${dbusername:opex}
     password: ${dbpassword:hiopex}
     initialization-mode: always
-  cloud:
-    bootstrap:
-      enabled: true
-    consul:
-      host: ${CONSUL_HOST}
-      port: 8500
-      discovery:
-        #healthCheckPath: ${management.context-path}/health
-        instance-id: ${spring.application.name}:${server.port}
-        healthCheckInterval: 20s
-        prefer-ip-address: true
 logging:
   level:
     co.nilin: DEBUG

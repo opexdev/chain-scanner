@@ -35,15 +35,6 @@ services:
       - VAULT_AUTH_DEFAULT=USERNAMEPASSWORD
     depends_on:
       - vault
-  consul:
-    image: consul
-    environment:
-      - CONSUL_BIND_INTERFACE=eth0
-    networks:
-      - default
-    deploy:
-      restart_policy:
-        condition: on-failure
   postgres-scanner-scheduler:
     <<: *postgres-db
     volumes:
@@ -78,13 +69,11 @@ services:
     image: ghcr.io/opexdev/ethereum-scanner
     environment:
       - JAVA_OPTS=-Xmx768m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
-      - CONSUL_HOST=consul
       - DB_IP_PORT=postgres-ethereum-scanner
       - CHAIN_NAME=ethereum
       - RPC_ENDPOINT=${ETH_RPC_ENDPOINT}
     depends_on:
       - vault
-      - consul
       - postgres-ethereum-scanner
     networks:
       - default
@@ -92,13 +81,11 @@ services:
     image: ghcr.io/opexdev/bitcoin-scanner
     environment:
       - JAVA_OPTS=-Xmx768m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
-      - CONSUL_HOST=consul
       - DB_IP_PORT=postgres-bitcoin-scanner
       - REST_ENDPOINT=${BITCOIN_REST_ENDPOINT}
       - API_KEY=${BITCOIN_API_KEY}
     depends_on:
       - vault
-      - consul
       - postgres-bitcoin-scanner
     networks:
       - default
@@ -106,13 +93,11 @@ services:
     image: ghcr.io/opexdev/ethereum-scanner
     environment:
       - JAVA_OPTS=-Xmx768m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
-      - CONSUL_HOST=consul
       - DB_IP_PORT=postgres-bsc-scanner
       - CHAIN_NAME=bsc
       - RPC_ENDPOINT=${BSC_RPC_ENDPOINT}
     depends_on:
       - vault
-      - consul
       - postgres-bsc-scanner
     networks:
       - default
@@ -120,13 +105,11 @@ services:
     image: ghcr.io/opexdev/tron-scanner
     environment:
       - JAVA_OPTS=-Xmx768m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
-      - CONSUL_HOST=consul
       - DB_IP_PORT=postgres-tron-scanner
       - REST_ENDPOINT=${TRON_REST_ENDPOINT}
       - API_KEY=${TRON_API_KEY}
     depends_on:
       - vault
-      - consul
       - postgres-tron-scanner
     networks:
       - default
