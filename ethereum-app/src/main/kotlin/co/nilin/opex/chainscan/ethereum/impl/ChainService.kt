@@ -2,16 +2,18 @@ package co.nilin.opex.chainscan.ethereum.impl
 
 import co.nilin.opex.chainscan.core.spi.FetchTransaction
 import co.nilin.opex.chainscan.core.utils.LoggerDelegate
-import kotlinx.coroutines.Dispatchers
+import co.nilin.opex.chainscan.ethereum.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.reactor.awaitSingle
 import org.slf4j.Logger
 import org.springframework.stereotype.Service
 import org.web3j.protocol.Web3j
 import org.web3j.protocol.core.DefaultBlockParameterNumber
 import org.web3j.protocol.core.methods.response.EthBlock
+import reactor.kotlin.core.publisher.toMono
 import java.math.BigInteger
-import java.util.concurrent.LinkedBlockingQueue
 
 @Service
 class ChainService(private val web3j: Web3j) : FetchTransaction<EthBlock.TransactionObject> {
@@ -21,22 +23,17 @@ class ChainService(private val web3j: Web3j) : FetchTransaction<EthBlock.Transac
         startBlock: BigInteger,
         endBlock: BigInteger
     ): List<EthBlock.TransactionObject> {
-        logger.info("Requested blocks: startBlock=$startBlock, endBlock=$endBlock")
-        val transactions = LinkedBlockingQueue<EthBlock.TransactionObject>()
         logger.info("Start fetching ethereum transfers: startBlock=$startBlock, endBlock=$endBlock")
-        coroutineScope {
-            for (i in startBlock.toLong()..endBlock.toLong()) {
-                launch(Dispatchers.IO) {
-                    val blockNumber = DefaultBlockParameterNumber(i)
-                    val block = web3j.ethGetBlockByNumber(blockNumber, true).send().block
-                    logger.info("Fetched block $i with ${block.transactions.size} transactions")
-                    block?.transactions?.forEach {
-                        transactions.add(it as EthBlock.TransactionObject)
-                    }
-                }
-            }
+        val blockRange = startBlock.toLong()..endBlock.toLong()
+        return coroutineScope {
+            blockRange.asFlow().flowOn(Dispatchers.SYNC).map {
+                val blockNumber = DefaultBlockParameterNumber(it)
+                async { web3j.ethGetBlockByNumber(blockNumber, true).sendAsync().toMono().awaitSingle().block }
+            }.buffer().map { it.await() }.map {
+                it.transactions.filterIsInstance<EthBlock.TransactionObject>()
+            }.toList().flatten()
+        }.also {
+            logger.info("Finished fetching transactions: lastBlock=$endBlock transfers=${it.size}")
         }
-        logger.info("Finished fetching transactions: lastBlock=$endBlock transfers=${transactions.size}")
-        return transactions.toList()
     }
 }
