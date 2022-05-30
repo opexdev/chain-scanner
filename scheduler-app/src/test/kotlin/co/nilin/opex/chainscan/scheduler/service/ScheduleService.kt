@@ -17,6 +17,7 @@ import java.time.LocalDateTime
 class ScheduleServiceTest {
     private val chainSyncRecordHandler: ChainSyncRecordHandler = mockk()
     private val chainSyncSchedulerHandler: ChainSyncSchedulerHandler = mockk()
+    private val chainSyncRetryHandler: ChainSyncRetryHandler = mockk()
     private val scannerProxy: ScannerProxy = mockk()
     private val chainScannerHandler: ChainScannerHandler = mockk()
     private val webhookCaller: WebhookCaller = mockk()
@@ -25,6 +26,7 @@ class ScheduleServiceTest {
         scannerProxy,
         chainSyncRecordHandler,
         chainSyncSchedulerHandler,
+        chainSyncRetryHandler,
         webhookCaller,
         chainScannerHandler,
         webhook
