@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS chain_sync_schedules
     chain       VARCHAR(72) NOT NULL UNIQUE REFERENCES chains (name),
     retry_time  TIMESTAMP   NOT NULL,
     delay       INTEGER     NOT NULL,
-    error_delay INTEGER     NOT NULL
+    error_delay INTEGER     NOT NULL,
     enabled     BOOLEAN     NOT NULL DEFAULT TRUE
 );
 
