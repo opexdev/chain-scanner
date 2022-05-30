@@ -3,7 +3,9 @@ package co.nilin.opex.chainscan.scheduler.service
 import co.nilin.opex.chainscan.scheduler.api.*
 import co.nilin.opex.chainscan.scheduler.po.ChainSyncRecord
 import co.nilin.opex.chainscan.scheduler.po.ChainSyncRetry
+import co.nilin.opex.chainscan.scheduler.utils.LoggerDelegate
 import kotlinx.coroutines.runBlocking
+import org.slf4j.Logger
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
@@ -20,8 +22,11 @@ class ScheduleService(
     private val chainScannerHandler: ChainScannerHandler,
     @Value("\${app.on-sync-webhook-url}") private val onSyncWebhookUrl: String,
 ) {
+    private val logger: Logger by LoggerDelegate()
+
     @Scheduled(fixedDelay = 1000)
     fun start(): Unit = runBlocking {
+        logger.info("Running start() schedule")
         val schedules = chainSyncSchedulerHandler.fetchActiveSchedules(LocalDateTime.now())
         schedules.forEach { sch ->
             val chain = chainScannerHandler.getScannersByName(sch.chainName).first()
@@ -41,6 +46,7 @@ class ScheduleService(
 
     @Scheduled(fixedDelay = 1000)
     fun startRetry(): Unit = runBlocking {
+        logger.info("Running startRetry() schedule")
         val schedules = chainSyncSchedulerHandler.fetchActiveSchedules(LocalDateTime.now())
         schedules.forEach { sch ->
             val chain = chainScannerHandler.getScannersByName(sch.chainName).first()
