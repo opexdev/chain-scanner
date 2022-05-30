@@ -20,7 +20,6 @@ class RestChainService(private val proxy: GetBlockProxy) : FetchTransaction<Bloc
             blockRange.asFlow().flowOn(Dispatchers.SYNC).map {
                 async { runCatching { proxy.getBlockHash(it) }.getOrNull() }
             }.buffer().mapNotNull { it.await() }.mapNotNull {
-                logger.info("Fetching block $it")
                 proxy.getBlockData(it)
             }.toList()
         }
