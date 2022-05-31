@@ -7,6 +7,7 @@ import org.springframework.data.relational.core.mapping.Table
 data class ChainScannerModel(
     val chainName: String,
     val url: String,
-    val maxBlockRange: Int,
+    val maxBlockRange: Int = 10,
+    val confirmations: Int = 0,
     @Id val id: Long? = null
 )

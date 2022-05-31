@@ -39,7 +39,8 @@ class ScheduleService(
                     launch {
                         val chain = chainScannerHandler.getScannersByName(sch.chainName).first()
                         runCatching {
-                            val response = scannerProxy.getTransfers(chain.url)
+                            val response =
+                                scannerProxy.getTransfers(chain.url, endBlock = -chain.confirmations.toBigInteger())
                             webhookCaller.callWebhook(onSyncWebhookUrl, response.transfers)
                             val record = chainSyncRecordHandler.lastSyncRecord(sch.chainName)
                             chainSyncRecordHandler.saveSyncRecord(
