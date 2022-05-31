@@ -44,10 +44,10 @@ class ScheduleService(
                             chainSyncRecordHandler.lastSyncedBlockedNumber(sch.chainName)?.plus(BigInteger.ONE) ?: head
                         val endBlockNumber = head.max(startBlockNumber)
                         val blockRange = startBlockNumber.toLong()..endBlockNumber.toLong()
-                        blockRange.forEach {
+                        blockRange.forEach { bn ->
                             launch {
                                 runCatching {
-                                    val response = scannerProxy.getTransfers(chain.url, it.toBigInteger())
+                                    val response = scannerProxy.getTransfers(chain.url, bn.toBigInteger())
                                     webhookCaller.callWebhook(onSyncWebhookUrl, response.transfers)
                                     val record = chainSyncRecordHandler.lastSyncRecord(sch.chainName)
                                     chainSyncRecordHandler.saveSyncRecord(
@@ -55,7 +55,7 @@ class ScheduleService(
                                             ?: ChainSyncRecord(sch.chainName, LocalDateTime.now(), response.blockNumber)
                                     )
                                 }.onFailure {
-                                    chainSyncRetryHandler.save(ChainSyncRetry(sch.chainName, BigInteger.ZERO))
+                                    chainSyncRetryHandler.save(ChainSyncRetry(sch.chainName, bn.toBigInteger()))
                                 }
                             }
                         }
