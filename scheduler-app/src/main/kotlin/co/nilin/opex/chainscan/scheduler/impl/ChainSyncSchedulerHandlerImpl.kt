@@ -1,9 +1,10 @@
 package co.nilin.opex.chainscan.scheduler.impl
 
+import co.nilin.opex.chainscan.scheduler.api.ChainSyncSchedulerHandler
+import co.nilin.opex.chainscan.scheduler.dto.toPlainObject
 import co.nilin.opex.chainscan.scheduler.model.ChainSyncScheduleModel
 import co.nilin.opex.chainscan.scheduler.po.ChainSyncSchedule
 import co.nilin.opex.chainscan.scheduler.repository.ChainSyncScheduleRepository
-import co.nilin.opex.chainscan.scheduler.api.ChainSyncSchedulerHandler
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.reactive.awaitFirst
@@ -16,9 +17,7 @@ import java.time.temporal.ChronoUnit
 class ChainSyncSchedulerHandlerImpl(private val chainSyncScheduleRepository: ChainSyncScheduleRepository) :
     ChainSyncSchedulerHandler {
     override suspend fun fetchActiveSchedules(time: LocalDateTime): List<ChainSyncSchedule> {
-        return chainSyncScheduleRepository.findActiveSchedule(time).map {
-            ChainSyncSchedule(it.chain, it.retryTime, it.delay, it.errorDelay)
-        }.toList()
+        return chainSyncScheduleRepository.findActiveSchedule(time).map { it.toPlainObject() }.toList()
     }
 
     override suspend fun prepareScheduleForNextTry(syncSchedule: ChainSyncSchedule, success: Boolean) {
