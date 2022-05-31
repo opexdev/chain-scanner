@@ -11,12 +11,14 @@ import org.springframework.stereotype.Component
 class BitcoinDecoder(@Value("\${app.chain-name}") private val chainName: String) : Decoder<BlockResponse> {
     override fun invoke(input: BlockResponse): List<Transfer> {
         return input.tx.flatMap { tx ->
-            tx.vout.map { v ->
+            tx.vout.filter {
+                !it.scriptPubKey?.address.isNullOrBlank()
+            }.map { v ->
                 Transfer(
                     "${tx.hash}_${v.scriptPubKey?.hex}",
                     input.height.toBigInteger(),
                     Wallet(""),
-                    Wallet(v.scriptPubKey?.address!!),
+                    Wallet(v.scriptPubKey!!.address!!),
                     false,
                     v.value,
                     chainName
