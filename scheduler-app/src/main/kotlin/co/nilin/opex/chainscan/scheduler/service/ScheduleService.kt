@@ -40,7 +40,8 @@ class ScheduleService(
                         val chain = chainScannerHandler.getScannersByName(sch.chainName).first()
                         val currentBlockNumber = scannerProxy.getBlockNumber(chain.url)
                         val head = currentBlockNumber - chain.confirmations.toBigInteger()
-                        val startBlockNumber = chainSyncRecordHandler.lastSyncedBlockedNumber(sch.chainName) ?: head
+                        val startBlockNumber =
+                            chainSyncRecordHandler.lastSyncedBlockedNumber(sch.chainName)?.plus(BigInteger.ONE) ?: head
                         val endBlockNumber = head.max(startBlockNumber)
                         val blockRange = startBlockNumber.toLong()..endBlockNumber.toLong()
                         blockRange.forEach {
