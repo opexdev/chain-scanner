@@ -1,5 +1,6 @@
 package co.nilin.opex.chainscan.database.model
 
+import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Table
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -16,5 +17,5 @@ data class TransferModel(
     val amount: BigDecimal,
     val chain: String,
     val tokenAddress: String? = null,
-    val id: Long? = null
+    @Id val id: Long? = null
 )

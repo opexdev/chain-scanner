@@ -20,9 +20,12 @@ class ChainSyncService<T>(
 ) {
     private val logger: Logger by LoggerDelegate()
 
-    suspend fun getTransfers(start: BigInteger?, end: BigInteger?): List<Transfer> {
-        val actualStart = start ?: getBlockNumber.invoke()
-        val actualEnd = (end ?: getBlockNumber.invoke()).takeIf { it > actualStart } ?: actualStart
+    suspend fun getTransfers(start: BigInteger? = null, end: BigInteger? = null): List<Transfer> {
+        require(start?.abs() == start)
+        val currentBlockNumber = getBlockNumber.invoke()
+        val actualStart = start ?: currentBlockNumber
+        val adjustedEnd = end ?: currentBlockNumber
+        val actualEnd = adjustedEnd.takeIf { it >= BigInteger.ZERO } ?: (currentBlockNumber + end!!)
         val tokens = watchListHandler.findAll().map { addressAdapter.makeValid(it.address) }
         logger.info("Syncing for: $chainName - Block: $actualStart")
         val cached = transferCacheHandler.getTransfers(tokens)
