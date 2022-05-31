@@ -9,7 +9,7 @@ import java.math.BigInteger
 @RestController
 class ScannerController(private val chainSyncService: ChainSyncService<*>) {
     @GetMapping("/transfers")
-    suspend fun getTransfers(start: BigInteger?, end: BigInteger?): List<Transfer> {
-        return chainSyncService.getTransfers(start, end)
+    suspend fun getTransfers(blockNumber: BigInteger?): List<Transfer> {
+        return chainSyncService.getTransfers(blockNumber)
     }
 }

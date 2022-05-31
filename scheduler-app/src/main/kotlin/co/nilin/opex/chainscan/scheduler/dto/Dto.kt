@@ -39,8 +39,7 @@ fun ChainSyncRecord.toModel() = ChainSyncRecordModel(
 
 fun ChainSyncRetryModel.toPlainObject() = ChainSyncRetry(
     chain,
-    startBlock,
-    endBlock,
+    blockNumber,
     retries,
     synced,
     giveUp,
@@ -50,8 +49,7 @@ fun ChainSyncRetryModel.toPlainObject() = ChainSyncRetry(
 
 fun ChainSyncRetry.toModel() = ChainSyncRetryModel(
     chain,
-    startBlock,
-    endBlock,
+    blockNumber,
     retries,
     synced,
     giveUp,

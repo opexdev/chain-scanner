@@ -20,25 +20,30 @@ class ChainSyncService<T>(
 ) {
     private val logger: Logger by LoggerDelegate()
 
-    suspend fun getTransfers(start: BigInteger? = null, end: BigInteger? = null): List<Transfer> {
-        require(start?.abs() == start)
+    suspend fun getTransfers(blockNumber: BigInteger? = null): List<Transfer> {
+        require(blockNumber?.abs() == blockNumber)
+        val actualBlockNumber = actualBlockNumber(blockNumber)
+        val watchedTokens = watchListHandler.findAll().map { addressAdapter.makeValid(it.address) }
+        logger.info("Syncing for: $chainName - Block: $actualBlockNumber")
+        val cached = transferCacheHandler.getTransfers(watchedTokens, actualBlockNumber)
+        return if (cached.isEmpty()) {
+            logger.info("Start fetching $chainName transfers: blockNumber=$blockNumber")
+            val response = fetchTransaction.getTransactions(actualBlockNumber)
+            logger.info("Finished fetching block info: blockNumber=$blockNumber")
+            return decoder.invoke(response).filter {
+                !it.isTokenTransfer || watchedTokens.contains(it.tokenAddress)
+            }.also {
+                transferCacheHandler.saveTransfers(it)
+            }
+        } else {
+            logger.info("Loading $chainName transfers from cache: blockNumber=$blockNumber")
+            cached
+        }
+    }
+
+    private suspend fun actualBlockNumber(blockNumber: BigInteger?): BigInteger {
         val currentBlockNumber = getBlockNumber.invoke()
-        val actualStart = start ?: currentBlockNumber
-        val adjustedEnd = end ?: currentBlockNumber
-        val actualEnd = adjustedEnd.takeIf { it >= BigInteger.ZERO } ?: (currentBlockNumber + end!!)
-        val tokens = watchListHandler.findAll().map { addressAdapter.makeValid(it.address) }
-        logger.info("Syncing for: $chainName - Block: $actualStart")
-        val cached = transferCacheHandler.getTransfers(tokens)
-        val notCachedStartBlock =
-            cached.filter { it.blockNumber >= actualStart }.maxOfOrNull { it.blockNumber }?.plus(BigInteger.ONE)
-                ?: actualStart
-        logger.info("Start fetching bitcoin transfers: startBlock=$actualStart, endBlock=$actualEnd")
-        val blockRange = notCachedStartBlock.toLong()..actualEnd.toLong()
-        val response = fetchTransaction.getTransactions(blockRange)
-        logger.info("Finished fetching transactions: lastBlock=$actualEnd transactions=${response.size}")
-        val transfers =
-            response.flatMap { decoder.invoke(it) }.filter { !it.isTokenTransfer || tokens.contains(it.tokenAddress) }
-        transferCacheHandler.saveTransfers(transfers)
-        return cached + transfers
+        val adjustedBlockNumber = blockNumber ?: (currentBlockNumber + BigInteger.ONE)
+        return adjustedBlockNumber.takeIf { it >= BigInteger.ZERO } ?: (currentBlockNumber + blockNumber!!)
     }
 }

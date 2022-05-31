@@ -35,7 +35,7 @@ class ScheduleServiceTest {
         every { LocalDateTime.now() } returns VALID.CURRENT_LOCAL_DATE_TIME
         coEvery {
             scannerProxy.getTransfers(VALID.SCHEDULE.chainName)
-        } returns TransferResult(BigInteger.ZERO, BigInteger.ZERO, emptyList())
+        } returns TransferResult(BigInteger.ZERO, emptyList())
         coEvery {
             webhookCaller.callWebhook(onSyncWebhookUrl, VALID.TRANSFER_RESULT.transfers)
         } returns Unit

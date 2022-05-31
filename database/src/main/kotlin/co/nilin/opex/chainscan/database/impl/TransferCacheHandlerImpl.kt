@@ -17,7 +17,7 @@ class TransferCacheHandlerImpl(
         transferRepository.saveAll(transfers.map { it.toModel() })
     }
 
-    override suspend fun getTransfers(tokenAddresses: List<String>): List<Transfer> {
+    override suspend fun getTransfers(tokenAddresses: List<String>, blockNumber: BigInteger?): List<Transfer> {
         val transfers =
             if (tokenAddresses.isEmpty()) transferRepository.findAllNotTokenTransfers()
             else transferRepository.findByTokenAddress(tokenAddresses)

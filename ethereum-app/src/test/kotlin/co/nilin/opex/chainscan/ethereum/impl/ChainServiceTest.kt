@@ -6,6 +6,7 @@ import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
 import org.web3j.protocol.Web3j
 import org.web3j.protocol.core.methods.response.EthBlockNumber
+import java.math.BigInteger
 
 private class ChainServiceTest {
     private val web3j: Web3j = mockk()
@@ -17,6 +18,6 @@ private class ChainServiceTest {
             val blockNumber = EthBlockNumber().also { it.result = "0" }
             every { send() } returns blockNumber
         }
-        chainService.getTransactions(1L..1L)
+        chainService.getTransactions(BigInteger.ZERO)
     }
 }

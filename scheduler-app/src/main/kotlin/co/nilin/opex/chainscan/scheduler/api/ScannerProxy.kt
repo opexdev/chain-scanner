@@ -4,5 +4,5 @@ import co.nilin.opex.chainscan.scheduler.po.TransferResult
 import java.math.BigInteger
 
 interface ScannerProxy {
-    suspend fun getTransfers(url: String, startBlock: BigInteger? = null, endBlock: BigInteger? = null): TransferResult
+    suspend fun getTransfers(url: String, blockNumber: BigInteger? = null): TransferResult
 }

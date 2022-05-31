@@ -39,16 +39,15 @@ class ScheduleService(
                     launch {
                         val chain = chainScannerHandler.getScannersByName(sch.chainName).first()
                         runCatching {
-                            val response =
-                                scannerProxy.getTransfers(chain.url, endBlock = -chain.confirmations.toBigInteger())
+                            val response = scannerProxy.getTransfers(chain.url, -chain.confirmations.toBigInteger())
                             webhookCaller.callWebhook(onSyncWebhookUrl, response.transfers)
                             val record = chainSyncRecordHandler.lastSyncRecord(sch.chainName)
                             chainSyncRecordHandler.saveSyncRecord(
-                                record?.copy(syncTime = LocalDateTime.now(), blockNumber = response.toBlockNumber)
-                                    ?: ChainSyncRecord(sch.chainName, LocalDateTime.now(), response.toBlockNumber)
+                                record?.copy(syncTime = LocalDateTime.now(), blockNumber = response.blockNumber)
+                                    ?: ChainSyncRecord(sch.chainName, LocalDateTime.now(), response.blockNumber)
                             )
                         }.onFailure {
-                            chainSyncRetryHandler.save(ChainSyncRetry(sch.chainName, BigInteger.ZERO, BigInteger.ZERO))
+                            chainSyncRetryHandler.save(ChainSyncRetry(sch.chainName, BigInteger.ZERO))
                         }
                     }
                 }
@@ -68,7 +67,7 @@ class ScheduleService(
                         val chainSyncRetries = chainSyncRetryHandler.findAllActive(sch.chainName)
                         chainSyncRetries.forEach { retry ->
                             runCatching {
-                                val response = scannerProxy.getTransfers(chain.url)
+                                val response = scannerProxy.getTransfers(chain.url, retry.blockNumber)
                                 webhookCaller.callWebhook(onSyncWebhookUrl, response.transfers)
                                 chainSyncRecordHandler.lastSyncRecord(sch.chainName)
                             }.onFailure {

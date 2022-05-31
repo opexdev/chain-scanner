@@ -16,13 +16,10 @@ private inline fun <reified T : Any> typeRef(): ParameterizedTypeReference<T> =
 @Service
 class ScannerProxyImpl(private val webClient: WebClient, private val chainScannerHandler: ChainScannerHandler) :
     ScannerProxy {
-    override suspend fun getTransfers(url: String, startBlock: BigInteger?, endBlock: BigInteger?): TransferResult {
+    override suspend fun getTransfers(url: String, blockNumber: BigInteger?): TransferResult {
         return webClient.post()
             .uri {
-                it.path(url)
-                    .queryParamIfPresent("startBlock", Optional.ofNullable(startBlock))
-                    .queryParamIfPresent("endBlock", Optional.ofNullable(endBlock))
-                    .build()
+                it.path(url).queryParamIfPresent("blockNumber", Optional.ofNullable(blockNumber)).build()
             }
             .retrieve()
             .onStatus({ t -> t.isError }, { it.createException() })

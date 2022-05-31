@@ -28,7 +28,6 @@ object VALID {
     val NEW_CHAIN_SYNC_RETRY = ChainSyncRetry(
         BITCOIN,
         BigInteger.ZERO,
-        BigInteger.ZERO,
         retries = 0
     )
 
@@ -42,5 +41,5 @@ object VALID {
         BITCOIN
     )
 
-    val TRANSFER_RESULT = TransferResult(BigInteger.ZERO, BigInteger.ZERO, listOf(TRANSFER))
+    val TRANSFER_RESULT = TransferResult(BigInteger.ZERO, listOf(TRANSFER))
 }
