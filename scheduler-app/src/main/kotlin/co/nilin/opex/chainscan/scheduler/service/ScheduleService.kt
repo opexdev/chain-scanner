@@ -75,16 +75,18 @@ class ScheduleService(
                         val chain = chainScannerHandler.getScannersByName(sch.chainName).first()
                         val chainSyncRetries = chainSyncRetryHandler.findAllActive(sch.chainName)
                         chainSyncRetries.forEach { retry ->
-                            runCatching {
-                                val response = scannerProxy.getTransfers(chain.url, retry.blockNumber)
-                                webhookCaller.callWebhook(onSyncWebhookUrl, response.transfers)
-                                chainSyncRecordHandler.lastSyncRecord(sch.chainName)
-                            }.onFailure {
-                                val retries = retry.retries + 1
-                                chainSyncRetryHandler.save(retry.copy(retries = retries, giveUp = retries >= 5))
-                            }.onSuccess {
-                                val retries = retry.retries + 1
-                                chainSyncRetryHandler.save(retry.copy(retries = retries, synced = true))
+                            launch {
+                                runCatching {
+                                    val response = scannerProxy.getTransfers(chain.url, retry.blockNumber)
+                                    webhookCaller.callWebhook(onSyncWebhookUrl, response.transfers)
+                                    chainSyncRecordHandler.lastSyncRecord(sch.chainName)
+                                }.onFailure {
+                                    val retries = retry.retries + 1
+                                    chainSyncRetryHandler.save(retry.copy(retries = retries, giveUp = retries >= 5))
+                                }.onSuccess {
+                                    val retries = retry.retries + 1
+                                    chainSyncRetryHandler.save(retry.copy(retries = retries, synced = true))
+                                }
                             }
                         }
                     }
