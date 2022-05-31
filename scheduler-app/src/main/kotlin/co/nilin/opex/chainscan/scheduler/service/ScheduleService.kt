@@ -39,9 +39,9 @@ class ScheduleService(
                     launch {
                         val chain = chainScannerHandler.getScannersByName(sch.chainName).first()
                         val currentBlockNumber = scannerProxy.getBlockNumber(chain.url)
-                        val startBlockNumber =
-                            chainSyncRecordHandler.lastSyncedBlockedNumber(sch.chainName) ?: currentBlockNumber
-                        val endBlockNumber = currentBlockNumber - chain.confirmations.toBigInteger()
+                        val head = currentBlockNumber - chain.confirmations.toBigInteger()
+                        val startBlockNumber = chainSyncRecordHandler.lastSyncedBlockedNumber(sch.chainName) ?: head
+                        val endBlockNumber = head.max(startBlockNumber)
                         val blockRange = startBlockNumber.toLong()..endBlockNumber.toLong()
                         blockRange.forEach {
                             launch {
@@ -95,5 +95,5 @@ class ScheduleService(
         }
     }
 
-    private fun CoroutineScope.isCompleted() = coroutineContext.job.children.all { it.isCompleted }
+    fun CoroutineScope.isCompleted() = coroutineContext.job.children.all { it.isCompleted }
 }

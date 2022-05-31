@@ -43,7 +43,7 @@ class ChainSyncService<T>(
 
     private suspend fun actualBlockNumber(blockNumber: BigInteger?): BigInteger {
         val currentBlockNumber = getBlockNumber.invoke()
-        val adjustedBlockNumber = blockNumber ?: (currentBlockNumber + BigInteger.ONE)
+        val adjustedBlockNumber = blockNumber ?: currentBlockNumber
         return adjustedBlockNumber.takeIf { it >= BigInteger.ZERO } ?: (currentBlockNumber + blockNumber!!)
     }
 }
