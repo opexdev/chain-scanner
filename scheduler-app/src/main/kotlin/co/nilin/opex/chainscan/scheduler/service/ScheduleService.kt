@@ -38,16 +38,25 @@ class ScheduleService(
                 schedules.forEach { sch ->
                     launch {
                         val chain = chainScannerHandler.getScannersByName(sch.chainName).first()
-                        runCatching {
-                            val response = scannerProxy.getTransfers(chain.url, -chain.confirmations.toBigInteger())
-                            webhookCaller.callWebhook(onSyncWebhookUrl, response.transfers)
-                            val record = chainSyncRecordHandler.lastSyncRecord(sch.chainName)
-                            chainSyncRecordHandler.saveSyncRecord(
-                                record?.copy(syncTime = LocalDateTime.now(), blockNumber = response.blockNumber)
-                                    ?: ChainSyncRecord(sch.chainName, LocalDateTime.now(), response.blockNumber)
-                            )
-                        }.onFailure {
-                            chainSyncRetryHandler.save(ChainSyncRetry(sch.chainName, BigInteger.ZERO))
+                        val currentBlockNumber = scannerProxy.getBlockNumber(chain.url)
+                        val startBlockNumber =
+                            chainSyncRecordHandler.lastSyncedBlockedNumber(sch.chainName) ?: currentBlockNumber
+                        val endBlockNumber = currentBlockNumber - chain.confirmations.toBigInteger()
+                        val blockRange = startBlockNumber.toLong()..endBlockNumber.toLong()
+                        blockRange.forEach {
+                            launch {
+                                runCatching {
+                                    val response = scannerProxy.getTransfers(chain.url, it.toBigInteger())
+                                    webhookCaller.callWebhook(onSyncWebhookUrl, response.transfers)
+                                    val record = chainSyncRecordHandler.lastSyncRecord(sch.chainName)
+                                    chainSyncRecordHandler.saveSyncRecord(
+                                        record?.copy(syncTime = LocalDateTime.now(), blockNumber = response.blockNumber)
+                                            ?: ChainSyncRecord(sch.chainName, LocalDateTime.now(), response.blockNumber)
+                                    )
+                                }.onFailure {
+                                    chainSyncRetryHandler.save(ChainSyncRetry(sch.chainName, BigInteger.ZERO))
+                                }
+                            }
                         }
                     }
                 }
