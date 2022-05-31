@@ -16,9 +16,9 @@ private inline fun <reified T : Any> typeRef(): ParameterizedTypeReference<T> =
 @Service
 class ScannerProxyImpl(private val webClient: WebClient) : ScannerProxy {
     override suspend fun getTransfers(url: String, blockNumber: BigInteger?): TransferResult {
-        return webClient.post()
+        return webClient.get()
             .uri {
-                it.path(url).queryParamIfPresent("blockNumber", Optional.ofNullable(blockNumber)).build()
+                it.path("$url/transfers").queryParamIfPresent("blockNumber", Optional.ofNullable(blockNumber)).build()
             }
             .retrieve()
             .onStatus({ t -> t.isError }, { it.createException() })
@@ -27,8 +27,8 @@ class ScannerProxyImpl(private val webClient: WebClient) : ScannerProxy {
     }
 
     override suspend fun getBlockNumber(url: String): BigInteger {
-        return webClient.post()
-            .uri { URI.create(url) }
+        return webClient.get()
+            .uri { URI.create("$url/block-number") }
             .retrieve()
             .onStatus({ t -> t.isError }, { it.createException() })
             .bodyToMono(typeRef<BigInteger>())
