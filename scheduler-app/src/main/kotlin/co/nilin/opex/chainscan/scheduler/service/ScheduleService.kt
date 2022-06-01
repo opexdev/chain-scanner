@@ -8,6 +8,7 @@ import co.nilin.opex.chainscan.scheduler.utils.LoggerDelegate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 import org.slf4j.Logger
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.scheduling.annotation.Scheduled
@@ -37,25 +38,35 @@ class ScheduleService(
                 val schedules = chainSyncSchedulerHandler.fetchActiveSchedules(LocalDateTime.now())
                 schedules.forEach { sch ->
                     launch {
-                        val chain = chainScannerHandler.getScannersByName(sch.chainName).first()
-                        val currentBlockNumber = scannerProxy.getBlockNumber(chain.url)
-                        val head = currentBlockNumber - chain.confirmations.toBigInteger()
-                        val startBlockNumber =
-                            chainSyncRecordHandler.lastSyncedBlockedNumber(sch.chainName)?.plus(BigInteger.ONE) ?: head
-                        val endBlockNumber = head.max(startBlockNumber)
-                        val blockRange = startBlockNumber.toLong()..endBlockNumber.toLong()
-                        blockRange.forEach { bn ->
-                            launch {
-                                runCatching {
-                                    val response = scannerProxy.getTransfers(chain.url, bn.toBigInteger())
-                                    webhookCaller.callWebhook(onSyncWebhookUrl, response.transfers)
-                                    val record = chainSyncRecordHandler.lastSyncRecord(sch.chainName)
-                                    chainSyncRecordHandler.saveSyncRecord(
-                                        record?.copy(syncTime = LocalDateTime.now(), blockNumber = response.blockNumber)
-                                            ?: ChainSyncRecord(sch.chainName, LocalDateTime.now(), response.blockNumber)
-                                    )
-                                }.onFailure {
-                                    chainSyncRetryHandler.save(ChainSyncRetry(sch.chainName, bn.toBigInteger()))
+                        withTimeoutOrNull(sch.timeout) {
+                            val chain = chainScannerHandler.getScannersByName(sch.chainName).first()
+                            val currentBlockNumber = scannerProxy.getBlockNumber(chain.url)
+                            val head = currentBlockNumber - chain.confirmations.toBigInteger()
+                            val startBlockNumber =
+                                chainSyncRecordHandler.lastSyncedBlockedNumber(sch.chainName)?.plus(BigInteger.ONE)
+                                    ?: head
+                            val endBlockNumber = head.max(startBlockNumber)
+                            val blockRange = startBlockNumber.toLong()..endBlockNumber.toLong()
+                            blockRange.forEach { bn ->
+                                launch {
+                                    runCatching {
+                                        val response = scannerProxy.getTransfers(chain.url, bn.toBigInteger())
+                                        webhookCaller.callWebhook(onSyncWebhookUrl, response.transfers)
+                                        val record = chainSyncRecordHandler.lastSyncRecord(sch.chainName)
+                                        chainSyncRecordHandler.saveSyncRecord(
+                                            record?.copy(
+                                                syncTime = LocalDateTime.now(),
+                                                blockNumber = response.blockNumber
+                                            )
+                                                ?: ChainSyncRecord(
+                                                    sch.chainName,
+                                                    LocalDateTime.now(),
+                                                    response.blockNumber
+                                                )
+                                        )
+                                    }.onFailure {
+                                        chainSyncRetryHandler.save(ChainSyncRetry(sch.chainName, bn.toBigInteger()))
+                                    }
                                 }
                             }
                         }
@@ -73,20 +84,22 @@ class ScheduleService(
                 val schedules = chainSyncSchedulerHandler.fetchActiveSchedules(LocalDateTime.now())
                 schedules.forEach { sch ->
                     launch {
-                        val chain = chainScannerHandler.getScannersByName(sch.chainName).first()
-                        val chainSyncRetries = chainSyncRetryHandler.findAllActive(sch.chainName)
-                        chainSyncRetries.forEach { retry ->
-                            launch {
-                                runCatching {
-                                    val response = scannerProxy.getTransfers(chain.url, retry.blockNumber)
-                                    webhookCaller.callWebhook(onSyncWebhookUrl, response.transfers)
-                                    chainSyncRecordHandler.lastSyncRecord(sch.chainName)
-                                }.onFailure {
-                                    val retries = retry.retries + 1
-                                    chainSyncRetryHandler.save(retry.copy(retries = retries, giveUp = retries >= 5))
-                                }.onSuccess {
-                                    val retries = retry.retries + 1
-                                    chainSyncRetryHandler.save(retry.copy(retries = retries, synced = true))
+                        withTimeoutOrNull(sch.timeout) {
+                            val chain = chainScannerHandler.getScannersByName(sch.chainName).first()
+                            val chainSyncRetries = chainSyncRetryHandler.findAllActive(sch.chainName)
+                            chainSyncRetries.forEach { retry ->
+                                launch {
+                                    runCatching {
+                                        val response = scannerProxy.getTransfers(chain.url, retry.blockNumber)
+                                        webhookCaller.callWebhook(onSyncWebhookUrl, response.transfers)
+                                        chainSyncRecordHandler.lastSyncRecord(sch.chainName)
+                                    }.onFailure {
+                                        val retries = retry.retries + 1
+                                        chainSyncRetryHandler.save(retry.copy(retries = retries, giveUp = retries >= 5))
+                                    }.onSuccess {
+                                        val retries = retry.retries + 1
+                                        chainSyncRetryHandler.save(retry.copy(retries = retries, synced = true))
+                                    }
                                 }
                             }
                         }

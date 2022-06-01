@@ -10,7 +10,8 @@ CREATE TABLE IF NOT EXISTS chain_sync_schedules
     retry_time  TIMESTAMP   NOT NULL,
     delay       INTEGER     NOT NULL,
     error_delay INTEGER     NOT NULL,
-    enabled     BOOLEAN     NOT NULL DEFAULT TRUE
+    enabled     BOOLEAN     NOT NULL DEFAULT TRUE,
+    timeout     INTEGER     NOT NULL DEFAULT 30000
 );
 
 CREATE TABLE IF NOT EXISTS chain_scanners
