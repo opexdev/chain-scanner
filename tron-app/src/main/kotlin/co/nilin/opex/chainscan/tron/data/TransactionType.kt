@@ -1,7 +1,6 @@
 package co.nilin.opex.chainscan.tron.data
 
 enum class TransactionType {
-
     TriggerSmartContract,
     TransferContract,
     AccountCreateContract,
@@ -9,5 +8,4 @@ enum class TransactionType {
     TransferAssetContract,
     WithdrawBalanceContract,
     VoteWitnessContract
-
 }

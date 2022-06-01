@@ -16,7 +16,7 @@ private const val TRIGGER_SMART_CONTRACT = "TriggerSmartContract"
 private const val TRANSFER_CONTRACT = "TransferContract"
 
 @Component
-class TronDataDecoder(@Value("\${app.chain-name}") private val chainName: String) : DataDecoder<BlockResponse> {
+class TronDataDecoder(@Value("\${app.chain.name}") private val chainName: String) : DataDecoder<BlockResponse> {
     private fun handleTriggerContract(blockNumber: BigInteger, hash: String, contract: Contract): Transfer? {
         val params = contract.parameter.value
         val data = params.data ?: return null

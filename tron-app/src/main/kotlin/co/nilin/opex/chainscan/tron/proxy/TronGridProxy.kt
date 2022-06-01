@@ -1,8 +1,9 @@
 package co.nilin.opex.chainscan.tron.proxy
 
+import co.nilin.opex.chainscan.core.utils.LoggerDelegate
 import co.nilin.opex.chainscan.tron.data.BlockResponse
 import kotlinx.coroutines.reactor.awaitSingleOrNull
-import org.slf4j.LoggerFactory
+import org.slf4j.Logger
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
@@ -13,17 +14,17 @@ import reactor.core.publisher.Mono
 @Component
 class TronGridProxy(
     private val webClient: WebClient,
-    @Value("\${app.rest-endpoint}")
+    @Value("\${app.rest-api.endpoint}")
     private val url: String,
-    @Value("\${app.api-key}")
+    @Value("\${app.rest-api.api-key}")
     private val apiKey: String
 ) {
-    private val logger = LoggerFactory.getLogger(TronGridProxy::class.java)
+    private val logger: Logger by LoggerDelegate()
 
     data class GetBlockRequest(val num: Long)
 
     suspend fun getBlockByNumber(number: Long): BlockResponse? {
-        logger.info("fetching block data $number")
+        logger.info("Fetching block data $number")
         return webClient.post()
             .uri("$url/wallet/getblockbynum")
             .accept(MediaType.APPLICATION_JSON)
@@ -37,7 +38,7 @@ class TronGridProxy(
     }
 
     suspend fun getLatestBlock(): BlockResponse? {
-        logger.info("fetching latest block")
+        logger.info("Fetching latest block")
         return webClient.post()
             .uri("$url/wallet/getnowblock")
             .accept(MediaType.APPLICATION_JSON)

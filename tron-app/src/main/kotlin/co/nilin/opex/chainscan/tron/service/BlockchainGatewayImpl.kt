@@ -20,7 +20,6 @@ class BlockchainGatewayImpl(private val proxy: TronGridProxy) : BlockchainGatewa
     }
 
     override suspend fun getLatestBlock(): BigInteger {
-        return run { proxy.getLatestBlock() }?.blockHeader?.rawData?.number?.toBigInteger()
-            ?: throw IllegalStateException()
+        return proxy.getLatestBlock()?.blockHeader?.rawData?.number?.toBigInteger() ?: throw IllegalStateException()
     }
 }
