@@ -2,7 +2,7 @@ package co.nilin.opex.chainscan.ethereum.service
 
 import co.nilin.opex.chainscan.core.model.Transfer
 import co.nilin.opex.chainscan.core.model.Wallet
-import co.nilin.opex.chainscan.core.spi.Decoder
+import co.nilin.opex.chainscan.core.spi.DataDecoder
 import co.nilin.opex.chainscan.ethereum.utils.checksumAddress
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
@@ -14,8 +14,8 @@ const val ERC20_TRANSFER_METHOD_SIG = "0xa9059cbb000000000000000000000000"
 const val ETH_TRANSFER_METHOD_SIG = "0x"
 
 @Component
-class EvmDecoder(@Value("\${app.chain-name}") private val chainName: String) :
-    Decoder<List<EthBlock.TransactionObject>> {
+class EvmDataDecoder(@Value("\${app.chain-name}") private val chainName: String) :
+    DataDecoder<List<EthBlock.TransactionObject>> {
     private fun isAssetTransfer(input: String) = input == ETH_TRANSFER_METHOD_SIG
     private fun isTokenTransfer(input: String) = input.length == 138 && input.startsWith(ERC20_TRANSFER_METHOD_SIG)
 
@@ -48,7 +48,7 @@ class EvmDecoder(@Value("\${app.chain-name}") private val chainName: String) :
         )
     }
 
-    override fun invoke(input: List<EthBlock.TransactionObject>): List<Transfer> = input.mapNotNull {
+    override suspend fun decode(input: List<EthBlock.TransactionObject>): List<Transfer> = input.mapNotNull {
         when {
             isAssetTransfer(it.input) -> decodeAssetTransfer(it)
             isTokenTransfer(it.input) -> decodeTokenTransfer(it)

@@ -2,7 +2,7 @@ package co.nilin.opex.chainscan.tron.service
 
 import co.nilin.opex.chainscan.core.model.Transfer
 import co.nilin.opex.chainscan.core.model.Wallet
-import co.nilin.opex.chainscan.core.spi.Decoder
+import co.nilin.opex.chainscan.core.spi.DataDecoder
 import co.nilin.opex.chainscan.tron.data.BlockResponse
 import co.nilin.opex.chainscan.tron.data.Contract
 import co.nilin.opex.chainscan.tron.utils.asTronAddress
@@ -16,7 +16,7 @@ private const val TRIGGER_SMART_CONTRACT = "TriggerSmartContract"
 private const val TRANSFER_CONTRACT = "TransferContract"
 
 @Component
-class TronDecoder(@Value("\${app.chain-name}") private val chainName: String) : Decoder<BlockResponse> {
+class TronDataDecoder(@Value("\${app.chain-name}") private val chainName: String) : DataDecoder<BlockResponse> {
     private fun handleTriggerContract(blockNumber: BigInteger, hash: String, contract: Contract): Transfer? {
         val params = contract.parameter.value
         val data = params.data ?: return null
@@ -47,7 +47,7 @@ class TronDecoder(@Value("\${app.chain-name}") private val chainName: String) : 
         }
     }
 
-    override fun invoke(input: BlockResponse): List<Transfer> {
+    override suspend fun decode(input: BlockResponse): List<Transfer> {
         val blockNumber = input.blockHeader?.rawData?.number?.toBigInteger()
             ?: throw java.lang.IllegalArgumentException("Block number must not be null")
         return input.transactions.flatMap { res ->

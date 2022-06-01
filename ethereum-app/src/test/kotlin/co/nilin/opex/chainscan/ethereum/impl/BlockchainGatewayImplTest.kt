@@ -1,6 +1,6 @@
 package co.nilin.opex.chainscan.ethereum.impl
 
-import co.nilin.opex.chainscan.ethereum.service.FetchTransactionImpl
+import co.nilin.opex.chainscan.ethereum.service.BlockchainGatewayImpl
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
@@ -9,9 +9,9 @@ import org.web3j.protocol.Web3j
 import org.web3j.protocol.core.methods.response.EthBlockNumber
 import java.math.BigInteger
 
-private class FetchTransactionImplTest {
+private class BlockchainGatewayImplTest {
     private val web3j: Web3j = mockk()
-    private val fetchTransactionImpl: FetchTransactionImpl = FetchTransactionImpl(web3j)
+    private val fetchTransactionImpl: BlockchainGatewayImpl = BlockchainGatewayImpl(web3j)
 
     @Test
     fun givenBlockNumber_whenGetTransactions_thenSuccess(): Unit = runBlocking {

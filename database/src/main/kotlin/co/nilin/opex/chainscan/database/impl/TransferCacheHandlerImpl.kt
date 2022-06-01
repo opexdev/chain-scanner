@@ -25,6 +25,6 @@ class TransferCacheHandlerImpl(
     }
 
     override suspend fun clearCache(blockNumber: BigInteger) {
-        transferRepository.clearCache(blockNumber)
+        transferRepository.clearCache(blockNumber).awaitSingle()
     }
 }

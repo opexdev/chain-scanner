@@ -5,6 +5,7 @@ import org.springframework.data.r2dbc.repository.Query
 import org.springframework.data.repository.reactive.ReactiveCrudRepository
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 import java.math.BigInteger
 
 @Repository
@@ -16,5 +17,5 @@ interface TransferRepository : ReactiveCrudRepository<TransferModel, Long> {
     fun findAllNotTokenTransfers(): Flux<TransferModel>
 
     @Query("delete from transfers where block_number <= :blockNumber")
-    fun clearCache(blockNumber: BigInteger): Flux<TransferModel>
+    fun clearCache(blockNumber: BigInteger): Mono<Int>
 }

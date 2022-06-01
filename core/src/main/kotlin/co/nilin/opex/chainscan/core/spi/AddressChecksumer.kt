@@ -1,5 +1,5 @@
 package co.nilin.opex.chainscan.core.spi
 
-interface AddressAdapter {
+interface AddressChecksumer {
     fun makeValid(address: String): String
 }

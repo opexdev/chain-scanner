@@ -11,38 +11,37 @@ import java.math.BigInteger
 @Service
 class ChainSyncService<T>(
     @Value("\${app.chain-name}") private val chainName: String,
-    private val fetchTransaction: FetchTransaction<T>,
-    private val decoder: Decoder<T>,
-    private val getBlockNumber: GetBlockNumber,
+    private val blockchainGateway: BlockchainGateway<T>,
+    private val dataDecoder: DataDecoder<T>,
     private val watchListHandler: WatchListHandler,
     private val transferCacheHandler: TransferCacheHandler,
-    private val addressAdapter: AddressAdapter
+    private val addressChecksumer: AddressChecksumer
 ) {
     private val logger: Logger by LoggerDelegate()
 
     suspend fun getTransfers(blockNumber: BigInteger? = null): List<Transfer> {
         require(blockNumber?.abs() == blockNumber)
         val actualBlockNumber = actualBlockNumber(blockNumber)
-        val watchedTokens = watchListHandler.findAll().map { addressAdapter.makeValid(it.address) }
+        val watchedTokens = watchListHandler.findAll().map { addressChecksumer.makeValid(it.address) }
         logger.info("Syncing for: $chainName - Block: $actualBlockNumber")
         val cached = transferCacheHandler.getTransfers(watchedTokens, actualBlockNumber)
         return if (cached.isEmpty()) {
-            logger.info("Start fetching $chainName transfers: blockNumber=$blockNumber")
-            val response = fetchTransaction.getTransactions(actualBlockNumber)
-            logger.info("Finished fetching block info: blockNumber=$blockNumber")
-            return decoder.invoke(response).filter {
+            logger.info("Start fetching $chainName transfers on blockNumber: $blockNumber")
+            val response = blockchainGateway.getTransactions(actualBlockNumber)
+            logger.info("Finished fetching block info on blockNumber: $blockNumber")
+            return dataDecoder.decode(response).filter {
                 !it.isTokenTransfer || watchedTokens.contains(it.tokenAddress)
             }.also {
                 transferCacheHandler.saveTransfers(it)
             }
         } else {
-            logger.info("Loading $chainName transfers from cache: blockNumber=$blockNumber")
+            logger.info("Loading $chainName transfers from cache on blockNumber: $blockNumber")
             cached
         }
     }
 
     private suspend fun actualBlockNumber(blockNumber: BigInteger?): BigInteger {
-        val currentBlockNumber = getBlockNumber.invoke()
+        val currentBlockNumber = blockchainGateway.getLatestBlock()
         val adjustedBlockNumber = blockNumber ?: currentBlockNumber
         return adjustedBlockNumber.takeIf { it >= BigInteger.ZERO } ?: (currentBlockNumber + blockNumber!!)
     }

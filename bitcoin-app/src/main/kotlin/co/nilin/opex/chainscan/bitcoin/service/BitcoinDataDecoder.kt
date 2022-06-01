@@ -3,13 +3,13 @@ package co.nilin.opex.chainscan.bitcoin.service
 import co.nilin.opex.chainscan.bitcoin.data.BlockResponse
 import co.nilin.opex.chainscan.core.model.Transfer
 import co.nilin.opex.chainscan.core.model.Wallet
-import co.nilin.opex.chainscan.core.spi.Decoder
+import co.nilin.opex.chainscan.core.spi.DataDecoder
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 
 @Component
-class BitcoinDecoder(@Value("\${app.chain-name}") private val chainName: String) : Decoder<BlockResponse> {
-    override fun invoke(input: BlockResponse): List<Transfer> {
+class BitcoinDataDecoder(@Value("\${app.chain-name}") private val chainName: String) : DataDecoder<BlockResponse> {
+    override suspend fun decode(input: BlockResponse): List<Transfer> {
         return input.tx.flatMap { tx ->
             tx.vout.filter {
                 !it.scriptPubKey?.address.isNullOrBlank()

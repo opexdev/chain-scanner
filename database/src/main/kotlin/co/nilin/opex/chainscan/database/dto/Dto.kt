@@ -2,7 +2,7 @@ package co.nilin.opex.chainscan.database.dto
 
 import co.nilin.opex.chainscan.core.model.Transfer
 import co.nilin.opex.chainscan.core.model.Wallet
-import co.nilin.opex.chainscan.core.model.WatchList
+import co.nilin.opex.chainscan.core.model.WatchListItem
 import co.nilin.opex.chainscan.database.model.TransferModel
 import co.nilin.opex.chainscan.database.model.WatchListModel
 
@@ -29,6 +29,6 @@ fun Transfer.toModel() = TransferModel(
     id
 )
 
-fun WatchListModel.toPlainObject() = WatchList(address, id)
+fun WatchListModel.toPlainObject() = WatchListItem(address, id)
 
-fun WatchList.toModel() = WatchListModel(address, id)
+fun WatchListItem.toModel() = WatchListModel(address, id)

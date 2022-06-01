@@ -1,9 +1,9 @@
 package co.nilin.opex.chainscan.tron.service
 
-import co.nilin.opex.chainscan.core.spi.AddressAdapter
+import co.nilin.opex.chainscan.core.spi.AddressChecksumer
 import org.springframework.stereotype.Component
 
 @Component
-class AddressAdapterImpl : AddressAdapter {
+class AddressChecksumerImpl : AddressChecksumer {
     override fun makeValid(address: String) = address
 }
