@@ -1,7 +1,7 @@
 package co.nilin.opex.chainscan.scheduler.db.dto
 
 import co.nilin.opex.chainscan.scheduler.core.po.*
-import co.nilin.opex.chainscan.scheduler.db.dao.*
+import co.nilin.opex.chainscan.scheduler.db.model.*
 
 fun ChainModel.toPlainObject() = Chain(name)
 

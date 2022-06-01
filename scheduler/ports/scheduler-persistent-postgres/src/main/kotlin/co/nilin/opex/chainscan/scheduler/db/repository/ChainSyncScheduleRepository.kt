@@ -1,6 +1,6 @@
 package co.nilin.opex.chainscan.scheduler.db.repository
 
-import co.nilin.opex.chainscan.scheduler.db.dao.ChainSyncScheduleModel
+import co.nilin.opex.chainscan.scheduler.db.model.ChainSyncScheduleModel
 import kotlinx.coroutines.flow.Flow
 import org.springframework.data.r2dbc.repository.Query
 import org.springframework.data.repository.reactive.ReactiveCrudRepository

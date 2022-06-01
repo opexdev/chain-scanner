@@ -3,8 +3,8 @@ package co.nilin.opex.chainscan.database.dto
 import co.nilin.opex.chainscan.core.model.Transfer
 import co.nilin.opex.chainscan.core.model.Wallet
 import co.nilin.opex.chainscan.core.model.WatchListItem
-import co.nilin.opex.chainscan.database.dao.TransferModel
-import co.nilin.opex.chainscan.database.dao.WatchListItemModel
+import co.nilin.opex.chainscan.database.model.TransferModel
+import co.nilin.opex.chainscan.database.model.WatchListItemModel
 
 fun TransferModel.toPlainObject() = Transfer(
     txHash,

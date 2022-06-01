@@ -1,11 +1,11 @@
 package co.nilin.opex.chainscan.scheduler.db.service
 
+import co.nilin.opex.chainscan.scheduler.core.po.ChainSyncSchedule
 import co.nilin.opex.chainscan.scheduler.core.spi.ChainSyncSchedulerHandler
-import co.nilin.opex.chainscan.scheduler.db.dao.ChainSyncScheduleModel
 import co.nilin.opex.chainscan.scheduler.db.dto.toModel
 import co.nilin.opex.chainscan.scheduler.db.dto.toPlainObject
+import co.nilin.opex.chainscan.scheduler.db.model.ChainSyncScheduleModel
 import co.nilin.opex.chainscan.scheduler.db.repository.ChainSyncScheduleRepository
-import co.nilin.opex.chainscan.scheduler.core.po.ChainSyncSchedule
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.reactive.awaitFirst

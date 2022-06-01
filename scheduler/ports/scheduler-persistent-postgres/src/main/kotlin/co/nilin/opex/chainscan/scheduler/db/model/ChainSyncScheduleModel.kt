@@ -1,4 +1,4 @@
-package co.nilin.opex.chainscan.scheduler.db.dao
+package co.nilin.opex.chainscan.scheduler.db.model
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Table

@@ -1,6 +1,6 @@
 package co.nilin.opex.chainscan.scheduler.db.repository
 
-import co.nilin.opex.chainscan.scheduler.db.dao.ChainSyncRetryModel
+import co.nilin.opex.chainscan.scheduler.db.model.ChainSyncRetryModel
 import org.springframework.data.repository.reactive.ReactiveCrudRepository
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Flux
