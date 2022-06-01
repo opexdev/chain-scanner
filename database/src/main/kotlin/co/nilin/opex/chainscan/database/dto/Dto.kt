@@ -4,7 +4,7 @@ import co.nilin.opex.chainscan.core.model.Transfer
 import co.nilin.opex.chainscan.core.model.Wallet
 import co.nilin.opex.chainscan.core.model.WatchListItem
 import co.nilin.opex.chainscan.database.model.TransferModel
-import co.nilin.opex.chainscan.database.model.WatchListModel
+import co.nilin.opex.chainscan.database.model.WatchListItemModel
 
 fun TransferModel.toPlainObject() = Transfer(
     txHash,
@@ -29,6 +29,6 @@ fun Transfer.toModel() = TransferModel(
     id
 )
 
-fun WatchListModel.toPlainObject() = WatchListItem(address, id)
+fun WatchListItemModel.toPlainObject() = WatchListItem(address, id)
 
-fun WatchListItem.toModel() = WatchListModel(address, id)
+fun WatchListItem.toModel() = WatchListItemModel(address, id)
