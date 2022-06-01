@@ -15,7 +15,7 @@
         <module>tron-app</module>
         <module>core</module>
         <module>database</module>
-        <module>scheduler-app</module>
+        <module>scheduler</module>
     </modules>
 
     <properties>

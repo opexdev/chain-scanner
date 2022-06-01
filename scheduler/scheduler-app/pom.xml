@@ -3,13 +3,14 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>chain-scanner</artifactId>
-        <groupId>co.nilin.opex.chainscan</groupId>
+        <artifactId>scheduler</artifactId>
+        <groupId>co.nilin.opex.chainscan.scheduler</groupId>
         <version>1.0.0-beta.4</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>co.nilin.opex.chainscan.scheduler</groupId>
+    <groupId>co.nilin.opex.chainscan.scheduler.app</groupId>
     <artifactId>scheduler-app</artifactId>
 
     <dependencies>

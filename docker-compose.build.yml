@@ -2,7 +2,7 @@ version: '3.8'
 services:
   scanner-scheduler:
     image: ghcr.io/opexdev/scanner-scheduler:$TAG
-    build: scheduler-app
+    build: scheduler/scheduler-app
   ethereum-scanner:
     image: ghcr.io/opexdev/ethereum-scanner:$TAG
     build: ethereum-app
