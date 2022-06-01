@@ -1,6 +1,6 @@
 package co.nilin.opex.chainscan.database.repository
 
-import co.nilin.opex.chainscan.database.model.TransferModel
+import co.nilin.opex.chainscan.database.dao.TransferModel
 import org.springframework.data.r2dbc.repository.Query
 import org.springframework.data.repository.reactive.ReactiveCrudRepository
 import org.springframework.stereotype.Repository

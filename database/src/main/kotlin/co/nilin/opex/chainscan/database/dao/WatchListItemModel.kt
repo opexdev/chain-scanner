@@ -1,4 +1,4 @@
-package co.nilin.opex.chainscan.database.model
+package co.nilin.opex.chainscan.database.dao
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Table
