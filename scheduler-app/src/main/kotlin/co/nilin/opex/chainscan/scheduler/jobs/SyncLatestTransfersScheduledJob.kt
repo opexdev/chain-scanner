@@ -41,10 +41,9 @@ class SyncLatestTransfersScheduledJob(
         logger.trace("Fetch transfers on block range: $startBlockNumber - $endBlockNumber")
         runCatching {
             coroutineScope {
-                blockRange.chunked(chain.maxBlockRange).forEach { br ->
-                    br.forEach { bn ->
-                        launch { fetch(chain, bn.toBigInteger()) }
-                    }
+                val br = blockRange.chunked(chain.maxBlockRange).first()
+                br.forEach { bn ->
+                    launch { fetch(chain, bn.toBigInteger()) }
                 }
             }
             sch.nextSchedule(sch.delay)
