@@ -1,9 +1,11 @@
 package co.nilin.opex.chainscan.scheduler.service
 
 import co.nilin.opex.chainscan.scheduler.api.*
+import co.nilin.opex.chainscan.scheduler.coroutines.Dispatchers
 import co.nilin.opex.chainscan.scheduler.po.TransferResult
 import co.nilin.opex.chainscan.scheduler.sample.VALID
 import io.mockk.*
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
 import org.springframework.stereotype.Service
@@ -19,14 +21,16 @@ class ScheduleServiceTest {
     private val chainScannerHandler: ChainScannerHandler = mockk()
     private val webhookCaller: WebhookCaller = mockk()
     private val onSyncWebhookUrl: String = "http://bc-gateway"
+    private val mainSyncJob: MainSyncJob = mockk()
+    private val retrySyncJob: RetrySyncJob = mockk()
+    private val mainSyncScope: CoroutineScope = CoroutineScope(Dispatchers.SCHEDULER)
+    private val retrySyncScope: CoroutineScope = CoroutineScope(Dispatchers.SCHEDULER)
     private val scheduleService: ScheduleService = ScheduleService(
-        scannerProxy,
-        chainSyncRecordHandler,
-        chainSyncSchedulerHandler,
-        chainSyncRetryHandler,
-        webhookCaller,
-        chainScannerHandler,
-        onSyncWebhookUrl
+        mainSyncJob,
+        retrySyncJob,
+        mainSyncScope,
+        retrySyncScope,
+        chainSyncSchedulerHandler
     )
 
     @Test
