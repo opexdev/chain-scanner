@@ -10,8 +10,10 @@ import org.slf4j.Logger
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
+import org.springframework.web.reactive.function.client.WebClientResponseException
 import java.math.BigInteger
 import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
 
 @Service
 class ScheduleService(
@@ -45,39 +47,74 @@ class ScheduleService(
                                         ?: head
                                 val endBlockNumber = head.max(startBlockNumber)
                                 val blockRange = startBlockNumber.toLong()..endBlockNumber.toLong()
-                                supervisorScope {
-                                    blockRange.chunked(chain.maxBlockRange).forEach { br ->
-                                        launch {
-                                            br.forEach { bn ->
-                                                launch {
-                                                    runCatching {
-                                                        val response =
-                                                            scannerProxy.getTransfers(chain.url, bn.toBigInteger())
-                                                        webhookCaller.callWebhook(onSyncWebhookUrl, response.transfers)
-                                                        val record =
-                                                            chainSyncRecordHandler.lastSyncRecord(sch.chainName)
-                                                        chainSyncRecordHandler.saveSyncRecord(
-                                                            record?.copy(
-                                                                syncTime = LocalDateTime.now(),
-                                                                blockNumber = response.blockNumber
+                                runCatching {
+                                    coroutineScope {
+                                        blockRange.chunked(chain.maxBlockRange).forEach { br ->
+                                            launch {
+                                                br.forEach { bn ->
+                                                    launch {
+                                                        runCatching {
+                                                            val response =
+                                                                scannerProxy.getTransfers(chain.url, bn.toBigInteger())
+                                                            webhookCaller.callWebhook(
+                                                                onSyncWebhookUrl,
+                                                                response.transfers
                                                             )
-                                                                ?: ChainSyncRecord(
-                                                                    sch.chainName,
-                                                                    LocalDateTime.now(),
-                                                                    response.blockNumber
+                                                            val record =
+                                                                chainSyncRecordHandler.lastSyncRecord(sch.chainName)
+                                                            chainSyncRecordHandler.saveSyncRecord(
+                                                                record?.copy(
+                                                                    syncTime = LocalDateTime.now(),
+                                                                    blockNumber = response.blockNumber
                                                                 )
-                                                        )
-                                                    }.onFailure {
-                                                        chainSyncRetryHandler.save(
-                                                            ChainSyncRetry(
-                                                                sch.chainName,
-                                                                bn.toBigInteger()
+                                                                    ?: ChainSyncRecord(
+                                                                        sch.chainName,
+                                                                        LocalDateTime.now(),
+                                                                        response.blockNumber
+                                                                    )
                                                             )
-                                                        )
+                                                        }.onFailure {
+                                                            chainSyncRetryHandler.save(
+                                                                ChainSyncRetry(
+                                                                    sch.chainName,
+                                                                    bn.toBigInteger()
+                                                                )
+                                                            )
+                                                        }
                                                     }
                                                 }
                                             }
                                         }
+                                    }
+                                    chainSyncSchedulerHandler.save(
+                                        sch.copy(
+                                            retryTime = LocalDateTime.now().plus(
+                                                sch.errorDelay,
+                                                ChronoUnit.SECONDS
+                                            )
+                                        )
+                                    )
+                                }.onFailure { e ->
+                                    when (e) {
+                                        is WebClientResponseException -> e.takeIf { it.rawStatusCode == 429 }
+                                            ?.apply {
+                                                chainSyncSchedulerHandler.save(
+                                                    sch.copy(
+                                                        retryTime = LocalDateTime.now().plus(
+                                                            chain.rateLimitDelay.toLong(),
+                                                            ChronoUnit.SECONDS
+                                                        )
+                                                    )
+                                                )
+                                            }
+                                        is Exception -> chainSyncSchedulerHandler.save(
+                                            sch.copy(
+                                                retryTime = LocalDateTime.now().plus(
+                                                    sch.errorDelay,
+                                                    ChronoUnit.SECONDS
+                                                )
+                                            )
+                                        )
                                     }
                                 }
                             }

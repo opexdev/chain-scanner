@@ -1,6 +1,7 @@
 package co.nilin.opex.chainscan.scheduler.impl
 
 import co.nilin.opex.chainscan.scheduler.api.ChainSyncSchedulerHandler
+import co.nilin.opex.chainscan.scheduler.dto.toModel
 import co.nilin.opex.chainscan.scheduler.dto.toPlainObject
 import co.nilin.opex.chainscan.scheduler.model.ChainSyncScheduleModel
 import co.nilin.opex.chainscan.scheduler.po.ChainSyncSchedule
@@ -11,7 +12,6 @@ import kotlinx.coroutines.reactive.awaitFirst
 import kotlinx.coroutines.reactive.awaitFirstOrNull
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
-import java.time.temporal.ChronoUnit
 
 @Component
 class ChainSyncSchedulerHandlerImpl(private val chainSyncScheduleRepository: ChainSyncScheduleRepository) :
@@ -20,14 +20,8 @@ class ChainSyncSchedulerHandlerImpl(private val chainSyncScheduleRepository: Cha
         return chainSyncScheduleRepository.findActiveSchedule(time).map { it.toPlainObject() }.toList()
     }
 
-    override suspend fun prepareScheduleForNextTry(syncSchedule: ChainSyncSchedule, success: Boolean) {
-        val chain = syncSchedule.chainName
-        val time = LocalDateTime.now().plus(
-            if (success) syncSchedule.delay else syncSchedule.errorDelay,
-            ChronoUnit.SECONDS
-        )
-        val dao = ChainSyncScheduleModel(chain, time, syncSchedule.delay, syncSchedule.errorDelay)
-        chainSyncScheduleRepository.save(dao).awaitFirst()
+    override suspend fun save(syncSchedule: ChainSyncSchedule) {
+        chainSyncScheduleRepository.save(syncSchedule.toModel()).awaitFirst()
     }
 
     override suspend fun scheduleChain(chain: String, delaySeconds: Long, errorDelaySeconds: Long) {

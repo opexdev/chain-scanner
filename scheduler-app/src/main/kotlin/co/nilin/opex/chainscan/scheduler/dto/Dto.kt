@@ -12,6 +12,7 @@ fun ChainScannerModel.toPlainObject() = ChainScanner(
     url,
     maxBlockRange,
     confirmations,
+    rateLimitDelay,
     id
 )
 
@@ -20,6 +21,7 @@ fun ChainScanner.toModel() = ChainScannerModel(
     url,
     maxBlockRange,
     confirmations,
+    rateLimitDelay,
     id
 )
 
@@ -62,6 +64,7 @@ fun ChainSyncScheduleModel.toPlainObject() = ChainSyncSchedule(
     retryTime,
     delay,
     errorDelay,
+    timeout,
     enabled,
     id
 )
@@ -71,6 +74,7 @@ fun ChainSyncSchedule.toModel() = ChainSyncScheduleModel(
     retryTime,
     delay,
     errorDelay,
+    timeout,
     enabled,
     id
 )
