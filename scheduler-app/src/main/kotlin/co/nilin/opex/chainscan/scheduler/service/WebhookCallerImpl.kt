@@ -7,6 +7,7 @@ import kotlinx.coroutines.reactive.awaitFirst
 import org.slf4j.Logger
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.WebClientRequestException
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import org.springframework.web.reactive.function.client.bodyToMono
 import java.net.URI
@@ -26,9 +27,9 @@ class WebhookCallerImpl(private val webClient: WebClient) : WebhookCaller {
         }.onSuccess {
             logger.trace("Successfully sent ${data.size} transfers to $url")
         }.onFailure { e ->
-            logger.trace("Error occurred for url: $url")
-            (e as? WebClientResponseException)?.let {
-                logger.trace("Failed to send ${data.size} transfers to `$url`: ${it.statusCode.name}(${it.statusCode.value()})")
+            when (e) {
+                is WebClientResponseException -> logger.trace("Failed to send ${data.size} transfers to `$url`: ${e.statusCode.name}(${e.statusCode.value()})")
+                is WebClientRequestException -> logger.trace("Failed to call webhook url: $url error: ${e.cause?.message ?: e.message}")
             }
         }
     }
