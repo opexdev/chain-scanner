@@ -1,4 +1,4 @@
-package co.nilin.opex.chainscan.ethereum.impl
+package co.nilin.opex.chainscan.ethereum.service
 
 import co.nilin.opex.chainscan.core.exceptions.RateLimitException
 import co.nilin.opex.chainscan.core.spi.FetchTransaction
@@ -13,7 +13,7 @@ import reactor.kotlin.core.publisher.toMono
 import java.math.BigInteger
 
 @Service
-class ChainService(private val web3j: Web3j) : FetchTransaction<List<EthBlock.TransactionObject>> {
+class FetchTransactionImpl(private val web3j: Web3j) : FetchTransaction<List<EthBlock.TransactionObject>> {
     override suspend fun getTransactions(blockNumber: BigInteger): List<EthBlock.TransactionObject> = coroutineScope {
         runCatching {
             val bn = DefaultBlockParameterNumber(blockNumber)

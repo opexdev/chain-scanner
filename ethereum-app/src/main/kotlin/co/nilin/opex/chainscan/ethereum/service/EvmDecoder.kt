@@ -1,4 +1,4 @@
-package co.nilin.opex.chainscan.ethereum.impl
+package co.nilin.opex.chainscan.ethereum.service
 
 import co.nilin.opex.chainscan.core.model.Transfer
 import co.nilin.opex.chainscan.core.model.Wallet
