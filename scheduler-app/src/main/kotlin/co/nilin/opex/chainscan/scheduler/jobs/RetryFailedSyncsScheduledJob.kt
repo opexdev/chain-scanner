@@ -1,6 +1,7 @@
 package co.nilin.opex.chainscan.scheduler.jobs
 
 import co.nilin.opex.chainscan.scheduler.api.*
+import co.nilin.opex.chainscan.scheduler.po.ChainSyncRecord
 import co.nilin.opex.chainscan.scheduler.po.ChainSyncSchedule
 import co.nilin.opex.chainscan.scheduler.utils.LoggerDelegate
 import kotlinx.coroutines.launch
@@ -8,6 +9,7 @@ import kotlinx.coroutines.supervisorScope
 import org.slf4j.Logger
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
+import java.time.LocalDateTime
 
 @Service
 class RetryFailedSyncsScheduledJob(
@@ -34,7 +36,18 @@ class RetryFailedSyncsScheduledJob(
                         chainSyncRetryHandler.save(retry.copy(retries = retries, giveUp = retries >= 5))
                     }.mapCatching { response ->
                         webhookCaller.callWebhook("$onSyncWebhookUrl/${chain.chainName}", response)
-                        chainSyncRecordHandler.lastSyncRecord(sch.chainName)
+                    }.onSuccess {
+                        val lastSyncRecord = chainSyncRecordHandler.lastSyncRecord(sch.chainName) ?: ChainSyncRecord(
+                            sch.chainName,
+                            LocalDateTime.now(),
+                            retry.blockNumber
+                        )
+                        chainSyncRecordHandler.saveSyncRecord(
+                            lastSyncRecord.copy(
+                                syncTime = LocalDateTime.now(),
+                                blockNumber = retry.blockNumber
+                            )
+                        )
                         val retries = retry.retries + 1
                         chainSyncRetryHandler.save(retry.copy(retries = retries, synced = true))
                     }

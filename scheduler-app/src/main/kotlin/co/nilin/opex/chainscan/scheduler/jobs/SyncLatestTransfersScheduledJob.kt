@@ -70,6 +70,7 @@ class SyncLatestTransfersScheduledJob(
             } ?: chainSyncRetryHandler.save(ChainSyncRetry(chain.chainName, blockNumber, error = e.message))
         }.mapCatching { response ->
             webhookCaller.callWebhook("$onSyncWebhookUrl/${chain.chainName}", response)
+        }.onSuccess {
             val record = chainSyncRecordHandler.lastSyncRecord(chain.chainName)
             chainSyncRecordHandler.saveSyncRecord(
                 record?.copy(syncTime = LocalDateTime.now(), blockNumber = blockNumber)
