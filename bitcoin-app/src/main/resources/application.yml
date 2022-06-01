@@ -12,6 +12,8 @@ logging:
     co.nilin: DEBUG
     reactor.netty.http.client: DEBUG
 app:
-  chain-name: bitcoin
-  rest-endpoint: ${REST_ENDPOINT}
-  api-key: ${API_KEY}
+  chain:
+    name: bitcoin
+  rest-api:
+    endpoint: ${REST_ENDPOINT}
+    api-key: ${API_KEY}
