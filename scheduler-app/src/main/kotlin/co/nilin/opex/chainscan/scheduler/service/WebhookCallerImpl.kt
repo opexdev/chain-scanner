@@ -26,9 +26,10 @@ class WebhookCallerImpl(private val webClient: WebClient) : WebhookCaller {
         }.onSuccess {
             logger.trace("Successfully sent ${data.size} transfers to $url")
         }.onFailure { e ->
+            logger.trace("Error occurred for url: $url")
             (e as? WebClientResponseException)?.let {
                 logger.trace("Failed to send ${data.size} transfers to `$url`: ${it.statusCode.name}(${it.statusCode.value()})")
             }
-        }.getOrThrow()
+        }
     }
 }

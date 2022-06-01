@@ -10,6 +10,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import org.slf4j.Logger
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import java.math.BigInteger
@@ -49,7 +50,7 @@ class SyncLatestTransfersScheduledJob(
             sch.nextSchedule(sch.delay)
         }.onFailure { e ->
             when (e) {
-                is WebClientResponseException -> e.takeIf { it.rawStatusCode == 429 }
+                is WebClientResponseException -> e.takeIf { it.statusCode == HttpStatus.TOO_MANY_REQUESTS }
                     ?.run { sch.nextSchedule(chain.rateLimitDelay.toLong()) }
                 is Exception -> sch.nextSchedule(sch.errorDelay)
             }

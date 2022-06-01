@@ -15,7 +15,7 @@ const val ETH_TRANSFER_METHOD_SIG = "0x"
 
 @Component
 class EvmDecoder(@Value("\${app.chain-name}") private val chainName: String) :
-    Decoder<EthBlock.TransactionObject> {
+    Decoder<List<EthBlock.TransactionObject>> {
     private fun isAssetTransfer(input: String) = input == ETH_TRANSFER_METHOD_SIG
     private fun isTokenTransfer(input: String) = input.length == 138 && input.startsWith(ERC20_TRANSFER_METHOD_SIG)
 
@@ -48,9 +48,11 @@ class EvmDecoder(@Value("\${app.chain-name}") private val chainName: String) :
         )
     }
 
-    override fun invoke(input: EthBlock.TransactionObject): List<Transfer> = when {
-        isAssetTransfer(input.input) -> listOf(decodeAssetTransfer(input))
-        isTokenTransfer(input.input) -> listOf(decodeTokenTransfer(input))
-        else -> emptyList()
+    override fun invoke(input: List<EthBlock.TransactionObject>): List<Transfer> = input.mapNotNull {
+        when {
+            isAssetTransfer(it.input) -> decodeAssetTransfer(it)
+            isTokenTransfer(it.input) -> decodeTokenTransfer(it)
+            else -> null
+        }
     }
 }
