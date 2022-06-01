@@ -31,7 +31,7 @@ object VALID {
         retries = 0
     )
 
-    private val TRANSFER = Transfer(
+    val TRANSFER = Transfer(
         "TX_HASH",
         BigInteger.ZERO,
         Wallet("ADDRESS"),
@@ -39,6 +39,4 @@ object VALID {
         BigDecimal.valueOf(0.0001),
         BITCOIN
     )
-
-    val TRANSFER_RESULT = TransferResult(BigInteger.ZERO, listOf(TRANSFER))
 }

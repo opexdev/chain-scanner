@@ -65,11 +65,11 @@ class SyncLatestTransfersScheduledJob(
     private suspend fun fetch(chain: ChainScanner, blockNumber: BigInteger) {
         runCatching {
             val response = scannerProxy.getTransfers(chain.url, blockNumber)
-            webhookCaller.callWebhook(onSyncWebhookUrl, response.transfers)
+            webhookCaller.callWebhook(onSyncWebhookUrl, response)
             val record = chainSyncRecordHandler.lastSyncRecord(chain.chainName)
             chainSyncRecordHandler.saveSyncRecord(
-                record?.copy(syncTime = LocalDateTime.now(), blockNumber = response.blockNumber)
-                    ?: ChainSyncRecord(chain.chainName, LocalDateTime.now(), response.blockNumber)
+                record?.copy(syncTime = LocalDateTime.now(), blockNumber = blockNumber)
+                    ?: ChainSyncRecord(chain.chainName, LocalDateTime.now(), blockNumber)
             )
         }.onFailure {
             chainSyncRetryHandler.save(ChainSyncRetry(chain.chainName, blockNumber, error = it.message))

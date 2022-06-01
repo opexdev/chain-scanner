@@ -4,14 +4,12 @@ import co.nilin.opex.chainscan.scheduler.api.*
 import co.nilin.opex.chainscan.scheduler.coroutines.Dispatchers
 import co.nilin.opex.chainscan.scheduler.jobs.RetryFailedSyncsScheduledJob
 import co.nilin.opex.chainscan.scheduler.jobs.SyncLatestTransfersScheduledJob
-import co.nilin.opex.chainscan.scheduler.po.TransferResult
 import co.nilin.opex.chainscan.scheduler.sample.VALID
 import io.mockk.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
 import org.springframework.stereotype.Service
-import java.math.BigInteger
 import java.time.LocalDateTime
 
 @Service
@@ -41,9 +39,9 @@ class ScheduleServiceTest {
         every { LocalDateTime.now() } returns VALID.CURRENT_LOCAL_DATE_TIME
         coEvery {
             scannerProxy.getTransfers(VALID.SCHEDULE.chainName)
-        } returns TransferResult(BigInteger.ZERO, emptyList())
+        } returns emptyList()
         coEvery {
-            webhookCaller.callWebhook(onSyncWebhookUrl, VALID.TRANSFER_RESULT.transfers)
+            webhookCaller.callWebhook(onSyncWebhookUrl, listOf(VALID.TRANSFER))
         } returns Unit
         coEvery {
             chainSyncRecordHandler.lastSyncRecord(VALID.SCHEDULE.chainName)
@@ -62,12 +60,12 @@ class ScheduleServiceTest {
         } returns Unit
         coEvery {
             scannerProxy.getTransfers(VALID.CHAIN_SCANNER.url)
-        } returns VALID.TRANSFER_RESULT
+        } returns listOf(VALID.TRANSFER)
 
         scheduleService.syncLatestTransfers()
 
         coVerify(exactly = 1) {
-            webhookCaller.callWebhook(onSyncWebhookUrl, VALID.TRANSFER_RESULT.transfers)
+            webhookCaller.callWebhook(onSyncWebhookUrl, listOf(VALID.TRANSFER))
         }
     }
 }
