@@ -7,16 +7,15 @@ import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withTimeoutOrNull
 import org.springframework.beans.factory.annotation.Value
 
-class RetrySyncJob(
+class RetryJobExecutor(
     private val scannerProxy: ScannerProxy,
     private val chainScannerHandler: ChainScannerHandler,
     private val chainSyncRecordHandler: ChainSyncRecordHandler,
-    private val chainSyncSchedulerHandler: ChainSyncSchedulerHandler,
     private val chainSyncRetryHandler: ChainSyncRetryHandler,
     private val webhookCaller: WebhookCaller,
     @Value("\${app.on-sync-webhook-url}") private val onSyncWebhookUrl: String
-) : SyncJob {
-    override suspend fun startJob(sch: ChainSyncSchedule) {
+) : JobExecutor {
+    override suspend fun execute(sch: ChainSyncSchedule) {
         withTimeoutOrNull(sch.timeout) {
             val chain = chainScannerHandler.getScannersByName(sch.chainName).first()
             val chainSyncRetries = chainSyncRetryHandler.findAllActive(sch.chainName)

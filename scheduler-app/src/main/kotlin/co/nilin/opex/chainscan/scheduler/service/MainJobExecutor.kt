@@ -13,7 +13,7 @@ import java.math.BigInteger
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 
-class MainSyncJob(
+class MainJobExecutor(
     private val scannerProxy: ScannerProxy,
     private val chainScannerHandler: ChainScannerHandler,
     private val chainSyncRecordHandler: ChainSyncRecordHandler,
@@ -21,8 +21,8 @@ class MainSyncJob(
     private val chainSyncRetryHandler: ChainSyncRetryHandler,
     private val webhookCaller: WebhookCaller,
     @Value("\${app.on-sync-webhook-url}") private val onSyncWebhookUrl: String,
-) : SyncJob {
-    override suspend fun startJob(sch: ChainSyncSchedule) {
+) : JobExecutor {
+    override suspend fun execute(sch: ChainSyncSchedule) {
         val chain = chainScannerHandler.getScannersByName(sch.chainName).first()
         val currentBlockNumber = scannerProxy.getBlockNumber(chain.url)
         val head = currentBlockNumber - chain.confirmations.toBigInteger()

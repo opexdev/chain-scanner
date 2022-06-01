@@ -21,8 +21,8 @@ class ScheduleServiceTest {
     private val chainScannerHandler: ChainScannerHandler = mockk()
     private val webhookCaller: WebhookCaller = mockk()
     private val onSyncWebhookUrl: String = "http://bc-gateway"
-    private val mainSyncJob: MainSyncJob = mockk()
-    private val retrySyncJob: RetrySyncJob = mockk()
+    private val mainSyncJob: MainJobExecutor = mockk()
+    private val retrySyncJob: RetryJobExecutor = mockk()
     private val mainSyncScope: CoroutineScope = CoroutineScope(Dispatchers.SCHEDULER)
     private val retrySyncScope: CoroutineScope = CoroutineScope(Dispatchers.SCHEDULER)
     private val scheduleService: ScheduleService = ScheduleService(

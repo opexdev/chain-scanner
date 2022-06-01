@@ -10,8 +10,8 @@ import java.time.LocalDateTime
 
 @Service
 class ScheduleService(
-    private val mainSyncJob: MainSyncJob,
-    private val retrySyncJob: RetrySyncJob,
+    private val mainSyncJob: MainJobExecutor,
+    private val retrySyncJob: RetryJobExecutor,
     private val mainSyncScope: CoroutineScope,
     private val retrySyncScope: CoroutineScope,
     private val chainSyncSchedulerHandler: ChainSyncSchedulerHandler
@@ -26,7 +26,7 @@ class ScheduleService(
                 supervisorScope {
                     schedules.forEach { sch ->
                         launch {
-                            withTimeoutOrNull(sch.timeout) { mainSyncJob.startJob(sch) }
+                            withTimeoutOrNull(sch.timeout) { mainSyncJob.execute(sch) }
                         }
                     }
                 }
@@ -42,7 +42,7 @@ class ScheduleService(
                     val schedules = chainSyncSchedulerHandler.fetchActiveSchedules(LocalDateTime.now())
                     schedules.forEach { sch ->
                         launch {
-                            withTimeoutOrNull(sch.timeout) { retrySyncJob.startJob(sch) }
+                            withTimeoutOrNull(sch.timeout) { retrySyncJob.execute(sch) }
                         }
                     }
                 }
