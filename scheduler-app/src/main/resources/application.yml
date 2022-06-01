@@ -9,7 +9,7 @@ spring:
     initialization-mode: always
 logging:
   level:
-    co.nilin: DEBUG
-    reactor.netty.http.client: DEBUG
+    co.nilin: TRACE
+    reactor.netty.http.client: OFF
 app:
   on-sync-webhook-url: http://bc-gateway

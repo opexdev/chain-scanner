@@ -5,8 +5,10 @@ import co.nilin.opex.chainscan.scheduler.po.ChainScanner
 import co.nilin.opex.chainscan.scheduler.po.ChainSyncRecord
 import co.nilin.opex.chainscan.scheduler.po.ChainSyncRetry
 import co.nilin.opex.chainscan.scheduler.po.ChainSyncSchedule
+import co.nilin.opex.chainscan.scheduler.utils.LoggerDelegate
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import org.slf4j.Logger
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClientResponseException
@@ -24,6 +26,8 @@ class SyncLatestTransfersScheduledJob(
     private val webhookCaller: WebhookCaller,
     @Value("\${app.on-sync-webhook-url}") private val onSyncWebhookUrl: String,
 ) : ScheduledJob {
+    private val logger: Logger by LoggerDelegate()
+
     override suspend fun execute(sch: ChainSyncSchedule) {
         val chain = chainScannerHandler.getScannersByName(sch.chainName).first()
         val currentBlockNumber = scannerProxy.getBlockNumber(chain.url)
@@ -33,6 +37,7 @@ class SyncLatestTransfersScheduledJob(
                 ?: head
         val endBlockNumber = head.max(startBlockNumber)
         val blockRange = startBlockNumber.toLong()..endBlockNumber.toLong()
+        logger.trace("Fetch transfers on block range: $startBlockNumber - $endBlockNumber")
         runCatching {
             coroutineScope {
                 blockRange.chunked(chain.maxBlockRange).forEach { br ->
@@ -66,7 +71,7 @@ class SyncLatestTransfersScheduledJob(
                     ?: ChainSyncRecord(chain.chainName, LocalDateTime.now(), response.blockNumber)
             )
         }.onFailure {
-            chainSyncRetryHandler.save(ChainSyncRetry(chain.chainName, blockNumber))
+            chainSyncRetryHandler.save(ChainSyncRetry(chain.chainName, blockNumber, error = it.message))
         }
     }
 }
