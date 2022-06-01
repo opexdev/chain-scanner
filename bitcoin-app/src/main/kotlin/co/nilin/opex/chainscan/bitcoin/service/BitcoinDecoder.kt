@@ -17,7 +17,6 @@ class BitcoinDecoder(@Value("\${app.chain-name}") private val chainName: String)
                 Transfer(
                     "${tx.hash}_${v.scriptPubKey?.hex}",
                     input.height.toBigInteger(),
-                    Wallet(""),
                     Wallet(v.scriptPubKey!!.address!!),
                     false,
                     v.value,

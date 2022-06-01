@@ -8,8 +8,7 @@ import java.math.BigInteger
 data class Transfer(
     val txHash: String,
     val blockNumber: BigInteger,
-    val from: Wallet,
-    val to: Wallet,
+    val receiver: Wallet,
     val isTokenTransfer: Boolean,
     val amount: BigDecimal,
     val chain: String,

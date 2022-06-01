@@ -9,10 +9,8 @@ import java.math.BigInteger
 data class TransferModel(
     val txHash: String,
     val blockNumber: BigInteger,
-    val fromAddress: String,
-    val fromMemo: String?,
-    val toAddress: String,
-    val toMemo: String?,
+    val receiverAddress: String,
+    val receiverMemo: String?,
     val isTokenTransfer: Boolean,
     val amount: BigDecimal,
     val chain: String,

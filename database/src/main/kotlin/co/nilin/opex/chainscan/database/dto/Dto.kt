@@ -9,8 +9,7 @@ import co.nilin.opex.chainscan.database.model.WatchListModel
 fun TransferModel.toPlainObject() = Transfer(
     txHash,
     blockNumber,
-    Wallet(fromAddress, fromMemo),
-    Wallet(toAddress, toMemo),
+    Wallet(receiverAddress, receiverMemo),
     isTokenTransfer,
     amount,
     chain,
@@ -21,10 +20,8 @@ fun TransferModel.toPlainObject() = Transfer(
 fun Transfer.toModel() = TransferModel(
     txHash,
     blockNumber,
-    from.address,
-    from.memo,
-    to.address,
-    to.memo,
+    receiver.address,
+    receiver.memo,
     isTokenTransfer,
     amount,
     chain,

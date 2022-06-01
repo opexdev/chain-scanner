@@ -35,7 +35,6 @@ object VALID {
         "TX_HASH",
         BigInteger.ZERO,
         Wallet("ADDRESS"),
-        Wallet("ADDRESS"),
         false,
         BigDecimal.valueOf(0.0001),
         BITCOIN

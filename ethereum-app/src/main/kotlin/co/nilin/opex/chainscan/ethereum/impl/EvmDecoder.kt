@@ -25,7 +25,6 @@ class EvmDecoder(@Value("\${app.chain-name}") private val chainName: String) :
         return Transfer(
             tx.hash,
             tx.blockNumber,
-            Wallet(tx.from.checksumAddress()),
             Wallet(tx.to.checksumAddress()),
             false,
             amount,
@@ -41,7 +40,6 @@ class EvmDecoder(@Value("\${app.chain-name}") private val chainName: String) :
         return Transfer(
             tx.hash,
             tx.blockNumber,
-            Wallet(tx.from.checksumAddress()),
             receiver,
             true,
             amount,

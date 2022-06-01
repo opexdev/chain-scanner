@@ -26,7 +26,6 @@ class TronDecoder(@Value("\${app.chain-name}") private val chainName: String) : 
         return Transfer(
             hash,
             blockNumber,
-            Wallet(params.from?.asTronAddress()!!),
             Wallet(toAddress),
             true,
             amount,
@@ -40,7 +39,6 @@ class TronDecoder(@Value("\${app.chain-name}") private val chainName: String) : 
             Transfer(
                 hash,
                 blockNumber,
-                Wallet(from?.asTronAddress()!!),
                 Wallet(to?.asTronAddress()!!),
                 false,
                 amount?.toBigDecimal()!!,
