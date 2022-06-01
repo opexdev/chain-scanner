@@ -16,11 +16,12 @@ CREATE TABLE IF NOT EXISTS chain_sync_schedules
 
 CREATE TABLE IF NOT EXISTS chain_scanners
 (
-    id              SERIAL      PRIMARY KEY,
-    chain_name      VARCHAR(72) NOT NULL REFERENCES chains (name),
-    url             VARCHAR(72) NOT NULL,
-    max_block_range INTEGER     NOT NULL DEFAULT 10,
-    confirmations    INTEGER     NOT NULL DEFAULT 0
+    id               SERIAL      PRIMARY KEY,
+    chain_name       VARCHAR(72) NOT NULL REFERENCES chains (name),
+    url              VARCHAR(72) NOT NULL,
+    max_block_range  INTEGER     NOT NULL DEFAULT 10,
+    confirmations    INTEGER     NOT NULL DEFAULT 0,
+    rate_limit_delay INTEGER     NOT NULL DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS chain_sync_retry
