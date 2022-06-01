@@ -70,8 +70,10 @@ class SyncLatestTransfersScheduledJob(
                 record?.copy(syncTime = LocalDateTime.now(), blockNumber = blockNumber)
                     ?: ChainSyncRecord(chain.chainName, LocalDateTime.now(), blockNumber)
             )
-        }.onFailure {
-            chainSyncRetryHandler.save(ChainSyncRetry(chain.chainName, blockNumber, error = it.message))
+        }.onFailure { e ->
+            chainSyncRetryHandler.findByChainAndBlockNumber(chain.chainName, blockNumber)?.let {
+                chainSyncRetryHandler.save(it.copy(error = e.message))
+            } ?: chainSyncRetryHandler.save(ChainSyncRetry(chain.chainName, blockNumber, error = e.message))
         }
     }
 }
