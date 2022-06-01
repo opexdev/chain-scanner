@@ -28,13 +28,13 @@ class RetryFailedSyncsScheduledJob(
                 launch {
                     logger.trace("Retry block sync on: ${retry.blockNumber}")
                     runCatching {
-                        val response = scannerProxy.getTransfers(chain.url, retry.blockNumber)
-                        webhookCaller.callWebhook("$onSyncWebhookUrl/${chain.chainName}", response)
-                        chainSyncRecordHandler.lastSyncRecord(sch.chainName)
+                        scannerProxy.getTransfers(chain.url, retry.blockNumber)
                     }.onFailure {
                         val retries = retry.retries + 1
                         chainSyncRetryHandler.save(retry.copy(retries = retries, giveUp = retries >= 5))
-                    }.onSuccess {
+                    }.mapCatching { response ->
+                        webhookCaller.callWebhook("$onSyncWebhookUrl/${chain.chainName}", response)
+                        chainSyncRecordHandler.lastSyncRecord(sch.chainName)
                         val retries = retry.retries + 1
                         chainSyncRetryHandler.save(retry.copy(retries = retries, synced = true))
                     }
