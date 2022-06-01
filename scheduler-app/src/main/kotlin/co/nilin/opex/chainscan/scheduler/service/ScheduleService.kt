@@ -14,8 +14,8 @@ import java.time.LocalDateTime
 class ScheduleService(
     private val mainSyncJob: SyncLatestTransfersScheduledJob,
     private val retrySyncJob: RetryFailedSyncsScheduledJob,
-    private val mainSyncScope: CoroutineScope,
-    private val retrySyncScope: CoroutineScope,
+    private val syncLatestTransfersScope: CoroutineScope,
+    private val retryFailedSyncsScope: CoroutineScope,
     private val chainSyncSchedulerHandler: ChainSyncSchedulerHandler
 ) {
     private val logger: Logger by LoggerDelegate()
@@ -23,8 +23,8 @@ class ScheduleService(
     @Scheduled(fixedDelay = 1000)
     fun syncLatestTransfers() {
         logger.trace("Run `syncLatestTransfers` job")
-        if (mainSyncScope.isCompleted()) {
-            mainSyncScope.launch {
+        if (syncLatestTransfersScope.isCompleted()) {
+            syncLatestTransfersScope.launch {
                 val schedules = chainSyncSchedulerHandler.fetchActiveSchedules(LocalDateTime.now())
                 supervisorScope {
                     schedules.forEach { sch ->
@@ -40,8 +40,8 @@ class ScheduleService(
     @Scheduled(fixedDelay = 1000)
     fun retryFailedSyncsJob() {
         logger.trace("Run `retryFailedSyncsJob` job")
-        if (retrySyncScope.isCompleted()) {
-            retrySyncScope.launch {
+        if (retryFailedSyncsScope.isCompleted()) {
+            retryFailedSyncsScope.launch {
                 supervisorScope {
                     val schedules = chainSyncSchedulerHandler.fetchActiveSchedules(LocalDateTime.now())
                     schedules.forEach { sch ->
