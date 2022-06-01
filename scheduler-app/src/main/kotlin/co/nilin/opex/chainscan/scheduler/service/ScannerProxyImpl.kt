@@ -6,6 +6,7 @@ import co.nilin.opex.chainscan.scheduler.utils.LoggerDelegate
 import kotlinx.coroutines.reactive.awaitFirst
 import org.slf4j.Logger
 import org.springframework.core.ParameterizedTypeReference
+import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import java.math.BigInteger
@@ -27,6 +28,7 @@ class ScannerProxyImpl(private val webClient: WebClient) : ScannerProxy {
                         .build()
                 )
             }
+            .accept(MediaType.APPLICATION_JSON)
             .retrieve()
             .onStatus({ t -> t.isError }, { it.createException() })
             .bodyToMono(typeRef<List<Transfer>>())
@@ -38,6 +40,7 @@ class ScannerProxyImpl(private val webClient: WebClient) : ScannerProxy {
             .uri {
                 URI.create(url).resolve(it.path("/block-number").build())
             }
+            .accept(MediaType.APPLICATION_JSON)
             .retrieve()
             .onStatus({ t -> t.isError }, { it.createException() })
             .bodyToMono(typeRef<BigInteger>())

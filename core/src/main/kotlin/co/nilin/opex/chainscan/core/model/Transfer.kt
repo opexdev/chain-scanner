@@ -1,5 +1,6 @@
 package co.nilin.opex.chainscan.core.model
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonInclude
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -13,5 +14,5 @@ data class Transfer(
     val amount: BigDecimal,
     val chain: String,
     val tokenAddress: String? = null,
-    val id: Long? = null
+    @JsonIgnore val id: Long? = null
 )
