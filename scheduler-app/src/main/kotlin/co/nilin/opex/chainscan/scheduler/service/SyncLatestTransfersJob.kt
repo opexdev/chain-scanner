@@ -15,7 +15,7 @@ import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 
 @Service
-class MainJobExecutor(
+class SyncLatestTransfersJob(
     private val scannerProxy: ScannerProxy,
     private val chainScannerHandler: ChainScannerHandler,
     private val chainSyncRecordHandler: ChainSyncRecordHandler,

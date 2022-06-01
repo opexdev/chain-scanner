@@ -21,8 +21,8 @@ class ScheduleServiceTest {
     private val chainScannerHandler: ChainScannerHandler = mockk()
     private val webhookCaller: WebhookCaller = mockk()
     private val onSyncWebhookUrl: String = "http://bc-gateway"
-    private val mainSyncJob: MainJobExecutor = mockk()
-    private val retrySyncJob: RetryJobExecutor = mockk()
+    private val mainSyncJob: SyncLatestTransfersJob = mockk()
+    private val retrySyncJob: RetryFailedSyncsJob = mockk()
     private val mainSyncScope: CoroutineScope = CoroutineScope(Dispatchers.SCHEDULER)
     private val retrySyncScope: CoroutineScope = CoroutineScope(Dispatchers.SCHEDULER)
     private val scheduleService: ScheduleService = ScheduleService(
@@ -62,7 +62,7 @@ class ScheduleServiceTest {
             scannerProxy.getTransfers(VALID.CHAIN_SCANNER.url)
         } returns VALID.TRANSFER_RESULT
 
-        scheduleService.start()
+        scheduleService.syncLatestTransfers()
 
         coVerify(exactly = 1) {
             webhookCaller.callWebhook(onSyncWebhookUrl, VALID.TRANSFER_RESULT.transfers)
