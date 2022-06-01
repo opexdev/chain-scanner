@@ -1,4 +1,4 @@
-package co.nilin.opex.chainscan.scheduler.impl
+package co.nilin.opex.chainscan.scheduler.service
 
 import co.nilin.opex.chainscan.scheduler.api.ScannerProxy
 import co.nilin.opex.chainscan.scheduler.po.TransferResult

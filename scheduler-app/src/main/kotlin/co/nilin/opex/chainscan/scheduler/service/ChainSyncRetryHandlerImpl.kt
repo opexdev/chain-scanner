@@ -1,4 +1,4 @@
-package co.nilin.opex.chainscan.scheduler.impl
+package co.nilin.opex.chainscan.scheduler.service
 
 import co.nilin.opex.chainscan.scheduler.api.ChainSyncRetryHandler
 import co.nilin.opex.chainscan.scheduler.dto.toModel
