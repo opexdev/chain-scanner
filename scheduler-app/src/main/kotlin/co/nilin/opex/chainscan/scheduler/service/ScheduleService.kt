@@ -46,30 +46,36 @@ class ScheduleService(
                                 val endBlockNumber = head.max(startBlockNumber)
                                 val blockRange = startBlockNumber.toLong()..endBlockNumber.toLong()
                                 supervisorScope {
-                                    blockRange.forEach { bn ->
+                                    blockRange.chunked(chain.maxBlockRange).forEach { br ->
                                         launch {
-                                            runCatching {
-                                                val response = scannerProxy.getTransfers(chain.url, bn.toBigInteger())
-                                                webhookCaller.callWebhook(onSyncWebhookUrl, response.transfers)
-                                                val record = chainSyncRecordHandler.lastSyncRecord(sch.chainName)
-                                                chainSyncRecordHandler.saveSyncRecord(
-                                                    record?.copy(
-                                                        syncTime = LocalDateTime.now(),
-                                                        blockNumber = response.blockNumber
-                                                    )
-                                                        ?: ChainSyncRecord(
-                                                            sch.chainName,
-                                                            LocalDateTime.now(),
-                                                            response.blockNumber
+                                            br.forEach { bn ->
+                                                launch {
+                                                    runCatching {
+                                                        val response =
+                                                            scannerProxy.getTransfers(chain.url, bn.toBigInteger())
+                                                        webhookCaller.callWebhook(onSyncWebhookUrl, response.transfers)
+                                                        val record =
+                                                            chainSyncRecordHandler.lastSyncRecord(sch.chainName)
+                                                        chainSyncRecordHandler.saveSyncRecord(
+                                                            record?.copy(
+                                                                syncTime = LocalDateTime.now(),
+                                                                blockNumber = response.blockNumber
+                                                            )
+                                                                ?: ChainSyncRecord(
+                                                                    sch.chainName,
+                                                                    LocalDateTime.now(),
+                                                                    response.blockNumber
+                                                                )
                                                         )
-                                                )
-                                            }.onFailure {
-                                                chainSyncRetryHandler.save(
-                                                    ChainSyncRetry(
-                                                        sch.chainName,
-                                                        bn.toBigInteger()
-                                                    )
-                                                )
+                                                    }.onFailure {
+                                                        chainSyncRetryHandler.save(
+                                                            ChainSyncRetry(
+                                                                sch.chainName,
+                                                                bn.toBigInteger()
+                                                            )
+                                                        )
+                                                    }
+                                                }
                                             }
                                         }
                                     }
