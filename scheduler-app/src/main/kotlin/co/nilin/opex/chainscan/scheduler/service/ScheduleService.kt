@@ -1,6 +1,8 @@
 package co.nilin.opex.chainscan.scheduler.service
 
 import co.nilin.opex.chainscan.scheduler.api.ChainSyncSchedulerHandler
+import co.nilin.opex.chainscan.scheduler.jobs.RetryFailedSyncsScheduledJob
+import co.nilin.opex.chainscan.scheduler.jobs.SyncLatestTransfersScheduledJob
 import co.nilin.opex.chainscan.scheduler.utils.LoggerDelegate
 import kotlinx.coroutines.*
 import org.slf4j.Logger
@@ -10,8 +12,8 @@ import java.time.LocalDateTime
 
 @Service
 class ScheduleService(
-    private val mainSyncJob: SyncLatestTransfersJob,
-    private val retrySyncJob: RetryFailedSyncsJob,
+    private val mainSyncJob: SyncLatestTransfersScheduledJob,
+    private val retrySyncJob: RetryFailedSyncsScheduledJob,
     private val mainSyncScope: CoroutineScope,
     private val retrySyncScope: CoroutineScope,
     private val chainSyncSchedulerHandler: ChainSyncSchedulerHandler

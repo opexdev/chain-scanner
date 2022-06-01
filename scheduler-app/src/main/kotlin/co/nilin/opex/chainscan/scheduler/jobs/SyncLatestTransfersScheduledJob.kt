@@ -1,4 +1,4 @@
-package co.nilin.opex.chainscan.scheduler.service
+package co.nilin.opex.chainscan.scheduler.jobs
 
 import co.nilin.opex.chainscan.scheduler.api.*
 import co.nilin.opex.chainscan.scheduler.po.ChainScanner
@@ -15,7 +15,7 @@ import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 
 @Service
-class SyncLatestTransfersJob(
+class SyncLatestTransfersScheduledJob(
     private val scannerProxy: ScannerProxy,
     private val chainScannerHandler: ChainScannerHandler,
     private val chainSyncRecordHandler: ChainSyncRecordHandler,
@@ -23,7 +23,7 @@ class SyncLatestTransfersJob(
     private val chainSyncRetryHandler: ChainSyncRetryHandler,
     private val webhookCaller: WebhookCaller,
     @Value("\${app.on-sync-webhook-url}") private val onSyncWebhookUrl: String,
-) : JobExecutor {
+) : ScheduledJob {
     override suspend fun execute(sch: ChainSyncSchedule) {
         val chain = chainScannerHandler.getScannersByName(sch.chainName).first()
         val currentBlockNumber = scannerProxy.getBlockNumber(chain.url)

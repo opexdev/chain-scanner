@@ -1,4 +1,4 @@
-package co.nilin.opex.chainscan.scheduler.service
+package co.nilin.opex.chainscan.scheduler.jobs
 
 import co.nilin.opex.chainscan.scheduler.api.*
 import co.nilin.opex.chainscan.scheduler.po.ChainSyncSchedule
@@ -8,14 +8,14 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 
 @Service
-class RetryFailedSyncsJob(
+class RetryFailedSyncsScheduledJob(
     private val scannerProxy: ScannerProxy,
     private val chainScannerHandler: ChainScannerHandler,
     private val chainSyncRecordHandler: ChainSyncRecordHandler,
     private val chainSyncRetryHandler: ChainSyncRetryHandler,
     private val webhookCaller: WebhookCaller,
     @Value("\${app.on-sync-webhook-url}") private val onSyncWebhookUrl: String
-) : JobExecutor {
+) : ScheduledJob {
     override suspend fun execute(sch: ChainSyncSchedule) {
         val chain = chainScannerHandler.getScannersByName(sch.chainName).first()
         val chainSyncRetries = chainSyncRetryHandler.findAllActive(sch.chainName)

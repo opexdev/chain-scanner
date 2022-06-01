@@ -2,6 +2,8 @@ package co.nilin.opex.chainscan.scheduler.service
 
 import co.nilin.opex.chainscan.scheduler.api.*
 import co.nilin.opex.chainscan.scheduler.coroutines.Dispatchers
+import co.nilin.opex.chainscan.scheduler.jobs.RetryFailedSyncsScheduledJob
+import co.nilin.opex.chainscan.scheduler.jobs.SyncLatestTransfersScheduledJob
 import co.nilin.opex.chainscan.scheduler.po.TransferResult
 import co.nilin.opex.chainscan.scheduler.sample.VALID
 import io.mockk.*
@@ -21,8 +23,8 @@ class ScheduleServiceTest {
     private val chainScannerHandler: ChainScannerHandler = mockk()
     private val webhookCaller: WebhookCaller = mockk()
     private val onSyncWebhookUrl: String = "http://bc-gateway"
-    private val mainSyncJob: SyncLatestTransfersJob = mockk()
-    private val retrySyncJob: RetryFailedSyncsJob = mockk()
+    private val mainSyncJob: SyncLatestTransfersScheduledJob = mockk()
+    private val retrySyncJob: RetryFailedSyncsScheduledJob = mockk()
     private val mainSyncScope: CoroutineScope = CoroutineScope(Dispatchers.SCHEDULER)
     private val retrySyncScope: CoroutineScope = CoroutineScope(Dispatchers.SCHEDULER)
     private val scheduleService: ScheduleService = ScheduleService(
