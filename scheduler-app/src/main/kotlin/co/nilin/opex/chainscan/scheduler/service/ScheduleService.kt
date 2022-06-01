@@ -22,7 +22,6 @@ class ScheduleService(
 
     @Scheduled(fixedDelay = 1000)
     fun syncLatestTransfers() {
-        logger.trace("Run `syncLatestTransfers` job")
         if (syncLatestTransfersScope.isCompleted()) {
             syncLatestTransfersScope.launch {
                 val schedules = chainSyncSchedulerHandler.fetchActiveSchedules(LocalDateTime.now())
@@ -39,7 +38,6 @@ class ScheduleService(
 
     @Scheduled(fixedDelay = 1000)
     fun retryFailedSyncsJob() {
-        logger.trace("Run `retryFailedSyncsJob` job")
         if (retryFailedSyncsScope.isCompleted()) {
             retryFailedSyncsScope.launch {
                 supervisorScope {
