@@ -1,8 +1,8 @@
 package co.nilin.opex.chainscan.scheduler.jobs
 
-import co.nilin.opex.chainscan.scheduler.api.*
-import co.nilin.opex.chainscan.scheduler.po.ChainSyncRecord
-import co.nilin.opex.chainscan.scheduler.po.ChainSyncSchedule
+import co.nilin.opex.chainscan.scheduler.core.spi.*
+import co.nilin.opex.chainscan.scheduler.core.po.ChainSyncRecord
+import co.nilin.opex.chainscan.scheduler.core.po.ChainSyncSchedule
 import co.nilin.opex.chainscan.scheduler.utils.LoggerDelegate
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope

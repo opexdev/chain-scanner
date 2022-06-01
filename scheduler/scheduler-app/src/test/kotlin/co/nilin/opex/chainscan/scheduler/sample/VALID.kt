@@ -1,6 +1,11 @@
 package co.nilin.opex.chainscan.scheduler.sample
 
-import co.nilin.opex.chainscan.scheduler.po.*
+import co.nilin.opex.chainscan.scheduler.core.po.ChainScanner
+import co.nilin.opex.chainscan.scheduler.core.po.ChainSyncRecord
+import co.nilin.opex.chainscan.scheduler.core.po.ChainSyncRetry
+import co.nilin.opex.chainscan.scheduler.core.po.ChainSyncSchedule
+import co.nilin.opex.chainscan.scheduler.core.po.Transfer
+import co.nilin.opex.chainscan.scheduler.core.po.Wallet
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.time.LocalDateTime

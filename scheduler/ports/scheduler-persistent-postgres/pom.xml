@@ -6,25 +6,31 @@
         <artifactId>scheduler</artifactId>
         <groupId>co.nilin.opex.chainscan.scheduler</groupId>
         <version>1.0.0-beta.4</version>
-        <relativePath>../pom.xml</relativePath>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>co.nilin.opex.chainscan.scheduler.app</groupId>
-    <artifactId>scheduler-app</artifactId>
+    <groupId>co.nilin.opex.chainscan.scheduler.db</groupId>
+    <artifactId>scheduler-persistent-postgres</artifactId>
+
+    <properties>
+        <spring-boot.repackage.skip>true</spring-boot.repackage.skip>
+    </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
+            <artifactId>spring-boot-starter-data-r2dbc</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.mockk</groupId>
-            <artifactId>mockk</artifactId>
+            <groupId>io.r2dbc</groupId>
+            <artifactId>r2dbc-postgresql</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-webflux</artifactId>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlinx</groupId>
@@ -35,17 +41,12 @@
             <artifactId>kotlinx-coroutines-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.fasterxml.jackson.module</groupId>
-            <artifactId>jackson-module-kotlin</artifactId>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-reflect</artifactId>
         </dependency>
         <dependency>
             <groupId>co.nilin.opex.chainscan.scheduler.core</groupId>
             <artifactId>scheduler-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>co.nilin.opex.chainscan.scheduler.db</groupId>
-            <artifactId>scheduler-persistent-postgres</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

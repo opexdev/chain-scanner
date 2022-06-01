@@ -16,5 +16,7 @@
 
     <modules>
         <module>scheduler-app</module>
+        <module>scheduler-core</module>
+        <module>ports/scheduler-persistent-postgres</module>
     </modules>
 </project>

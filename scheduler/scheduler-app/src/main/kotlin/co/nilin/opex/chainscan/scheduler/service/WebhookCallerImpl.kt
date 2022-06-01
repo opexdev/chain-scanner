@@ -1,7 +1,7 @@
 package co.nilin.opex.chainscan.scheduler.service
 
-import co.nilin.opex.chainscan.scheduler.api.WebhookCaller
-import co.nilin.opex.chainscan.scheduler.po.Transfer
+import co.nilin.opex.chainscan.scheduler.core.spi.WebhookCaller
+import co.nilin.opex.chainscan.scheduler.core.po.Transfer
 import co.nilin.opex.chainscan.scheduler.utils.LoggerDelegate
 import kotlinx.coroutines.reactive.awaitFirst
 import org.slf4j.Logger

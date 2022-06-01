@@ -1,6 +1,6 @@
 package co.nilin.opex.chainscan.scheduler.service
 
-import co.nilin.opex.chainscan.scheduler.api.*
+import co.nilin.opex.chainscan.scheduler.core.spi.*
 import co.nilin.opex.chainscan.scheduler.coroutines.Dispatchers
 import co.nilin.opex.chainscan.scheduler.jobs.RetryFailedSyncsScheduledJob
 import co.nilin.opex.chainscan.scheduler.jobs.SyncLatestTransfersScheduledJob
