@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS chain_sync_retry
     synced       BOOLEAN     NOT NULL DEFAULT FALSE,
     give_up      BOOLEAN     NOT NULL DEFAULT FALSE,
     error        TEXT,
-    UNIQUE (chain, start_block, end_block)
+    UNIQUE (chain, block_number)
 );
 
 CREATE TABLE IF NOT EXISTS chain_sync_records
