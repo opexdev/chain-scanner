@@ -6,7 +6,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withTimeoutOrNull
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.stereotype.Service
 
+@Service
 class RetryJobExecutor(
     private val scannerProxy: ScannerProxy,
     private val chainScannerHandler: ChainScannerHandler,

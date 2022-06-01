@@ -8,11 +8,13 @@ import co.nilin.opex.chainscan.scheduler.po.ChainSyncSchedule
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import java.math.BigInteger
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 
+@Service
 class MainJobExecutor(
     private val scannerProxy: ScannerProxy,
     private val chainScannerHandler: ChainScannerHandler,
