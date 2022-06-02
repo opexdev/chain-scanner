@@ -7,7 +7,7 @@ data class ChainSyncSchedule(
     val retryTime: LocalDateTime,
     val delay: Long,
     val errorDelay: Long,
-    val timeout: Long = 30000,
+    val timeout: Long = 30,
     val enabled: Boolean = true,
     val id: Long? = null
 )

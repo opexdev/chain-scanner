@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS chain_sync_schedules
     delay       INTEGER     NOT NULL,
     error_delay INTEGER     NOT NULL,
     enabled     BOOLEAN     NOT NULL DEFAULT TRUE,
-    timeout     INTEGER     NOT NULL DEFAULT 30000
+    timeout     INTEGER     NOT NULL DEFAULT 30
 );
 
 CREATE TABLE IF NOT EXISTS chain_scanners

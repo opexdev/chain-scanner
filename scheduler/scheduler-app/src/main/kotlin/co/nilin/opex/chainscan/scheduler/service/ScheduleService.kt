@@ -28,7 +28,7 @@ class ScheduleService(
                 supervisorScope {
                     schedules.forEach { sch ->
                         launch {
-                            withTimeoutOrNull(sch.timeout) { mainSyncJob.execute(sch) }
+                            withTimeoutOrNull(sch.timeout * 1000) { mainSyncJob.execute(sch) }
                         }
                     }
                 }
@@ -44,7 +44,7 @@ class ScheduleService(
                     val schedules = chainSyncSchedulerHandler.fetchActiveSchedules(LocalDateTime.now())
                     schedules.forEach { sch ->
                         launch {
-                            withTimeoutOrNull(sch.timeout) { retrySyncJob.execute(sch) }
+                            withTimeoutOrNull(sch.timeout * 1000) { retrySyncJob.execute(sch) }
                         }
                     }
                 }
