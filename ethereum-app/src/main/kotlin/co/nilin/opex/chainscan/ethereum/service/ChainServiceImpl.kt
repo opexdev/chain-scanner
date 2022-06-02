@@ -1,7 +1,7 @@
 package co.nilin.opex.chainscan.ethereum.service
 
 import co.nilin.opex.chainscan.core.exceptions.RateLimitException
-import co.nilin.opex.chainscan.core.spi.BlockchainGateway
+import co.nilin.opex.chainscan.core.spi.ChainService
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.reactor.awaitSingle
 import org.springframework.stereotype.Service
@@ -13,7 +13,7 @@ import reactor.kotlin.core.publisher.toMono
 import java.math.BigInteger
 
 @Service
-class BlockchainGatewayImpl(private val web3j: Web3j) : BlockchainGateway<List<EthBlock.TransactionObject>> {
+class ChainServiceImpl(private val web3j: Web3j) : ChainService<List<EthBlock.TransactionObject>> {
     override suspend fun getTransactions(blockNumber: BigInteger): List<EthBlock.TransactionObject> = coroutineScope {
         runCatching {
             val bn = DefaultBlockParameterNumber(blockNumber)

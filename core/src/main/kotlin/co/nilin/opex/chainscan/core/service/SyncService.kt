@@ -9,9 +9,9 @@ import org.springframework.stereotype.Service
 import java.math.BigInteger
 
 @Service
-class ChainSyncService<T>(
+class SyncService<T>(
     @Value("\${app.chain-name}") private val chainName: String,
-    private val blockchainGateway: BlockchainGateway<T>,
+    private val chainService: ChainService<T>,
     private val dataDecoder: DataDecoder<T>,
     private val watchListHandler: WatchListHandler,
     private val transferCacheHandler: TransferCacheHandler,
@@ -27,7 +27,7 @@ class ChainSyncService<T>(
         val cached = transferCacheHandler.getTransfers(watchedTokens, actualBlockNumber)
         return if (cached.isEmpty()) {
             logger.info("Start fetching $chainName transfers on blockNumber: $blockNumber")
-            val response = blockchainGateway.getTransactions(actualBlockNumber)
+            val response = chainService.getTransactions(actualBlockNumber)
             logger.info("Finished fetching block info on blockNumber: $blockNumber")
             return dataDecoder.decode(response).filter {
                 !it.isTokenTransfer || watchedTokens.contains(it.tokenAddress)
@@ -41,7 +41,7 @@ class ChainSyncService<T>(
     }
 
     private suspend fun actualBlockNumber(blockNumber: BigInteger?): BigInteger {
-        val currentBlockNumber = blockchainGateway.getLatestBlock()
+        val currentBlockNumber = chainService.getLatestBlock()
         val adjustedBlockNumber = blockNumber ?: currentBlockNumber
         return adjustedBlockNumber.takeIf { it >= BigInteger.ZERO } ?: (currentBlockNumber + blockNumber!!)
     }
