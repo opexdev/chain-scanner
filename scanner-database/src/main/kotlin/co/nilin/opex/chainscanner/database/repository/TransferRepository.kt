@@ -16,6 +16,6 @@ interface TransferRepository : ReactiveCrudRepository<TransferModel, Long> {
     @Query("select * from transfers where not is_token_transfer")
     fun findAllNotTokenTransfers(): Flux<TransferModel>
 
-    @Query("delete from transfers where block_number <= :blockNumber")
+    @Query("delete from transfers where block_number == :blockNumber")
     fun clearCache(blockNumber: BigInteger): Mono<Int>
 }

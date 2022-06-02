@@ -48,21 +48,23 @@ class RetryFailedSyncsScheduledJob(
 
     private suspend fun fetch(
         sch: ChainSyncSchedule,
-        chain: ChainScanner,
-        retry: ChainSyncRetry
+        chainScanner: ChainScanner,
+        chainSyncRetry: ChainSyncRetry
     ) {
         runCatching {
-            val response = scannerProxy.getTransfers(chain.url, retry.blockNumber)
-            webhookCaller.callWebhook(chain.chainName, response)
+            val response = scannerProxy.getTransfers(chainScanner.url, chainSyncRetry.blockNumber)
+            webhookCaller.callWebhook(chainScanner.chainName, response)
+            scannerProxy.clearCache(chainScanner.url, chainSyncRetry.blockNumber)
         }.onFailure { e ->
-            val retries = retry.retries + 1
+            val retries = chainSyncRetry.retries + 1
             chainSyncRetryHandler.save(
-                retry.copy(retries = retries, giveUp = retries >= sch.maxRetries, error = e.message)
+                chainSyncRetry.copy(retries = retries, giveUp = retries >= sch.maxRetries, error = e.message)
             )
-            if (e is WebClientResponseException && e.statusCode == HttpStatus.TOO_MANY_REQUESTS) throw RateLimitException()
+            if (e is WebClientResponseException && e.statusCode == HttpStatus.TOO_MANY_REQUESTS)
+                throw RateLimitException()
         }.onSuccess {
-            val retries = retry.retries + 1
-            chainSyncRetryHandler.save(retry.copy(retries = retries, synced = true))
+            val retries = chainSyncRetry.retries + 1
+            chainSyncRetryHandler.save(chainSyncRetry.copy(retries = retries, synced = true))
         }
     }
 

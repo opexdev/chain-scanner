@@ -1,7 +1,7 @@
 package co.nilin.opex.chainscanner.scheduler.service
 
-import co.nilin.opex.chainscanner.scheduler.core.spi.ScannerProxy
 import co.nilin.opex.chainscanner.scheduler.core.po.Transfer
+import co.nilin.opex.chainscanner.scheduler.core.spi.ScannerProxy
 import co.nilin.opex.chainscanner.scheduler.utils.LoggerDelegate
 import kotlinx.coroutines.reactive.awaitFirst
 import org.slf4j.Logger
@@ -44,6 +44,20 @@ class ScannerProxyImpl(private val webClient: WebClient) : ScannerProxy {
             .retrieve()
             .onStatus({ t -> t.isError }, { it.createException() })
             .bodyToMono(typeRef<BigInteger>())
+            .awaitFirst()
+    }
+
+    override suspend fun clearCache(url: String, blockNumber: BigInteger) {
+        webClient.get()
+            .uri {
+                URI.create(url).resolve(
+                    it.path("/clear-cache").queryParam("blockNumber", blockNumber).build()
+                )
+            }
+            .accept(MediaType.APPLICATION_JSON)
+            .retrieve()
+            .onStatus({ t -> t.isError }, { it.createException() })
+            .bodyToMono(typeRef<List<Transfer>>())
             .awaitFirst()
     }
 }

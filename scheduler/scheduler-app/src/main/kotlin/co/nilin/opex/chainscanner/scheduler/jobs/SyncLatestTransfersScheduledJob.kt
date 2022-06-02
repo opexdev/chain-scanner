@@ -67,6 +67,7 @@ class SyncLatestTransfersScheduledJob(
         runCatching {
             val response = scannerProxy.getTransfers(chainScanner.url, blockNumber)
             webhookCaller.callWebhook(chainScanner.chainName, response)
+            scannerProxy.clearCache(chainScanner.url, blockNumber)
         }.onFailure { e ->
             val chainSyncRetry =
                 chainSyncRetryHandler.findByChainAndBlockNumber(chainScanner.chainName, blockNumber) ?: ChainSyncRetry(
@@ -76,7 +77,8 @@ class SyncLatestTransfersScheduledJob(
                     maxRetries = sch.maxRetries
                 )
             chainSyncRetryHandler.save(chainSyncRetry.copy(error = e.message))
-            if (e is WebClientResponseException && e.statusCode == HttpStatus.TOO_MANY_REQUESTS) throw RateLimitException()
+            if (e is WebClientResponseException && e.statusCode == HttpStatus.TOO_MANY_REQUESTS)
+                throw RateLimitException()
         }.also {
             val chainSyncRecord = chainSyncRecordHandler.lastSyncRecord(chainScanner.chainName) ?: ChainSyncRecord(
                 chainScanner.chainName,

@@ -6,4 +6,5 @@ import java.math.BigInteger
 interface ScannerProxy {
     suspend fun getTransfers(url: String, blockNumber: BigInteger? = null): List<Transfer>
     suspend fun getBlockNumber(url: String): BigInteger
+    suspend fun clearCache(url: String, blockNumber: BigInteger)
 }
