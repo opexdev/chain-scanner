@@ -29,11 +29,9 @@ class SyncService<T>(
             logger.info("Start fetching $chainName transfers on blockNumber: $blockNumber")
             val response = chainService.getTransactions(actualBlockNumber)
             logger.info("Finished fetching block info on blockNumber: $blockNumber")
-            return dataDecoder.decode(response).filter {
-                !it.isTokenTransfer || watchedTokens.contains(it.tokenAddress)
-            }.also {
-                transferCacheHandler.saveTransfers(it)
-            }
+            return dataDecoder.decode(response)
+                .filter { !it.isTokenTransfer || watchedTokens.contains(it.tokenAddress) }
+                .also { transferCacheHandler.saveTransfers(it) }
         } else {
             logger.info("Loading $chainName transfers from cache on blockNumber: $blockNumber")
             cached
