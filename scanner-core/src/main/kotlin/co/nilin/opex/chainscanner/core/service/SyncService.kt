@@ -25,16 +25,15 @@ class SyncService<T>(
         val watchedTokens = watchListHandler.findAll().map { addressChecksumer.makeValid(it.address) }
         logger.info("Syncing for: $chainName - Block: $actualBlockNumber")
         val cached = transferCacheHandler.getTransfers(watchedTokens, actualBlockNumber)
-        return if (cached.isEmpty()) {
+        return cached.takeIf { it.isNotEmpty() }.also {
+            logger.info("Loading $chainName transfers from cache on blockNumber: $actualBlockNumber")
+        } ?: run {
             logger.info("Start fetching $chainName transfers on blockNumber: $actualBlockNumber")
             val response = chainService.getTransactions(actualBlockNumber)
             logger.info("Finished fetching block info on blockNumber: $actualBlockNumber")
             return dataDecoder.decode(response)
                 .filter { !it.isTokenTransfer || watchedTokens.contains(it.tokenAddress) }
                 .also { transferCacheHandler.saveTransfers(it) }
-        } else {
-            logger.info("Loading $chainName transfers from cache on blockNumber: $actualBlockNumber")
-            cached
         }
     }
 }
