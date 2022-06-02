@@ -73,7 +73,7 @@ fun ChainSyncScheduleModel.toPlainObject() = ChainSyncSchedule(
 
 fun ChainSyncSchedule.toModel() = ChainSyncScheduleModel(
     chainName,
-    retryTime,
+    executeTime,
     delay,
     errorDelay,
     timeout,

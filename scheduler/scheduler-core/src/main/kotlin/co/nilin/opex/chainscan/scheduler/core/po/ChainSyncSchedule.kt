@@ -4,7 +4,7 @@ import java.time.LocalDateTime
 
 data class ChainSyncSchedule(
     val chainName: String,
-    val retryTime: LocalDateTime,
+    val executeTime: LocalDateTime,
     val delay: Long,
     val errorDelay: Long,
     val timeout: Long = 30,

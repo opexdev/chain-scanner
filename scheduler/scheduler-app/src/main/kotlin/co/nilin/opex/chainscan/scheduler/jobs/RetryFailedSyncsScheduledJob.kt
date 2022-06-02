@@ -4,6 +4,7 @@ import co.nilin.opex.chainscan.scheduler.core.po.ChainScanner
 import co.nilin.opex.chainscan.scheduler.core.po.ChainSyncRetry
 import co.nilin.opex.chainscan.scheduler.core.po.ChainSyncSchedule
 import co.nilin.opex.chainscan.scheduler.core.spi.*
+import co.nilin.opex.chainscan.scheduler.exceptions.RateLimitException
 import co.nilin.opex.chainscan.scheduler.utils.LoggerDelegate
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -26,7 +27,7 @@ class RetryFailedSyncsScheduledJob(
     private val logger: Logger by LoggerDelegate()
 
     override suspend fun execute(sch: ChainSyncSchedule) {
-        val chainScanner = chainScannerHandler.getScannersByName(sch.chainName).first()
+        val chainScanner = chainScannerHandler.getScannersByName(sch.chainName).firstOrNull() ?: return
         val chainSyncRetries = chainSyncRetryHandler.findAllActive(sch.chainName)
         runCatching {
             coroutineScope {
@@ -34,24 +35,22 @@ class RetryFailedSyncsScheduledJob(
                 blockRange?.forEach { retry ->
                     launch {
                         logger.trace("Retry block sync on blockNumber: ${retry.blockNumber}")
-                        fetch(chainScanner, retry, sch)
+                        fetch(sch, chainScanner, retry)
                     }
                 }
             }
         }.onFailure { e ->
             when (e) {
-                is WebClientResponseException -> e.takeIf { it.statusCode == HttpStatus.TOO_MANY_REQUESTS }
-                    ?.run { sch.enqueueNextSchedule(chainScanner.delayOnRateLimit.toLong()) }
-                    ?: sch.enqueueNextSchedule(sch.errorDelay)
+                is RateLimitException -> sch.enqueueNextSchedule(chainScanner.delayOnRateLimit.toLong())
                 else -> sch.enqueueNextSchedule(sch.errorDelay)
             }
         }
     }
 
     private suspend fun fetch(
+        sch: ChainSyncSchedule,
         chain: ChainScanner,
-        retry: ChainSyncRetry,
-        sch: ChainSyncSchedule
+        retry: ChainSyncRetry
     ) {
         runCatching {
             val response = scannerProxy.getTransfers(chain.url, retry.blockNumber)
@@ -59,16 +58,9 @@ class RetryFailedSyncsScheduledJob(
         }.onFailure { e ->
             val retries = retry.retries + 1
             chainSyncRetryHandler.save(
-                retry.copy(
-                    retries = retries,
-                    giveUp = retries >= sch.maxRetries,
-                    error = e.message
-                )
+                retry.copy(retries = retries, giveUp = retries >= sch.maxRetries, error = e.message)
             )
-            when (e) {
-                is WebClientResponseException -> e.takeUnless { it.statusCode == HttpStatus.TOO_MANY_REQUESTS }
-                    ?: throw e
-            }
+            if (e is WebClientResponseException && e.statusCode == HttpStatus.TOO_MANY_REQUESTS) throw RateLimitException()
         }.onSuccess {
             val retries = retry.retries + 1
             chainSyncRetryHandler.save(retry.copy(retries = retries, synced = true))
@@ -77,6 +69,6 @@ class RetryFailedSyncsScheduledJob(
 
     private suspend fun ChainSyncSchedule.enqueueNextSchedule(nextTimeDiff: Long) {
         val retryTime = LocalDateTime.now().plus(nextTimeDiff, ChronoUnit.SECONDS)
-        chainSyncSchedulerHandler.save(copy(retryTime = retryTime))
+        chainSyncSchedulerHandler.save(copy(executeTime = retryTime))
     }
 }

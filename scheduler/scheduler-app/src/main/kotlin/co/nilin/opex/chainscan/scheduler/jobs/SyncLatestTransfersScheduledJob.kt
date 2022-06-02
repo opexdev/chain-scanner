@@ -5,6 +5,7 @@ import co.nilin.opex.chainscan.scheduler.core.po.ChainSyncRecord
 import co.nilin.opex.chainscan.scheduler.core.po.ChainSyncRetry
 import co.nilin.opex.chainscan.scheduler.core.po.ChainSyncSchedule
 import co.nilin.opex.chainscan.scheduler.core.spi.*
+import co.nilin.opex.chainscan.scheduler.exceptions.RateLimitException
 import co.nilin.opex.chainscan.scheduler.utils.LoggerDelegate
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -28,7 +29,7 @@ class SyncLatestTransfersScheduledJob(
     private val logger: Logger by LoggerDelegate()
 
     override suspend fun execute(sch: ChainSyncSchedule) {
-        val chainScanner = chainScannerHandler.getScannersByName(sch.chainName).first()
+        val chainScanner = chainScannerHandler.getScannersByName(sch.chainName).firstOrNull() ?: return
         val blockRange = calculateBlockRange(chainScanner, sch.confirmations)
         logger.trace("Fetch transfers on block range: ${blockRange.first} - ${blockRange.last}")
         runCatching {
@@ -40,9 +41,7 @@ class SyncLatestTransfersScheduledJob(
             }
         }.onFailure { e ->
             when (e) {
-                is WebClientResponseException -> e.takeIf { it.statusCode == HttpStatus.TOO_MANY_REQUESTS }
-                    ?.run { sch.enqueueNextSchedule(chainScanner.delayOnRateLimit.toLong()) }
-                    ?: sch.enqueueNextSchedule(sch.errorDelay)
+                is RateLimitException -> sch.enqueueNextSchedule(chainScanner.delayOnRateLimit.toLong())
                 else -> sch.enqueueNextSchedule(sch.errorDelay)
             }
         }.onSuccess {
@@ -61,7 +60,7 @@ class SyncLatestTransfersScheduledJob(
 
     private suspend fun ChainSyncSchedule.enqueueNextSchedule(nextTimeDiff: Long) {
         val retryTime = LocalDateTime.now().plus(nextTimeDiff, ChronoUnit.SECONDS)
-        chainSyncSchedulerHandler.save(copy(retryTime = retryTime))
+        chainSyncSchedulerHandler.save(copy(executeTime = retryTime))
     }
 
     private suspend fun fetch(chainScanner: ChainScanner, blockNumber: BigInteger, sch: ChainSyncSchedule) {
@@ -69,31 +68,23 @@ class SyncLatestTransfersScheduledJob(
             val response = scannerProxy.getTransfers(chainScanner.url, blockNumber)
             webhookCaller.callWebhook(chainScanner.chainName, response)
         }.onFailure { e ->
-            val chainSyncRetry = chainSyncRetryHandler.findByChainAndBlockNumber(chainScanner.chainName, blockNumber)
-            chainSyncRetry?.let { chainSyncRetryHandler.save(it.copy(error = e.message)) }
-                ?: chainSyncRetryHandler.save(
-                    ChainSyncRetry(
-                        chainScanner.chainName,
-                        blockNumber,
-                        error = e.message,
-                        maxRetries = sch.maxRetries
-                    )
+            val chainSyncRetry =
+                chainSyncRetryHandler.findByChainAndBlockNumber(chainScanner.chainName, blockNumber) ?: ChainSyncRetry(
+                    chainScanner.chainName,
+                    blockNumber,
+                    error = e.message,
+                    maxRetries = sch.maxRetries
                 )
-            when (e) {
-                is WebClientResponseException -> e.takeUnless { it.statusCode == HttpStatus.TOO_MANY_REQUESTS }
-                    ?: throw e
-            }
+            chainSyncRetryHandler.save(chainSyncRetry.copy(error = e.message))
+            if (e is WebClientResponseException && e.statusCode == HttpStatus.TOO_MANY_REQUESTS) throw RateLimitException()
         }.also {
-            val record = chainSyncRecordHandler.lastSyncRecord(chainScanner.chainName) ?: ChainSyncRecord(
+            val chainSyncRecord = chainSyncRecordHandler.lastSyncRecord(chainScanner.chainName) ?: ChainSyncRecord(
                 chainScanner.chainName,
                 LocalDateTime.now(),
                 blockNumber
             )
             chainSyncRecordHandler.saveSyncRecord(
-                record.copy(
-                    syncTime = LocalDateTime.now(),
-                    blockNumber = blockNumber
-                )
+                chainSyncRecord.copy(syncTime = LocalDateTime.now(), blockNumber = blockNumber)
             )
         }.getOrThrow()
     }
