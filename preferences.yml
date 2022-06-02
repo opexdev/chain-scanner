@@ -6,6 +6,7 @@ chains:
         delayOnRateLimit: 300
     schedule:
       delay: 6
+      errorDelay: 3
       timeout: 30
       maxRetries: 5
       confirmations: 0

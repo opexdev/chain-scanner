@@ -28,7 +28,12 @@ class ScheduleService(
                 supervisorScope {
                     schedules.forEach { sch ->
                         launch {
-                            withTimeoutOrNull(sch.timeout * 1000) { mainSyncJob.execute(sch) }
+                            runCatching {
+                                withTimeout(sch.timeout * 1000) { mainSyncJob.execute(sch) }
+                            }.onFailure {
+                                if (it is TimeoutCancellationException)
+                                    logger.error("Timeout reached on chain: ${sch.chainName}")
+                            }
                         }
                     }
                 }
@@ -44,7 +49,12 @@ class ScheduleService(
                     val schedules = chainSyncSchedulerHandler.fetchActiveSchedules(LocalDateTime.now())
                     schedules.forEach { sch ->
                         launch {
-                            withTimeoutOrNull(sch.timeout * 1000) { retrySyncJob.execute(sch) }
+                            runCatching {
+                                withTimeout(sch.timeout * 1000) { retrySyncJob.execute(sch) }
+                            }.onFailure {
+                                if (it is TimeoutCancellationException)
+                                    logger.error("Timeout reached when retrying chain: ${sch.chainName}")
+                            }
                         }
                     }
                 }
