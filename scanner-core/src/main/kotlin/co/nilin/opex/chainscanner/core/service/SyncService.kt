@@ -3,7 +3,6 @@ package co.nilin.opex.chainscanner.core.service
 import co.nilin.opex.chainscanner.core.model.Transfer
 import co.nilin.opex.chainscanner.core.spi.*
 import co.nilin.opex.chainscanner.core.utils.LoggerDelegate
-import co.nilin.opex.chainscanner.core.spi.*
 import org.slf4j.Logger
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
@@ -22,7 +21,7 @@ class SyncService<T>(
 
     suspend fun getTransfers(blockNumber: BigInteger? = null): List<Transfer> {
         require(blockNumber?.abs() == blockNumber)
-        val actualBlockNumber = actualBlockNumber(blockNumber)
+        val actualBlockNumber = blockNumber ?: chainService.getLatestBlock()
         val watchedTokens = watchListHandler.findAll().map { addressChecksumer.makeValid(it.address) }
         logger.info("Syncing for: $chainName - Block: $actualBlockNumber")
         val cached = transferCacheHandler.getTransfers(watchedTokens, actualBlockNumber)
@@ -39,11 +38,5 @@ class SyncService<T>(
             logger.info("Loading $chainName transfers from cache on blockNumber: $blockNumber")
             cached
         }
-    }
-
-    private suspend fun actualBlockNumber(blockNumber: BigInteger?): BigInteger {
-        val currentBlockNumber = chainService.getLatestBlock()
-        val adjustedBlockNumber = blockNumber ?: currentBlockNumber
-        return adjustedBlockNumber.takeIf { it >= BigInteger.ZERO } ?: (currentBlockNumber + blockNumber!!)
     }
 }
