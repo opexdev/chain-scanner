@@ -5,7 +5,7 @@ import org.springframework.boot.runApplication
 import org.springframework.context.annotation.ComponentScan
 
 @SpringBootApplication
-@ComponentScan("co.nilin.opex.chainscan")
+@ComponentScan("co.nilin.opex.chainscanner")
 class App
 
 fun main(args: Array<String>) {

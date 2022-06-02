@@ -1,4 +1,4 @@
-package co.nilin.opex.chainscan.scheduler.config
+package co.nilin.opex.chainscanner.scheduler.db.config
 
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Configuration
@@ -7,7 +7,7 @@ import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories
 import org.springframework.r2dbc.core.DatabaseClient
 
 @Configuration
-@EnableR2dbcRepositories(basePackages = ["co.nilin.opex"])
+@EnableR2dbcRepositories(basePackages = ["co.nilin.opex.chainscanner"])
 class PostgresConfig(
     db: DatabaseClient,
     @Value("classpath:schema.sql") private val schemaResource: Resource
