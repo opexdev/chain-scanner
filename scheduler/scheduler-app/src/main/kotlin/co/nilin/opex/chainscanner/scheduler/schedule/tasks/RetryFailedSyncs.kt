@@ -1,4 +1,4 @@
-package co.nilin.opex.chainscanner.scheduler.jobs
+package co.nilin.opex.chainscanner.scheduler.schedule.tasks
 
 import co.nilin.opex.chainscanner.scheduler.core.po.ChainScanner
 import co.nilin.opex.chainscanner.scheduler.core.po.ChainSyncRetry
@@ -16,13 +16,13 @@ import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 
 @Service
-class RetryFailedSyncsScheduledJob(
+class RetryFailedSyncs(
     private val scannerProxy: ScannerProxy,
     private val chainScannerHandler: ChainScannerHandler,
     private val chainSyncSchedulerHandler: ChainSyncSchedulerHandler,
     private val chainSyncRetryHandler: ChainSyncRetryHandler,
     private val webhookCaller: WebhookCaller,
-) : ScheduledJob {
+) : ScheduleTask {
     private val logger: Logger by LoggerDelegate()
 
     override suspend fun execute(sch: ChainSyncSchedule) {

@@ -16,8 +16,8 @@ import java.time.LocalDateTime
 @Component
 class ChainSyncSchedulerHandlerImpl(private val chainSyncScheduleRepository: ChainSyncScheduleRepository) :
     ChainSyncSchedulerHandler {
-    override suspend fun fetchActiveSchedules(time: LocalDateTime): List<ChainSyncSchedule> {
-        return chainSyncScheduleRepository.findActiveSchedule(time).map { it.toPlainObject() }.toList()
+    override suspend fun fetchActiveSchedules(dateTime: LocalDateTime): List<ChainSyncSchedule> {
+        return chainSyncScheduleRepository.findActiveSchedule(dateTime).map { it.toPlainObject() }.toList()
     }
 
     override suspend fun save(syncSchedule: ChainSyncSchedule) {
