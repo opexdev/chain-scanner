@@ -3,16 +3,15 @@ chains:
     scanners:
       - url: http://bsc-scanner
         maxBlockRange: 30
-        rateLimitDelay: 300
+        delayOnRateLimit: 300
     schedule:
       delay: 6
       timeout: 30
-      maxRetry: 5
+      maxRetries: 5
       confirmations: 0
 currencies:
   - symbol: BUSD
     name: Binance USD
     implementations:
       - chain: bsc
-        token: true
         tokenAddress: 0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56
