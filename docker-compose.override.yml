@@ -3,6 +3,8 @@ services:
   scanner-scheduler:
     image: ghcr.io/opexdev/scanner-scheduler
     build: scheduler/scheduler-app
+    volumes:
+      - "./preferences.yml:/preferences.yml"
   ethereum-scanner:
     image: ghcr.io/opexdev/ethereum-scanner
     build: ethereum-app
