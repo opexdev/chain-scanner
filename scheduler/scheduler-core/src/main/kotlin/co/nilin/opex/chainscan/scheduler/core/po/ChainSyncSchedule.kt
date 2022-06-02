@@ -9,5 +9,7 @@ data class ChainSyncSchedule(
     val errorDelay: Long,
     val timeout: Long = 30,
     val enabled: Boolean = true,
+    val confirmations: Int = 0,
+    val maxRetries: Int = 5,
     val id: Long? = null
 )

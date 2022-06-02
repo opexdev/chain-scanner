@@ -1,8 +1,8 @@
 package co.nilin.opex.chainscan.scheduler.jobs
 
-import co.nilin.opex.chainscan.scheduler.core.spi.*
 import co.nilin.opex.chainscan.scheduler.core.po.ChainSyncRecord
 import co.nilin.opex.chainscan.scheduler.core.po.ChainSyncSchedule
+import co.nilin.opex.chainscan.scheduler.core.spi.*
 import co.nilin.opex.chainscan.scheduler.utils.LoggerDelegate
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
@@ -33,7 +33,7 @@ class RetryFailedSyncsScheduledJob(
                         scannerProxy.getTransfers(chain.url, retry.blockNumber)
                     }.onFailure {
                         val retries = retry.retries + 1
-                        chainSyncRetryHandler.save(retry.copy(retries = retries, giveUp = retries >= 5))
+                        chainSyncRetryHandler.save(retry.copy(retries = retries, giveUp = retries >= sch.maxRetries))
                     }.mapCatching { response ->
                         webhookCaller.callWebhook("$onSyncWebhookUrl/${chain.chainName}", response)
                     }.onSuccess {

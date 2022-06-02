@@ -9,6 +9,7 @@ data class ChainSyncRetryModel(
     val chain: String,
     val blockNumber: BigInteger,
     val retries: Int = 0,
+    val maxRetries: Int = 0,
     val synced: Boolean = false,
     val giveUp: Boolean = false,
     val error: String? = null,

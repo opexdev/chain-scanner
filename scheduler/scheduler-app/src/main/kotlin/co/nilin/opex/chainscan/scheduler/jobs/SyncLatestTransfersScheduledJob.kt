@@ -1,10 +1,10 @@
 package co.nilin.opex.chainscan.scheduler.jobs
 
-import co.nilin.opex.chainscan.scheduler.core.spi.*
 import co.nilin.opex.chainscan.scheduler.core.po.ChainScanner
 import co.nilin.opex.chainscan.scheduler.core.po.ChainSyncRecord
 import co.nilin.opex.chainscan.scheduler.core.po.ChainSyncRetry
 import co.nilin.opex.chainscan.scheduler.core.po.ChainSyncSchedule
+import co.nilin.opex.chainscan.scheduler.core.spi.*
 import co.nilin.opex.chainscan.scheduler.utils.LoggerDelegate
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -32,7 +32,7 @@ class SyncLatestTransfersScheduledJob(
     override suspend fun execute(sch: ChainSyncSchedule) {
         val chain = chainScannerHandler.getScannersByName(sch.chainName).first()
         val currentBlockNumber = scannerProxy.getBlockNumber(chain.url)
-        val head = currentBlockNumber - chain.confirmations.toBigInteger()
+        val head = currentBlockNumber - sch.confirmations.toBigInteger()
         val startBlockNumber =
             chainSyncRecordHandler.lastSyncedBlockedNumber(sch.chainName)?.plus(BigInteger.ONE)
                 ?: head
@@ -50,7 +50,7 @@ class SyncLatestTransfersScheduledJob(
         }.onFailure { e ->
             when (e) {
                 is WebClientResponseException -> e.takeIf { it.statusCode == HttpStatus.TOO_MANY_REQUESTS }
-                    ?.run { sch.nextSchedule(chain.rateLimitDelay.toLong()) }
+                    ?.run { sch.nextSchedule(chain.delayOnRateLimit.toLong()) }
                 is Exception -> sch.nextSchedule(sch.errorDelay)
             }
         }
