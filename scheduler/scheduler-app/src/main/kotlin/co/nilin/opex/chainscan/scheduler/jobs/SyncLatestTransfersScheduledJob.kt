@@ -36,7 +36,7 @@ class SyncLatestTransfersScheduledJob(
             coroutineScope {
                 val br = blockRange.chunked(chainScanner.maxBlockRange).firstOrNull()
                 br?.forEach { bn ->
-                    launch { fetch(chainScanner, bn.toBigInteger(), sch) }
+                    launch { fetch(sch, chainScanner, bn.toBigInteger()) }
                 }
             }
         }.onFailure { e ->
@@ -63,7 +63,7 @@ class SyncLatestTransfersScheduledJob(
         chainSyncSchedulerHandler.save(copy(executeTime = retryTime))
     }
 
-    private suspend fun fetch(chainScanner: ChainScanner, blockNumber: BigInteger, sch: ChainSyncSchedule) {
+    private suspend fun fetch(sch: ChainSyncSchedule, chainScanner: ChainScanner, blockNumber: BigInteger) {
         runCatching {
             val response = scannerProxy.getTransfers(chainScanner.url, blockNumber)
             webhookCaller.callWebhook(chainScanner.chainName, response)

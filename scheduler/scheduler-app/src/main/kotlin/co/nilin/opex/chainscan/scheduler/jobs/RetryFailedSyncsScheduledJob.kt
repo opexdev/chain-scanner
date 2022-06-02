@@ -20,7 +20,6 @@ class RetryFailedSyncsScheduledJob(
     private val scannerProxy: ScannerProxy,
     private val chainScannerHandler: ChainScannerHandler,
     private val chainSyncSchedulerHandler: ChainSyncSchedulerHandler,
-    private val chainSyncRecordHandler: ChainSyncRecordHandler,
     private val chainSyncRetryHandler: ChainSyncRetryHandler,
     private val webhookCaller: WebhookCaller,
 ) : ScheduledJob {
