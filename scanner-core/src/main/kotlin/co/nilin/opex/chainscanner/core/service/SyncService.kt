@@ -26,14 +26,14 @@ class SyncService<T>(
         logger.info("Syncing for: $chainName - Block: $actualBlockNumber")
         val cached = transferCacheHandler.getTransfers(watchedTokens, actualBlockNumber)
         return if (cached.isEmpty()) {
-            logger.info("Start fetching $chainName transfers on blockNumber: $blockNumber")
+            logger.info("Start fetching $chainName transfers on blockNumber: $actualBlockNumber")
             val response = chainService.getTransactions(actualBlockNumber)
-            logger.info("Finished fetching block info on blockNumber: $blockNumber")
+            logger.info("Finished fetching block info on blockNumber: $actualBlockNumber")
             return dataDecoder.decode(response)
                 .filter { !it.isTokenTransfer || watchedTokens.contains(it.tokenAddress) }
                 .also { transferCacheHandler.saveTransfers(it) }
         } else {
-            logger.info("Loading $chainName transfers from cache on blockNumber: $blockNumber")
+            logger.info("Loading $chainName transfers from cache on blockNumber: $actualBlockNumber")
             cached
         }
     }
