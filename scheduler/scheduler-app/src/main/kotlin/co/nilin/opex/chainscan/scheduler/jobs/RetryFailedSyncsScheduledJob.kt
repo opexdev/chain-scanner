@@ -26,9 +26,10 @@ class RetryFailedSyncsScheduledJob(
         val chain = chainScannerHandler.getScannersByName(sch.chainName).first()
         val chainSyncRetries = chainSyncRetryHandler.findAllActive(sch.chainName)
         supervisorScope {
-            chainSyncRetries.forEach { retry ->
+            val blockRange = chainSyncRetries.chunked(chain.maxBlockRange).firstOrNull()
+            blockRange?.forEach { retry ->
                 launch {
-                    logger.trace("Retry block sync on: ${retry.blockNumber}")
+                    logger.trace("Retry block sync on blockNumber: ${retry.blockNumber}")
                     runCatching {
                         scannerProxy.getTransfers(chain.url, retry.blockNumber)
                     }.onFailure {

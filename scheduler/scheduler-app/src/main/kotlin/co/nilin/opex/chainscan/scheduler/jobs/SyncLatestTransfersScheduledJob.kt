@@ -6,8 +6,8 @@ import co.nilin.opex.chainscan.scheduler.core.po.ChainSyncRetry
 import co.nilin.opex.chainscan.scheduler.core.po.ChainSyncSchedule
 import co.nilin.opex.chainscan.scheduler.core.spi.*
 import co.nilin.opex.chainscan.scheduler.utils.LoggerDelegate
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
 import org.slf4j.Logger
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
@@ -40,19 +40,21 @@ class SyncLatestTransfersScheduledJob(
         val blockRange = startBlockNumber.toLong()..endBlockNumber.toLong()
         logger.trace("Fetch transfers on block range: $startBlockNumber - $endBlockNumber")
         runCatching {
-            coroutineScope {
-                val br = blockRange.chunked(chain.maxBlockRange).first()
-                br.forEach { bn ->
-                    launch { fetch(chain, bn.toBigInteger()) }
+            supervisorScope {
+                val br = blockRange.chunked(chain.maxBlockRange).firstOrNull()
+                br?.forEach { bn ->
+                    launch { fetch(chain, bn.toBigInteger(), sch) }
                 }
             }
-            sch.nextSchedule(sch.delay)
         }.onFailure { e ->
             when (e) {
                 is WebClientResponseException -> e.takeIf { it.statusCode == HttpStatus.TOO_MANY_REQUESTS }
                     ?.run { sch.nextSchedule(chain.delayOnRateLimit.toLong()) }
                 is Exception -> sch.nextSchedule(sch.errorDelay)
+                else -> sch.nextSchedule(sch.delay)
             }
+        }.onSuccess {
+            sch.nextSchedule(sch.delay)
         }
     }
 
@@ -61,21 +63,27 @@ class SyncLatestTransfersScheduledJob(
         chainSyncSchedulerHandler.save(copy(retryTime = retryTime))
     }
 
-    private suspend fun fetch(chain: ChainScanner, blockNumber: BigInteger) {
+    private suspend fun fetch(chain: ChainScanner, blockNumber: BigInteger, sch: ChainSyncSchedule) {
         runCatching {
             scannerProxy.getTransfers(chain.url, blockNumber)
         }.onFailure { e ->
-            chainSyncRetryHandler.findByChainAndBlockNumber(chain.chainName, blockNumber)?.let {
-                chainSyncRetryHandler.save(it.copy(error = e.message))
-            } ?: chainSyncRetryHandler.save(ChainSyncRetry(chain.chainName, blockNumber, error = e.message))
+            val chainSyncRetry = chainSyncRetryHandler.findByChainAndBlockNumber(chain.chainName, blockNumber)
+            chainSyncRetry?.let { chainSyncRetryHandler.save(it.copy(error = e.message)) }
+                ?: chainSyncRetryHandler.save(
+                    ChainSyncRetry(
+                        chain.chainName,
+                        blockNumber,
+                        error = e.message,
+                        maxRetries = sch.maxRetries
+                    )
+                )
         }.mapCatching { response ->
             webhookCaller.callWebhook("$onSyncWebhookUrl/${chain.chainName}", response)
-        }.onSuccess {
-            val record = chainSyncRecordHandler.lastSyncRecord(chain.chainName)
-            chainSyncRecordHandler.saveSyncRecord(
-                record?.copy(syncTime = LocalDateTime.now(), blockNumber = blockNumber)
-                    ?: ChainSyncRecord(chain.chainName, LocalDateTime.now(), blockNumber)
-            )
         }
+        val record = chainSyncRecordHandler.lastSyncRecord(chain.chainName)
+        chainSyncRecordHandler.saveSyncRecord(
+            record?.copy(syncTime = LocalDateTime.now(), blockNumber = blockNumber)
+                ?: ChainSyncRecord(chain.chainName, LocalDateTime.now(), blockNumber)
+        )
     }
 }
