@@ -9,7 +9,6 @@ import co.nilin.opex.chainscan.scheduler.utils.LoggerDelegate
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
 import org.slf4j.Logger
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClientResponseException
@@ -24,8 +23,7 @@ class SyncLatestTransfersScheduledJob(
     private val chainSyncRecordHandler: ChainSyncRecordHandler,
     private val chainSyncSchedulerHandler: ChainSyncSchedulerHandler,
     private val chainSyncRetryHandler: ChainSyncRetryHandler,
-    private val webhookCaller: WebhookCaller,
-    @Value("\${app.on-sync-webhook-url}") private val onSyncWebhookUrl: String,
+    private val webhookCaller: WebhookCaller
 ) : ScheduledJob {
     private val logger: Logger by LoggerDelegate()
 
@@ -66,7 +64,7 @@ class SyncLatestTransfersScheduledJob(
     private suspend fun fetch(chain: ChainScanner, blockNumber: BigInteger, sch: ChainSyncSchedule) {
         runCatching {
             val response = scannerProxy.getTransfers(chain.url, blockNumber)
-            webhookCaller.callWebhook("$onSyncWebhookUrl/${chain.chainName}", response)
+            webhookCaller.callWebhook(chain.chainName, response)
         }.onFailure { e ->
             val chainSyncRetry = chainSyncRetryHandler.findByChainAndBlockNumber(chain.chainName, blockNumber)
             chainSyncRetry?.let { chainSyncRetryHandler.save(it.copy(error = e.message)) }
