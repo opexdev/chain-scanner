@@ -1,5 +1,7 @@
 server.port: 8080
 spring:
+  application:
+    name: bitcoin-scanner
   main:
     allow-bean-definition-overriding: false
   r2dbc:
@@ -7,6 +9,9 @@ spring:
     username: ${dbusername:opex}
     password: ${dbpassword:hiopex}
     initialization-mode: always
+  cloud:
+    config:
+      import: vault://secret/${spring.application.name}
 logging:
   level:
     co.nilin: DEBUG
