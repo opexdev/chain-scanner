@@ -28,13 +28,13 @@ class RetryFailedSyncsScheduledJob(
     override suspend fun execute(sch: ChainSyncSchedule) {
         val chainScanner = chainScannerHandler.getScannersByName(sch.chainName).firstOrNull() ?: return
         val chainSyncRetries = chainSyncRetryHandler.findAllActive(sch.chainName)
+        val blockRange = chainSyncRetries.take(chainScanner.maxBlockRange)
         runCatching {
             coroutineScope {
-                val blockRange = chainSyncRetries.chunked(chainScanner.maxBlockRange).firstOrNull()
-                blockRange?.forEach { retry ->
+                blockRange.forEach { chainSyncRetry ->
                     launch {
-                        logger.trace("Retry block sync on blockNumber: ${retry.blockNumber}")
-                        fetch(sch, chainScanner, retry)
+                        logger.trace("Retry block sync on blockNumber: ${chainSyncRetry.blockNumber}")
+                        fetch(sch, chainScanner, chainSyncRetry)
                     }
                 }
             }
