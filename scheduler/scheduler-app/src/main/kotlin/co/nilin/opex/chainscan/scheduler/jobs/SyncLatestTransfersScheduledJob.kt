@@ -49,7 +49,7 @@ class SyncLatestTransfersScheduledJob(
         }.onFailure { e ->
             when (e) {
                 is WebClientResponseException -> e.takeIf { it.statusCode == HttpStatus.TOO_MANY_REQUESTS }
-                    ?.run { sch.nextSchedule(chain.delayOnRateLimit.toLong()) }
+                    ?.run { sch.nextSchedule(chain.delayOnRateLimit.toLong()) } ?: sch.nextSchedule(sch.errorDelay)
                 is Exception -> sch.nextSchedule(sch.errorDelay)
                 else -> sch.nextSchedule(sch.delay)
             }
