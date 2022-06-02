@@ -15,9 +15,9 @@ abstract class ChainSyncScheduleRunner(
 ) {
     private val logger: Logger by LoggerDelegate()
 
-    @Scheduled(fixedDelay = 1000, initialDelay = 120000)
+    @Scheduled(fixedDelay = 1000, initialDelay = 60000)
     fun runSchedules() {
-        logger.debug("")
+        logger.debug("Executing runSchedules()")
         if (!scope.isCompleted()) return
         scope.launch {
             val schedules = chainSyncSchedulerHandler.fetchActiveSchedules(LocalDateTime.now())

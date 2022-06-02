@@ -10,7 +10,7 @@ import java.math.BigInteger
 
 @Service
 class SyncService<T>(
-    @Value("\${app.chain-name}") private val chainName: String,
+    @Value("\${app.chain.name}") private val chainName: String,
     private val chainService: ChainService<T>,
     private val dataDecoder: DataDecoder<T>,
     private val watchListHandler: WatchListHandler,

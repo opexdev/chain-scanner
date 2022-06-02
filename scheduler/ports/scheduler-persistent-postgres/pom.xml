@@ -49,5 +49,10 @@
             <artifactId>scheduler-core</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>co.nilin.opex.chainscanner.preferences</groupId>
+            <artifactId>preferences</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>

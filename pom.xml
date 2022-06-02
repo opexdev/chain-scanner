@@ -16,6 +16,7 @@
         <module>scanner-core</module>
         <module>scanner-database</module>
         <module>scheduler</module>
+        <module>preferences</module>
     </modules>
 
     <properties>

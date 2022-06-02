@@ -76,6 +76,9 @@ services:
       - DB_IP_PORT=postgres-ethereum-scanner
       - CHAIN_NAME=ethereum
       - RPC_ENDPOINT=${ETH_RPC_ENDPOINT}
+      - PREFERENCES=$PREFERENCES
+    configs:
+      - preferences.yml
     depends_on:
       - vault
       - postgres-ethereum-scanner
@@ -88,6 +91,9 @@ services:
       - DB_IP_PORT=postgres-bitcoin-scanner
       - REST_ENDPOINT=${BITCOIN_REST_ENDPOINT}
       - API_KEY=${BITCOIN_API_KEY}
+      - PREFERENCES=$PREFERENCES
+    configs:
+      - preferences.yml
     depends_on:
       - vault
       - postgres-bitcoin-scanner
@@ -100,6 +106,9 @@ services:
       - DB_IP_PORT=postgres-bsc-scanner
       - CHAIN_NAME=bsc
       - RPC_ENDPOINT=${BSC_RPC_ENDPOINT}
+      - PREFERENCES=$PREFERENCES
+    configs:
+      - preferences.yml
     depends_on:
       - vault
       - postgres-bsc-scanner
@@ -112,6 +121,9 @@ services:
       - DB_IP_PORT=postgres-tron-scanner
       - REST_ENDPOINT=${TRON_REST_ENDPOINT}
       - API_KEY=${TRON_API_KEY}
+      - PREFERENCES=$PREFERENCES
+    configs:
+      - preferences.yml
     depends_on:
       - vault
       - postgres-tron-scanner

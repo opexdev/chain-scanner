@@ -22,7 +22,8 @@ CREATE TABLE IF NOT EXISTS chain_scanners
     chain_name          VARCHAR(72) NOT NULL REFERENCES chains (name),
     url                 VARCHAR(72) NOT NULL,
     max_block_range     INTEGER     NOT NULL DEFAULT 10,
-    delay_on_rate_limit INTEGER     NOT NULL DEFAULT 0
+    delay_on_rate_limit INTEGER     NOT NULL DEFAULT 0,
+    UNIQUE (chain_name, url)
 );
 
 CREATE TABLE IF NOT EXISTS chain_sync_retry

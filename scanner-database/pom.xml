@@ -47,5 +47,10 @@
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-reflect</artifactId>
         </dependency>
+        <dependency>
+            <groupId>co.nilin.opex.chainscanner.preferences</groupId>
+            <artifactId>preferences</artifactId>
+            <version>1.0.0-beta.4</version>
+        </dependency>
     </dependencies>
 </project>
