@@ -4,17 +4,17 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>co.nilin.opex.chainscan</groupId>
+    <groupId>co.nilin.opex.chainscanner</groupId>
     <artifactId>chain-scanner</artifactId>
     <packaging>pom</packaging>
     <version>1.0.0-beta.4</version>
 
     <modules>
-        <module>bitcoin-app</module>
-        <module>ethereum-app</module>
-        <module>tron-app</module>
-        <module>core</module>
-        <module>database</module>
+        <module>bitcoin-scanner-app</module>
+        <module>ethereum-scanner-app</module>
+        <module>tron-scanner-app</module>
+        <module>scanner-core</module>
+        <module>scanner-database</module>
         <module>scheduler</module>
     </modules>
 
@@ -82,12 +82,12 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>co.nilin.opex.chainscan.core</groupId>
+                <groupId>co.nilin.opex.chainscanner.core</groupId>
                 <artifactId>core</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>co.nilin.opex.chainscan.database</groupId>
+                <groupId>co.nilin.opex.chainscanner.database</groupId>
                 <artifactId>database</artifactId>
                 <version>${project.version}</version>
             </dependency>

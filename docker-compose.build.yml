@@ -5,10 +5,10 @@ services:
     build: scheduler/scheduler-app
   ethereum-scanner:
     image: ghcr.io/opexdev/ethereum-scanner:$TAG
-    build: ethereum-app
+    build: ethereum-scanner-app
   bitcoin-scanner:
     image: ghcr.io/opexdev/bitcoin-scanner:$TAG
-    build: bitcoin-app
+    build: bitcoin-scanner-app
   tron-scanner:
     image: ghcr.io/opexdev/tron-scanner:$TAG
-    build: tron-app
+    build: tron-scanner-app

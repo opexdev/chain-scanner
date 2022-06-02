@@ -7,13 +7,13 @@ services:
       - "./preferences.yml:/preferences.yml"
   ethereum-scanner:
     image: ghcr.io/opexdev/ethereum-scanner
-    build: ethereum-app
+    build: ethereum-scanner-app
   bitcoin-scanner:
     image: ghcr.io/opexdev/bitcoin-scanner
-    build: bitcoin-app
+    build: bitcoin-scanner-app
   bsc-scanner:
     image: ghcr.io/opexdev/bsc-scanner
-    build: ethereum-app
+    build: ethereum-scanner-app
   tron-scanner:
     image: ghcr.io/opexdev/tron-scanner
-    build: tron-app
+    build: tron-scanner-app

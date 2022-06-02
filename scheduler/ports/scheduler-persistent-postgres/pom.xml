@@ -4,13 +4,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>scheduler</artifactId>
-        <groupId>co.nilin.opex.chainscan.scheduler</groupId>
+        <groupId>co.nilin.opex.chainscanner.scheduler</groupId>
         <version>1.0.0-beta.4</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>co.nilin.opex.chainscan.scheduler.db</groupId>
+    <groupId>co.nilin.opex.chainscanner.scheduler.db</groupId>
     <artifactId>scheduler-persistent-postgres</artifactId>
 
     <properties>
@@ -45,7 +45,7 @@
             <artifactId>kotlin-reflect</artifactId>
         </dependency>
         <dependency>
-            <groupId>co.nilin.opex.chainscan.scheduler.core</groupId>
+            <groupId>co.nilin.opex.chainscanner.scheduler.core</groupId>
             <artifactId>scheduler-core</artifactId>
             <version>${project.version}</version>
         </dependency>
