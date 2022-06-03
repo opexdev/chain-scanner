@@ -5,18 +5,12 @@ import co.nilin.opex.chainscanner.scheduler.schedule.tasks.RetryFailedSyncs
 import co.nilin.opex.chainscanner.scheduler.schedule.tasks.SyncLatestTransfers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.annotation.Configuration
+import org.springframework.stereotype.Service
 
-@Configuration
-class Schedules(
-    private val chainSyncSchedulerHandler: ChainSyncSchedulerHandler
-) {
-    @Autowired
-    fun `Sync latest transfers`(mainSync: SyncLatestTransfers): ChainSyncScheduleRunner =
-        object : ChainSyncScheduleRunner(mainSync, CoroutineScope(Dispatchers.IO), chainSyncSchedulerHandler) {}
+@Service
+class `Sync latest transfers`(chainSyncSchedulerHandler: ChainSyncSchedulerHandler, mainSync: SyncLatestTransfers) :
+    ChainSyncScheduleRunner(mainSync, CoroutineScope(Dispatchers.IO), chainSyncSchedulerHandler)
 
-    @Autowired
-    fun `Retry failed syncs`(retrySync: RetryFailedSyncs): ChainSyncScheduleRunner =
-        object : ChainSyncScheduleRunner(retrySync, CoroutineScope(Dispatchers.IO), chainSyncSchedulerHandler) {}
-}
+@Service
+class `Retry failed syncs`(chainSyncSchedulerHandler: ChainSyncSchedulerHandler, retrySync: RetryFailedSyncs) :
+    ChainSyncScheduleRunner(retrySync, CoroutineScope(Dispatchers.IO), chainSyncSchedulerHandler)
