@@ -11,7 +11,7 @@
     </parent>
 
     <groupId>co.nilin.opex.chainscanner.core</groupId>
-    <artifactId>core</artifactId>
+    <artifactId>scanner-core</artifactId>
 
     <properties>
         <spring-boot.repackage.skip>true</spring-boot.repackage.skip>

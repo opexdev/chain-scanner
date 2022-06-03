@@ -84,12 +84,12 @@
             </dependency>
             <dependency>
                 <groupId>co.nilin.opex.chainscanner.core</groupId>
-                <artifactId>core</artifactId>
+                <artifactId>scanner-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>co.nilin.opex.chainscanner.database</groupId>
-                <artifactId>database</artifactId>
+                <artifactId>scanner-database</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>

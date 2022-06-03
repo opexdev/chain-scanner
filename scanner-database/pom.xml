@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>co.nilin.opex.chainscanner.database</groupId>
-    <artifactId>database</artifactId>
+    <artifactId>scanner-database</artifactId>
 
     <properties>
         <spring-boot.repackage.skip>true</spring-boot.repackage.skip>
@@ -33,7 +33,7 @@
         </dependency>
         <dependency>
             <groupId>co.nilin.opex.chainscanner.core</groupId>
-            <artifactId>core</artifactId>
+            <artifactId>scanner-core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlinx</groupId>

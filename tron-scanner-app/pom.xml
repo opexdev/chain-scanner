@@ -20,7 +20,7 @@
         </dependency>
         <dependency>
             <groupId>co.nilin.opex.chainscanner.core</groupId>
-            <artifactId>core</artifactId>
+            <artifactId>scanner-core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.bitcoinj</groupId>
@@ -41,7 +41,7 @@
         </dependency>
         <dependency>
             <groupId>co.nilin.opex.chainscanner.database</groupId>
-            <artifactId>database</artifactId>
+            <artifactId>scanner-database</artifactId>
         </dependency>
     </dependencies>
 </project>
