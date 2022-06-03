@@ -15,11 +15,11 @@ abstract class ChainSyncScheduleRunner(
 ) {
     private val logger: Logger by LoggerDelegate()
 
-    @Scheduled(fixedDelay = 1000)
+    @Scheduled(fixedDelay = 1000, initialDelay = 60000)
     fun runSchedules() {
+        if (!scope.isCompleted()) return
         val name = this::class.simpleName
         logger.trace("Executing schedule: $name")
-        if (!scope.isCompleted()) return
         scope.launch {
             val schedules = chainSyncSchedulerHandler.fetchActiveSchedules(LocalDateTime.now())
             logger.debug("Schedules count: ${schedules.size}")
