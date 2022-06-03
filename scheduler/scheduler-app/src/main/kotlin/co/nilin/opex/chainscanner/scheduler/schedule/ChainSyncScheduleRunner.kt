@@ -9,7 +9,6 @@ import org.springframework.scheduling.annotation.Scheduled
 import java.time.LocalDateTime
 
 abstract class ChainSyncScheduleRunner(
-    private val name: String,
     private val scheduleTask: ScheduleTask,
     private val scope: CoroutineScope,
     private val chainSyncSchedulerHandler: ChainSyncSchedulerHandler
@@ -18,6 +17,7 @@ abstract class ChainSyncScheduleRunner(
 
     @Scheduled(fixedDelay = 1000, initialDelay = 60000)
     fun runSchedules() {
+        val name = this::class.simpleName
         logger.debug("Executing schedule: $name")
         if (!scope.isCompleted()) return
         scope.launch {
