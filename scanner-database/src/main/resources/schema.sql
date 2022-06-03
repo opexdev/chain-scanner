@@ -1,6 +1,8 @@
 CREATE TABLE IF NOT EXISTS watch_list
 (
     id      SERIAL      PRIMARY KEY,
+    symbol  VARCHAR(25) NOT NULL,
+    name    VARCHAR(25) NOT NULL,
     address VARCHAR(72) NOT NULL UNIQUE
 );
 

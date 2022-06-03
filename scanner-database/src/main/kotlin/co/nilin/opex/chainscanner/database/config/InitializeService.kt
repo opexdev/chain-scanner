@@ -3,6 +3,8 @@ package co.nilin.opex.chainscanner.database.config
 import co.nilin.opex.chainscanner.core.model.WatchListItem
 import co.nilin.opex.chainscanner.core.spi.WatchListHandler
 import co.nilin.opex.chainscanner.preferences.Preferences
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -21,10 +23,14 @@ class InitializeService(
 
     @PostConstruct
     fun init() = runBlocking {
-        preferences.currencies.forEach { c ->
-            c.implementations.filter { it.chain == chainName }.forEach { ci ->
-                ci.tokenAddress?.also {
-                    runCatching { watchListHandler.add(WatchListItem(it)) }
+        coroutineScope {
+            preferences.currencies.forEach { c ->
+                c.implementations.filter { it.chain == chainName }.forEach { ci ->
+                    launch {
+                        ci.tokenAddress?.also {
+                            runCatching { watchListHandler.add(WatchListItem(c.symbol, c.name, it)) }
+                        }
+                    }
                 }
             }
         }
