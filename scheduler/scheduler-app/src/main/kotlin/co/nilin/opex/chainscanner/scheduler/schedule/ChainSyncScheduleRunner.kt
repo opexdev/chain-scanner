@@ -34,7 +34,7 @@ abstract class ChainSyncScheduleRunner(
                                 logger.error("Timeout on chain: ${sch.chainName} schedule: $name")
                             else if (e is ScannerConnectException) throw e
                         }.onSuccess {
-                            logger.info("Successfully executed schedule: $name chain: ${sch.chainName}")
+                            logger.debug("Successfully executed schedule: $name chain: ${sch.chainName}")
                         }
                     }
                 }
