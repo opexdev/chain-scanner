@@ -19,8 +19,7 @@ abstract class ChainSyncScheduleRunner(
     @Scheduled(fixedDelay = 1000, initialDelay = 60000)
     fun runSchedules() {
         if (!scope.isCompleted()) return
-        val name = this::class.simpleName
-        logger.trace("Executing schedule: $name")
+        logger.trace("Running schedule...")
         scope.launch {
             val schedules = chainSyncSchedulerHandler.fetchActiveSchedules(LocalDateTime.now())
             logger.debug("Schedules count: ${schedules.size}")
@@ -30,11 +29,10 @@ abstract class ChainSyncScheduleRunner(
                         runCatching {
                             withTimeout(sch.timeout * 1000) { scheduleTask.execute(sch) }
                         }.onFailure { e ->
-                            if (e is TimeoutCancellationException)
-                                logger.error("Timeout on chain: ${sch.chainName} schedule: $name")
+                            if (e is TimeoutCancellationException) logger.error("Timeout on chain: ${sch.chainName}")
                             else if (e is ScannerConnectException) throw e
                         }.onSuccess {
-                            logger.debug("Successfully executed schedule: $name chain: ${sch.chainName}")
+                            logger.debug("Successfully executed chain: ${sch.chainName}")
                         }
                     }
                 }
