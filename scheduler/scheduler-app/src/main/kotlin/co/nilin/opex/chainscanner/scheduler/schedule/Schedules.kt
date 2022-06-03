@@ -8,9 +8,9 @@ import kotlinx.coroutines.Dispatchers
 import org.springframework.stereotype.Service
 
 @Service
-class `Sync latest transfers`(chainSyncSchedulerHandler: ChainSyncSchedulerHandler, mainSync: SyncLatestTransfers) :
-    ChainSyncScheduleRunner(mainSync, CoroutineScope(Dispatchers.IO), chainSyncSchedulerHandler)
+class `Sync latest transfers`(chainSyncSchedulerHandler: ChainSyncSchedulerHandler, sync: SyncLatestTransfers) :
+    ChainSyncScheduleRunner("MAIN", sync, CoroutineScope(Dispatchers.IO), chainSyncSchedulerHandler)
 
 @Service
-class `Retry failed syncs`(chainSyncSchedulerHandler: ChainSyncSchedulerHandler, retrySync: RetryFailedSyncs) :
-    ChainSyncScheduleRunner(retrySync, CoroutineScope(Dispatchers.IO), chainSyncSchedulerHandler)
+class `Retry failed syncs`(chainSyncSchedulerHandler: ChainSyncSchedulerHandler, retry: RetryFailedSyncs) :
+    ChainSyncScheduleRunner("RETRY", retry, CoroutineScope(Dispatchers.IO), chainSyncSchedulerHandler)

@@ -9,6 +9,7 @@ import org.springframework.scheduling.annotation.Scheduled
 import java.time.LocalDateTime
 
 abstract class ChainSyncScheduleRunner(
+    private val name: String,
     private val scheduleTask: ScheduleTask,
     private val scope: CoroutineScope,
     private val chainSyncSchedulerHandler: ChainSyncSchedulerHandler
@@ -17,7 +18,7 @@ abstract class ChainSyncScheduleRunner(
 
     @Scheduled(fixedDelay = 1000, initialDelay = 60000)
     fun runSchedules() {
-        logger.debug("Executing runSchedules()")
+        logger.debug("Executing schedule: $name")
         if (!scope.isCompleted()) return
         scope.launch {
             val schedules = chainSyncSchedulerHandler.fetchActiveSchedules(LocalDateTime.now())
@@ -27,7 +28,8 @@ abstract class ChainSyncScheduleRunner(
                         runCatching {
                             withTimeout(sch.timeout * 1000) { scheduleTask.execute(sch) }
                         }.onFailure { e ->
-                            if (e is TimeoutCancellationException) logger.error("Timeout on chain: ${sch.chainName}")
+                            if (e is TimeoutCancellationException)
+                                logger.error("Timeout on chain: ${sch.chainName} schedule: $name")
                         }
                     }
                 }
