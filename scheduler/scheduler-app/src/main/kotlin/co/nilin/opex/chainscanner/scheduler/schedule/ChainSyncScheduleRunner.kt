@@ -18,8 +18,8 @@ abstract class ChainSyncScheduleRunner(
 
     @Scheduled(fixedDelay = 1000, initialDelay = 60000)
     fun runSchedules() {
+        scope.ensureActive()
         if (!scope.isCompleted()) return
-        logger.trace("Running schedule...")
         scope.launch {
             val schedules = chainSyncSchedulerHandler.fetchActiveSchedules(LocalDateTime.now())
             logger.debug("Schedules count: ${schedules.size}")
