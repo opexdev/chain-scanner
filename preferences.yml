@@ -1,7 +1,7 @@
 chains:
   - name: bsc
     scanners:
-      - url: http://bsc-scanner
+      - url: http://bsc-scanner:8080
         maxBlockRange: 30
         delayOnRateLimit: 300
     schedule:
