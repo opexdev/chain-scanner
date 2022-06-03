@@ -18,7 +18,6 @@ abstract class ChainSyncScheduleRunner(
 
     @Scheduled(fixedDelay = 1000, initialDelay = 60000)
     fun runSchedules() {
-        scope.ensureActive()
         if (!scope.isCompleted()) return
         scope.launch {
             val schedules = chainSyncSchedulerHandler.fetchActiveSchedules(LocalDateTime.now())
@@ -37,6 +36,7 @@ abstract class ChainSyncScheduleRunner(
                     }
                 }
             }
+            scope.ensureActive()
         }
     }
 
