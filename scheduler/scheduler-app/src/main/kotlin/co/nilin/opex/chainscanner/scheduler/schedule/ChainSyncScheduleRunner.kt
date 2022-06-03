@@ -2,6 +2,7 @@ package co.nilin.opex.chainscanner.scheduler.schedule
 
 import co.nilin.opex.chainscanner.scheduler.core.spi.ChainSyncSchedulerHandler
 import co.nilin.opex.chainscanner.scheduler.core.spi.ScheduleTask
+import co.nilin.opex.chainscanner.scheduler.exceptions.ScannerConnectException
 import co.nilin.opex.chainscanner.scheduler.utils.LoggerDelegate
 import kotlinx.coroutines.*
 import org.slf4j.Logger
@@ -23,7 +24,7 @@ abstract class ChainSyncScheduleRunner(
         scope.launch {
             val schedules = chainSyncSchedulerHandler.fetchActiveSchedules(LocalDateTime.now())
             logger.debug("Schedules count: ${schedules.size}")
-            supervisorScope {
+            coroutineScope {
                 schedules.forEach { sch ->
                     launch {
                         runCatching {
@@ -31,6 +32,7 @@ abstract class ChainSyncScheduleRunner(
                         }.onFailure { e ->
                             if (e is TimeoutCancellationException)
                                 logger.error("Timeout on chain: ${sch.chainName} schedule: $name")
+                            else if (e is ScannerConnectException) throw e
                         }.onSuccess {
                             logger.info("Successfully executed schedule: $name chain: ${sch.chainName}")
                         }
