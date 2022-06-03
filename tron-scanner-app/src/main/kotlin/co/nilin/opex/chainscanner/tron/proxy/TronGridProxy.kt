@@ -24,7 +24,7 @@ class TronGridProxy(
     data class GetBlockRequest(val num: Long)
 
     suspend fun getBlockByNumber(number: Long): BlockResponse? {
-        logger.info("Fetching block data $number")
+        logger.debug("Fetching block data $number")
         return webClient.post()
             .uri("$url/wallet/getblockbynum")
             .accept(MediaType.APPLICATION_JSON)
@@ -38,7 +38,7 @@ class TronGridProxy(
     }
 
     suspend fun getLatestBlock(): BlockResponse? {
-        logger.info("Fetching latest block")
+        logger.debug("Fetching latest block")
         return webClient.post()
             .uri("$url/wallet/getnowblock")
             .accept(MediaType.APPLICATION_JSON)

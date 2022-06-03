@@ -23,14 +23,14 @@ class SyncService<T>(
         require(blockNumber?.abs() == blockNumber)
         val actualBlockNumber = blockNumber ?: chainService.getLatestBlock()
         val watchedTokens = watchListHandler.findAll().map { addressChecksumer.makeValid(it.address) }
-        logger.info("Syncing for: $chainName - Block: $actualBlockNumber")
+        logger.debug("Syncing for: $chainName - Block: $actualBlockNumber")
         val cached = transferCacheHandler.getTransfers(watchedTokens, actualBlockNumber)
         return cached.takeIf { it.isNotEmpty() }.also {
-            logger.info("Loading $chainName transfers from cache on blockNumber: $actualBlockNumber")
+            logger.debug("Loading $chainName transfers from cache on blockNumber: $actualBlockNumber")
         } ?: run {
-            logger.info("Start fetching $chainName transfers on blockNumber: $actualBlockNumber")
+            logger.debug("Start fetching $chainName transfers on blockNumber: $actualBlockNumber")
             val response = chainService.getTransactions(actualBlockNumber)
-            logger.info("Finished fetching block info on blockNumber: $actualBlockNumber")
+            logger.debug("Finished fetching block info on blockNumber: $actualBlockNumber")
             return dataDecoder.decode(response)
                 .filter { !it.isTokenTransfer || watchedTokens.contains(it.tokenAddress) }
                 .also { transferCacheHandler.saveTransfers(it) }

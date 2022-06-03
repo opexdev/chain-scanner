@@ -33,7 +33,7 @@ class RetryFailedSyncs(
             coroutineScope {
                 blockRange.forEach { chainSyncRetry ->
                     launch {
-                        logger.trace("Retry block sync on blockNumber: ${chainSyncRetry.blockNumber}")
+                        logger.debug("Retry block sync on blockNumber: ${chainSyncRetry.blockNumber}")
                         fetch(sch, chainScanner, chainSyncRetry)
                     }
                 }

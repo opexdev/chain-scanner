@@ -15,13 +15,14 @@ abstract class ChainSyncScheduleRunner(
 ) {
     private val logger: Logger by LoggerDelegate()
 
-    @Scheduled(fixedDelay = 1000, initialDelay = 60000)
+    @Scheduled(fixedDelay = 1000)
     fun runSchedules() {
         val name = this::class.simpleName
-        logger.debug("Executing schedule: $name")
+        logger.trace("Executing schedule: $name")
         if (!scope.isCompleted()) return
         scope.launch {
             val schedules = chainSyncSchedulerHandler.fetchActiveSchedules(LocalDateTime.now())
+            logger.debug("Schedules count: ${schedules.size}")
             supervisorScope {
                 schedules.forEach { sch ->
                     launch {
@@ -30,6 +31,8 @@ abstract class ChainSyncScheduleRunner(
                         }.onFailure { e ->
                             if (e is TimeoutCancellationException)
                                 logger.error("Timeout on chain: ${sch.chainName} schedule: $name")
+                        }.onSuccess {
+                            logger.info("Successfully executed schedule: $name chain: ${sch.chainName}")
                         }
                     }
                 }

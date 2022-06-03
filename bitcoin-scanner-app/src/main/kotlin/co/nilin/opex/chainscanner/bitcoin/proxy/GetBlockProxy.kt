@@ -23,7 +23,7 @@ class GetBlockProxy(
     private val logger: Logger by LoggerDelegate()
 
     suspend fun getInfo(): ChainInfoResponse? {
-        logger.trace("Fetching chain info")
+        logger.debug("Fetching chain info")
         return webClient.get()
             .uri("$endpoint/chaininfo.json")
             .accept(MediaType.APPLICATION_JSON)
@@ -36,7 +36,7 @@ class GetBlockProxy(
     }
 
     suspend fun getBlockHash(height: Long): String {
-        logger.trace("Fetching block hash of $height")
+        logger.debug("Fetching block hash of $height")
         return webClient.get()
             .uri("$endpoint/blockhashbyheight/${height}.json")
             .accept(MediaType.APPLICATION_JSON)
@@ -49,7 +49,7 @@ class GetBlockProxy(
     }
 
     suspend fun getBlockData(hash: String): BlockResponse? {
-        logger.trace("Fetching block data of $hash")
+        logger.debug("Fetching block data of $hash")
         return webClient.get()
             .uri("$endpoint/block/${hash}.json")
             .accept(MediaType.APPLICATION_JSON)

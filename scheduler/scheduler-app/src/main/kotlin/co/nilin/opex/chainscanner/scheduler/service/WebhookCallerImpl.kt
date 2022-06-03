@@ -30,7 +30,7 @@ class WebhookCallerImpl(
                 .bodyToMono<Void>()
                 .awaitFirst()
         }.onSuccess {
-            logger.trace("Successfully sent transfers url: $uri count: ${data.size}")
+            logger.debug("Successfully sent transfers url: $uri count: ${data.size}")
         }.recoverCatching { e ->
             when (e) {
                 is WebClientResponseException -> throw Exception("${e.statusCode.name}(${e.statusCode.value()}")
@@ -38,7 +38,7 @@ class WebhookCallerImpl(
                 else -> throw e
             }
         }.onFailure { e ->
-            logger.trace("Failed to call webhook url: `$uri` error: ${e.cause?.message ?: e.message}")
+            logger.error("Failed to call webhook url: `$uri` error: ${e.cause?.message ?: e.message}")
         }.getOrThrow()
     }
 }

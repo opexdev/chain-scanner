@@ -31,7 +31,7 @@ class SyncLatestTransfers(
     override suspend fun execute(sch: ChainSyncSchedule) {
         val chainScanner = chainScannerHandler.getScannersByName(sch.chainName).firstOrNull() ?: return
         val blockRange = calculateBlockRange(chainScanner, sch.confirmations)
-        logger.trace("Fetch transfers on block range: ${blockRange.first} - ${blockRange.last}")
+        logger.debug("Fetch transfers on block range: ${blockRange.first} - ${blockRange.last}")
         runCatching {
             coroutineScope {
                 val br = blockRange.take(chainScanner.maxBlockRange)
