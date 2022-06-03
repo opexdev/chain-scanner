@@ -13,7 +13,7 @@ import java.math.BigInteger
 import java.net.URI
 import java.util.*
 
-private inline fun <reified T : Any> typeRef(): ParameterizedTypeReference<T> =
+private inline fun <reified T : Any> parameterizedTypeReference(): ParameterizedTypeReference<T> =
     object : ParameterizedTypeReference<T>() {}
 
 @Service
@@ -24,26 +24,25 @@ class ScannerProxyImpl(private val webClient: WebClient) : ScannerProxy {
         return webClient.get()
             .uri {
                 URI.create(url).resolve(
-                    it.path("/transfers").queryParamIfPresent("blockNumber", Optional.ofNullable(blockNumber))
+                    it.path("/transfers")
+                        .queryParamIfPresent("blockNumber", Optional.ofNullable(blockNumber))
                         .build()
                 )
             }
             .accept(MediaType.APPLICATION_JSON)
             .retrieve()
             .onStatus({ t -> t.isError }, { it.createException() })
-            .bodyToMono(typeRef<List<Transfer>>())
+            .bodyToMono(parameterizedTypeReference<List<Transfer>>())
             .awaitFirst()
     }
 
     override suspend fun getBlockNumber(url: String): BigInteger {
         return webClient.get()
-            .uri {
-                URI.create(url).resolve(it.path("/block-number").build())
-            }
+            .uri { URI.create(url).resolve("/block-number") }
             .accept(MediaType.APPLICATION_JSON)
             .retrieve()
             .onStatus({ t -> t.isError }, { it.createException() })
-            .bodyToMono(typeRef<BigInteger>())
+            .bodyToMono(BigInteger::class.java)
             .awaitFirst()
     }
 
@@ -57,7 +56,7 @@ class ScannerProxyImpl(private val webClient: WebClient) : ScannerProxy {
             .accept(MediaType.APPLICATION_JSON)
             .retrieve()
             .onStatus({ t -> t.isError }, { it.createException() })
-            .bodyToMono(typeRef<List<Transfer>>())
+            .bodyToMono(parameterizedTypeReference<List<Transfer>>())
             .awaitFirst()
     }
 }
