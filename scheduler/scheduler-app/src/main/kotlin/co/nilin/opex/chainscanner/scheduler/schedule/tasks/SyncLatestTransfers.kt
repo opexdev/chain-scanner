@@ -33,9 +33,9 @@ class SyncLatestTransfers(
 
     override suspend fun execute(sch: ChainSyncSchedule) {
         val chainScanner = chainScannerHandler.getScannersByName(sch.chainName).firstOrNull() ?: return
-        val blockRange = runCatching { calculateBlockRange(chainScanner, sch.confirmations) }.onFailure { e ->
-            if (e is WebClientRequestException && e.isConnectionError) throw ScannerConnectException("Block range")
-        }.getOrThrow()
+        val blockRange = runCatching {
+            calculateBlockRange(chainScanner, sch.confirmations)
+        }.onFailure(::rethrowBlockRangeExceptions).getOrThrow()
         logger.debug("Fetch transfers on block range: ${blockRange.first} - ${blockRange.last}")
         runCatching {
             coroutineScope {
@@ -45,15 +45,24 @@ class SyncLatestTransfers(
                 }
             }
         }.onFailure { e ->
-            when (e) {
-                is RateLimitException -> sch.enqueueNextSchedule(chainScanner.delayOnRateLimit.toLong())
-                is ScannerConnectException -> throw e
-                else -> sch.enqueueNextSchedule(sch.errorDelay)
-            }
+            rethrowScheduleExceptions(e, sch, chainScanner)
         }.onSuccess {
             sch.enqueueNextSchedule(sch.delay)
             logger.trace("Successfully fetched transfers for block range: ${blockRange.first} - ${blockRange.last}")
         }
+    }
+
+    private fun rethrowBlockRangeExceptions(e: Throwable) {
+        if (e is WebClientRequestException && e.isConnectionError) throw ScannerConnectException("Block range")
+    }
+
+    private suspend fun rethrowScheduleExceptions(
+        e: Throwable,
+        sch: ChainSyncSchedule,
+        chainScanner: ChainScanner
+    ) = when (e) {
+        is RateLimitException -> sch.enqueueNextSchedule(chainScanner.delayOnRateLimit.toLong())
+        else -> throw e
     }
 
     private suspend fun calculateBlockRange(chainScanner: ChainScanner, confirmations: Int): LongRange {
@@ -96,13 +105,8 @@ class SyncLatestTransfers(
         error: String?,
         sch: ChainSyncSchedule
     ) {
-        val chainSyncRetry =
-            chainSyncRetryHandler.findByChainAndBlockNumber(chainScanner.chainName, blockNumber) ?: ChainSyncRetry(
-                chainScanner.chainName,
-                blockNumber,
-                error = error,
-                maxRetries = sch.maxRetries
-            )
+        val chainSyncRetry = chainSyncRetryHandler.findByChainAndBlockNumber(chainScanner.chainName, blockNumber)
+            ?: ChainSyncRetry(chainScanner.chainName, blockNumber, error = error, maxRetries = sch.maxRetries)
         chainSyncRetryHandler.save(chainSyncRetry.copy(error = error))
     }
 

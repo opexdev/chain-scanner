@@ -5,12 +5,36 @@ import co.nilin.opex.chainscanner.scheduler.schedule.tasks.RetryFailedSyncs
 import co.nilin.opex.chainscanner.scheduler.schedule.tasks.SyncLatestTransfers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 
 @Service
-class SyncLatestTransfersSchedule(chainSyncSchedulerHandler: ChainSyncSchedulerHandler, sync: SyncLatestTransfers) :
-    ChainSyncScheduleRunner(sync, CoroutineScope(Dispatchers.IO), chainSyncSchedulerHandler)
+class SyncLatestTransfersSchedule(
+    chainSyncSchedulerHandler: ChainSyncSchedulerHandler, sync: SyncLatestTransfers,
+    @Value("\${app.schedule.error-rate}")
+    errorRate: Int,
+    @Value("\${app.schedule.error-rate-period}")
+    errorRatePeriod: Int
+) : ChainSyncScheduleRunner(
+    sync,
+    CoroutineScope(Dispatchers.IO),
+    chainSyncSchedulerHandler,
+    errorRate,
+    errorRatePeriod
+)
 
 @Service
-class RetryFailedSyncsSchedule(chainSyncSchedulerHandler: ChainSyncSchedulerHandler, retry: RetryFailedSyncs) :
-    ChainSyncScheduleRunner(retry, CoroutineScope(Dispatchers.IO), chainSyncSchedulerHandler)
+class RetryFailedSyncsSchedule(
+    chainSyncSchedulerHandler: ChainSyncSchedulerHandler,
+    retry: RetryFailedSyncs,
+    @Value("\${app.schedule.error-rate}")
+    errorRate: Int,
+    @Value("\${app.schedule.error-rate-period}")
+    errorRatePeriod: Int
+) : ChainSyncScheduleRunner(
+    retry,
+    CoroutineScope(Dispatchers.IO),
+    chainSyncSchedulerHandler,
+    errorRate,
+    errorRatePeriod
+)

@@ -29,6 +29,6 @@ fun Transfer.toModel() = TransferModel(
     id
 )
 
-fun WatchListItemModel.toPlainObject() = WatchListItem(address, id)
+fun WatchListItemModel.toPlainObject() = WatchListItem(symbol, name, address, id)
 
-fun WatchListItem.toModel() = WatchListItemModel(address, id)
+fun WatchListItem.toModel() = WatchListItemModel(symbol, name, address, id)

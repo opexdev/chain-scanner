@@ -13,6 +13,10 @@
     <groupId>co.nilin.opex.chainscanner.scheduler.app</groupId>
     <artifactId>scheduler-app</artifactId>
 
+    <properties>
+        <resilience4jVersion>1.7.1</resilience4jVersion>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -47,6 +51,16 @@
             <groupId>co.nilin.opex.chainscanner.scheduler.db</groupId>
             <artifactId>scheduler-persistent-postgres</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.resilience4j</groupId>
+            <artifactId>resilience4j-ratelimiter</artifactId>
+            <version>${resilience4jVersion}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.resilience4j</groupId>
+            <artifactId>resilience4j-kotlin</artifactId>
+            <version>${resilience4jVersion}</version>
         </dependency>
     </dependencies>
 </project>

@@ -30,4 +30,8 @@ class ChainSyncSchedulerHandlerImpl(private val chainSyncScheduleRepository: Cha
             ?: ChainSyncScheduleModel(chain, LocalDateTime.now(), delaySeconds, errorDelaySeconds)
         chainSyncScheduleRepository.save(doc).awaitFirstOrNull()
     }
+
+    override suspend fun findByChain(chainName: String): ChainSyncSchedule? {
+        return chainSyncScheduleRepository.findByChain(chainName).awaitFirstOrNull()?.toPlainObject()
+    }
 }

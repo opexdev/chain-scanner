@@ -2,6 +2,7 @@ package co.nilin.opex.chainscanner.scheduler.service
 
 import co.nilin.opex.chainscanner.scheduler.core.po.Transfer
 import co.nilin.opex.chainscanner.scheduler.core.spi.WebhookCaller
+import co.nilin.opex.chainscanner.scheduler.exceptions.WebhookException
 import co.nilin.opex.chainscanner.scheduler.utils.LoggerDelegate
 import kotlinx.coroutines.reactive.awaitFirst
 import org.slf4j.Logger
@@ -29,16 +30,18 @@ class WebhookCallerImpl(
                 .onStatus({ t -> t.isError }, { it.createException() })
                 .bodyToMono<Void>()
                 .awaitFirst()
+        }.onFailure {
+            rethrowWebhookExceptions(it, uri.toString())
         }.onSuccess {
             logger.debug("Successfully sent transfers url: $uri count: ${data.size}")
-        }.recoverCatching { e ->
-            when (e) {
-                is WebClientResponseException -> throw Exception("${e.statusCode.name}(${e.statusCode.value()}")
-                is WebClientRequestException -> throw Exception("${e.cause?.message ?: e.message}")
-                else -> throw e
-            }
-        }.onFailure { e ->
-            logger.error("Failed to call webhook url: `$uri` error: ${e.cause?.message ?: e.message}")
-        }.getOrThrow()
+        }
+    }
+
+    private fun rethrowWebhookExceptions(e: Throwable, uri: String): Nothing = when (e) {
+        is WebClientRequestException ->
+            throw WebhookException("Failed to call webhook url: `$uri` error: ${e.cause?.message ?: e.message}")
+        is WebClientResponseException ->
+            throw WebhookException("Failed to call webhook url: `$uri` error: ${e.statusCode.name}(${e.statusCode.value()}")
+        else -> throw e
     }
 }
