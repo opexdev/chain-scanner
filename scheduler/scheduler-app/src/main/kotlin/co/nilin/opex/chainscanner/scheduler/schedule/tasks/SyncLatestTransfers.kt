@@ -19,18 +19,17 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import java.math.BigInteger
 import java.net.ConnectException
 import java.time.LocalDateTime
-import java.time.temporal.ChronoUnit
 
 @Service
 class SyncLatestTransfers(
     private val scannerProxy: ScannerProxy,
     private val chainScannerHandler: ChainScannerHandler,
     private val chainSyncRecordHandler: ChainSyncRecordHandler,
-    private val chainSyncSchedulerHandler: ChainSyncSchedulerHandler,
+    chainSyncSchedulerHandler: ChainSyncSchedulerHandler,
     private val chainSyncRetryHandler: ChainSyncRetryHandler,
     private val webhookCaller: WebhookCaller,
     private val blockRangeCalculator: BlockRangeCalculator
-) : ScheduleTask {
+) : ScheduleTask, SyncScheduleTaskBase(chainSyncSchedulerHandler) {
     private val logger: Logger by LoggerDelegate()
 
     override suspend fun execute(sch: ChainSyncSchedule) {
@@ -54,24 +53,6 @@ class SyncLatestTransfers(
         }
     }
 
-    private fun rethrowBlockRangeExceptions(e: Throwable) {
-        if (e is WebClientRequestException && e.isConnectionError) throw ScannerConnectException("Block range")
-    }
-
-    private suspend fun rethrowScheduleExceptions(
-        e: Throwable,
-        sch: ChainSyncSchedule,
-        chainScanner: ChainScanner
-    ) = when (e) {
-        is RateLimitException -> sch.enqueueNextSchedule(chainScanner.delayOnRateLimit.toLong())
-        else -> throw e
-    }
-
-    private suspend fun ChainSyncSchedule.enqueueNextSchedule(nextTimeDiff: Long) {
-        val retryTime = LocalDateTime.now().plus(nextTimeDiff, ChronoUnit.SECONDS)
-        chainSyncSchedulerHandler.save(copy(executeTime = retryTime))
-    }
-
     private suspend fun fetch(sch: ChainSyncSchedule, chainScanner: ChainScanner, blockNumber: BigInteger) {
         runCatching {
             scannerProxy.getTransfers(chainScanner.url, blockNumber)
@@ -90,6 +71,10 @@ class SyncLatestTransfers(
         }.also {
             updateChainSyncRecord(chainScanner.chainName, blockNumber)
         }.getOrThrow()
+    }
+
+    private fun rethrowBlockRangeExceptions(e: Throwable) {
+        if (e is WebClientRequestException && e.isConnectionError) throw ScannerConnectException("Block range")
     }
 
     private suspend fun enqueueRetryTask(

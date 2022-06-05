@@ -15,17 +15,15 @@ import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClientRequestException
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import java.net.ConnectException
-import java.time.LocalDateTime
-import java.time.temporal.ChronoUnit
 
 @Service
 class RetryFailedSyncs(
     private val scannerProxy: ScannerProxy,
     private val chainScannerHandler: ChainScannerHandler,
-    private val chainSyncSchedulerHandler: ChainSyncSchedulerHandler,
+    chainSyncSchedulerHandler: ChainSyncSchedulerHandler,
     private val chainSyncRetryHandler: ChainSyncRetryHandler,
     private val webhookCaller: WebhookCaller,
-) : ScheduleTask {
+) : ScheduleTask, SyncScheduleTaskBase(chainSyncSchedulerHandler) {
     private val logger: Logger by LoggerDelegate()
 
     override suspend fun execute(sch: ChainSyncSchedule) {
@@ -42,11 +40,7 @@ class RetryFailedSyncs(
                 }
             }
         }.onFailure { e ->
-            when (e) {
-                is RateLimitException -> sch.enqueueNextSchedule(chainScanner.delayOnRateLimit.toLong())
-                is ScannerConnectException -> throw e
-                else -> sch.enqueueNextSchedule(sch.errorDelay)
-            }
+            rethrowScheduleExceptions(e, sch, chainScanner)
         }
     }
 
@@ -58,13 +52,13 @@ class RetryFailedSyncs(
         runCatching {
             scannerProxy.getTransfers(chainScanner.url, chainSyncRetry.blockNumber)
         }.onFailure {
-            increaseRetryCounter(chainSyncRetry, sch, it.message)
+            chainSyncRetryHandler.increaseRetryCounter(chainSyncRetry, sch, it.message)
             if (it is WebClientResponseException && it.isTooManyRequests) throw RateLimitException()
             else if (it is WebClientRequestException && it.isConnectionError) throw ScannerConnectException("Get transfers")
         }.mapCatching {
             webhookCaller.callWebhook(chainScanner.chainName, it)
         }.onFailure {
-            increaseRetryCounter(chainSyncRetry, sch, it.message)
+            chainSyncRetryHandler.increaseRetryCounter(chainSyncRetry, sch, it.message)
         }.mapCatching {
             scannerProxy.clearCache(chainScanner.url, chainSyncRetry.blockNumber)
         }.onFailure { e ->
@@ -73,22 +67,6 @@ class RetryFailedSyncs(
             val retries = chainSyncRetry.retries + 1
             chainSyncRetryHandler.save(chainSyncRetry.copy(retries = retries, synced = true))
         }
-    }
-
-    private suspend fun increaseRetryCounter(
-        chainSyncRetry: ChainSyncRetry,
-        sch: ChainSyncSchedule,
-        error: String?
-    ) {
-        val retries = chainSyncRetry.retries + 1
-        chainSyncRetryHandler.save(
-            chainSyncRetry.copy(retries = retries, giveUp = retries >= sch.maxRetries, error = error)
-        )
-    }
-
-    private suspend fun ChainSyncSchedule.enqueueNextSchedule(nextTimeDiff: Long) {
-        val retryTime = LocalDateTime.now().plus(nextTimeDiff, ChronoUnit.SECONDS)
-        chainSyncSchedulerHandler.save(copy(executeTime = retryTime))
     }
 
     private val WebClientResponseException.isTooManyRequests: Boolean
