@@ -10,11 +10,7 @@ import co.nilin.opex.chainscanner.scheduler.utils.LoggerDelegate
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import org.slf4j.Logger
-import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
-import org.springframework.web.reactive.function.client.WebClientRequestException
-import org.springframework.web.reactive.function.client.WebClientResponseException
-import java.net.ConnectException
 
 @Service
 class RetryFailedSyncs(
@@ -35,8 +31,7 @@ class RetryFailedSyncs(
                     launch {
                         logger.debug("Retry block sync on blockNumber: ${chainSyncRetry.blockNumber}")
                         fetchFunction.fetch(sch, chainScanner, chainSyncRetry.blockNumber).onSuccess {
-                            val retries = chainSyncRetry.retries + 1
-                            chainSyncRetryHandler.save(chainSyncRetry.copy(retries = retries, synced = true))
+                            chainSyncRetryHandler.markAsSynced(chainSyncRetry)
                         }.getOrThrow()
                     }
                 }
@@ -45,10 +40,4 @@ class RetryFailedSyncs(
             rethrowScheduleExceptions(e, sch, chainScanner)
         }
     }
-
-    private val WebClientResponseException.isTooManyRequests: Boolean
-        get() = statusCode == HttpStatus.TOO_MANY_REQUESTS
-
-    private val WebClientRequestException.isConnectionError: Boolean
-        get() = mostSpecificCause is ConnectException
 }

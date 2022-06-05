@@ -23,21 +23,21 @@ class FetchFunction(
 ) {
     suspend fun fetch(sch: ChainSyncSchedule, chainScanner: ChainScanner, blockNumber: BigInteger) = runCatching {
         scannerProxy.getTransfers(chainScanner.url, blockNumber)
-    }.onFailure {
-        if (it is WebClientResponseException && it.isTooManyRequests) throw RateLimitException()
-        else if (it is WebClientRequestException && it.isConnectionError) throw ScannerConnectException("Get transfers")
-        else enqueueRetryTask(chainScanner, blockNumber, it.message, sch)
+    }.recoverCatching { e ->
+        if (e is WebClientResponseException && e.isTooManyRequests) throw RateLimitException()
+        else if (e is WebClientRequestException && e.isConnectionError) throw ScannerConnectException("Get transfers")
+        else throw e
     }.mapCatching {
         webhookCaller.callWebhook(chainScanner.chainName, it)
     }.onFailure { e ->
-        enqueueRetryTask(chainScanner, blockNumber, e.message, sch)
+        retry(chainScanner, blockNumber, e.message, sch)
     }.mapCatching {
         scannerProxy.clearCache(chainScanner.url, blockNumber)
     }.onFailure {
         if (it is WebClientRequestException && it.isConnectionError) throw ScannerConnectException("Clear cache")
     }
 
-    private suspend fun enqueueRetryTask(
+    private suspend fun retry(
         chainScanner: ChainScanner,
         blockNumber: BigInteger,
         error: String?,
@@ -45,7 +45,7 @@ class FetchFunction(
     ) {
         val chainSyncRetry =
             chainSyncRetryHandler.findByChainAndBlockNumber(chainScanner.chainName, blockNumber)?.let {
-                it.copy(retries = it.retries + 1, giveUp = it.retries + 1 > it.maxRetries)
+                it.copy(retries = it.retries + 1, giveUp = it.retries + 1 >= it.maxRetries)
             } ?: ChainSyncRetry(chainScanner.chainName, blockNumber, maxRetries = sch.maxRetries)
         chainSyncRetryHandler.save(chainSyncRetry.copy(error = error))
     }
