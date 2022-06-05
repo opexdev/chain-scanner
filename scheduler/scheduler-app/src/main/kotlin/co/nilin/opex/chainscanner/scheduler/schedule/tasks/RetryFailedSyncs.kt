@@ -1,11 +1,10 @@
 package co.nilin.opex.chainscanner.scheduler.schedule.tasks
 
-import co.nilin.opex.chainscanner.scheduler.core.po.ChainScanner
-import co.nilin.opex.chainscanner.scheduler.core.po.ChainSyncRetry
 import co.nilin.opex.chainscanner.scheduler.core.po.ChainSyncSchedule
-import co.nilin.opex.chainscanner.scheduler.core.spi.*
-import co.nilin.opex.chainscanner.scheduler.exceptions.RateLimitException
-import co.nilin.opex.chainscanner.scheduler.exceptions.ScannerConnectException
+import co.nilin.opex.chainscanner.scheduler.core.spi.ChainScannerHandler
+import co.nilin.opex.chainscanner.scheduler.core.spi.ChainSyncRetryHandler
+import co.nilin.opex.chainscanner.scheduler.core.spi.ChainSyncSchedulerHandler
+import co.nilin.opex.chainscanner.scheduler.core.spi.ScheduleTask
 import co.nilin.opex.chainscanner.scheduler.utils.LoggerDelegate
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -18,11 +17,10 @@ import java.net.ConnectException
 
 @Service
 class RetryFailedSyncs(
-    private val scannerProxy: ScannerProxy,
     private val chainScannerHandler: ChainScannerHandler,
     chainSyncSchedulerHandler: ChainSyncSchedulerHandler,
     private val chainSyncRetryHandler: ChainSyncRetryHandler,
-    private val webhookCaller: WebhookCaller,
+    private val fetchFunction: FetchFunction
 ) : ScheduleTask, SyncScheduleTaskBase(chainSyncSchedulerHandler) {
     private val logger: Logger by LoggerDelegate()
 
@@ -35,38 +33,16 @@ class RetryFailedSyncs(
                 blockRange.forEach { chainSyncRetry ->
                     launch {
                         logger.debug("Retry block sync on blockNumber: ${chainSyncRetry.blockNumber}")
-                        fetch(sch, chainScanner, chainSyncRetry)
+                        fetchFunction.fetch(sch, chainScanner, chainSyncRetry.blockNumber).onSuccess {
+                            val retries = chainSyncRetry.retries + 1
+                            chainSyncRetryHandler.save(chainSyncRetry.copy(retries = retries, synced = true))
+                        }.getOrThrow()
                     }
                 }
             }
         }.onFailure { e ->
             rethrowScheduleExceptions(e, sch, chainScanner)
         }
-    }
-
-    private suspend fun fetch(
-        sch: ChainSyncSchedule,
-        chainScanner: ChainScanner,
-        chainSyncRetry: ChainSyncRetry
-    ) {
-        runCatching {
-            scannerProxy.getTransfers(chainScanner.url, chainSyncRetry.blockNumber)
-        }.onFailure {
-            chainSyncRetryHandler.increaseRetryCounter(chainSyncRetry, sch, it.message)
-            if (it is WebClientResponseException && it.isTooManyRequests) throw RateLimitException()
-            else if (it is WebClientRequestException && it.isConnectionError) throw ScannerConnectException("Get transfers")
-        }.mapCatching {
-            webhookCaller.callWebhook(chainScanner.chainName, it)
-        }.onFailure {
-            chainSyncRetryHandler.increaseRetryCounter(chainSyncRetry, sch, it.message)
-        }.mapCatching {
-            scannerProxy.clearCache(chainScanner.url, chainSyncRetry.blockNumber)
-        }.onFailure { e ->
-            if (e is WebClientRequestException && e.isConnectionError) throw ScannerConnectException("Get transfers")
-        }.onSuccess {
-            val retries = chainSyncRetry.retries + 1
-            chainSyncRetryHandler.save(chainSyncRetry.copy(retries = retries, synced = true))
-        }.getOrThrow()
     }
 
     private val WebClientResponseException.isTooManyRequests: Boolean
