@@ -66,7 +66,7 @@ class RetryFailedSyncs(
         }.onSuccess {
             val retries = chainSyncRetry.retries + 1
             chainSyncRetryHandler.save(chainSyncRetry.copy(retries = retries, synced = true))
-        }
+        }.getOrThrow()
     }
 
     private val WebClientResponseException.isTooManyRequests: Boolean
