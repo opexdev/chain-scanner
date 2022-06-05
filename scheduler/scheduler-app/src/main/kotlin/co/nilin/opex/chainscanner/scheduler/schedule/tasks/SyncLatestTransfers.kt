@@ -7,6 +7,7 @@ import co.nilin.opex.chainscanner.scheduler.core.spi.ChainSyncRecordHandler
 import co.nilin.opex.chainscanner.scheduler.core.spi.ChainSyncSchedulerHandler
 import co.nilin.opex.chainscanner.scheduler.core.spi.ScheduleTask
 import co.nilin.opex.chainscanner.scheduler.service.BlockRangeCalculator
+import co.nilin.opex.chainscanner.scheduler.service.FetchFunction
 import co.nilin.opex.chainscanner.scheduler.utils.LoggerDelegate
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
