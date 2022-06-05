@@ -7,6 +7,7 @@ import co.nilin.opex.chainscanner.scheduler.core.po.ChainSyncSchedule
 import co.nilin.opex.chainscanner.scheduler.core.spi.*
 import co.nilin.opex.chainscanner.scheduler.exceptions.RateLimitException
 import co.nilin.opex.chainscanner.scheduler.exceptions.ScannerConnectException
+import co.nilin.opex.chainscanner.scheduler.service.BlockRangeCalculator
 import co.nilin.opex.chainscanner.scheduler.utils.LoggerDelegate
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -27,14 +28,15 @@ class SyncLatestTransfers(
     private val chainSyncRecordHandler: ChainSyncRecordHandler,
     private val chainSyncSchedulerHandler: ChainSyncSchedulerHandler,
     private val chainSyncRetryHandler: ChainSyncRetryHandler,
-    private val webhookCaller: WebhookCaller
+    private val webhookCaller: WebhookCaller,
+    private val blockRangeCalculator: BlockRangeCalculator
 ) : ScheduleTask {
     private val logger: Logger by LoggerDelegate()
 
     override suspend fun execute(sch: ChainSyncSchedule) {
         val chainScanner = chainScannerHandler.getScannersByName(sch.chainName).firstOrNull() ?: return
         val blockRange = runCatching {
-            calculateBlockRange(chainScanner, sch.confirmations)
+            blockRangeCalculator.calculateBlockRange(chainScanner, sch.confirmations)
         }.onFailure(::rethrowBlockRangeExceptions).getOrThrow()
         logger.debug("Fetch transfers on block range: ${blockRange.first} - ${blockRange.last}")
         runCatching {
@@ -63,15 +65,6 @@ class SyncLatestTransfers(
     ) = when (e) {
         is RateLimitException -> sch.enqueueNextSchedule(chainScanner.delayOnRateLimit.toLong())
         else -> throw e
-    }
-
-    private suspend fun calculateBlockRange(chainScanner: ChainScanner, confirmations: Int): LongRange {
-        val chainHeadBlock = scannerProxy.getBlockNumber(chainScanner.url)
-        val confirmedBlock = chainHeadBlock - confirmations.toBigInteger()
-        val lastSyncedBlock = chainSyncRecordHandler.lastSyncedBlockedNumber(chainScanner.chainName)
-        val startBlock = lastSyncedBlock?.plus(BigInteger.ONE) ?: confirmedBlock
-        val endBlock = confirmedBlock.min(startBlock + chainScanner.maxBlockRange.toBigInteger())
-        return startBlock.toLong()..endBlock.toLong()
     }
 
     private suspend fun ChainSyncSchedule.enqueueNextSchedule(nextTimeDiff: Long) {
