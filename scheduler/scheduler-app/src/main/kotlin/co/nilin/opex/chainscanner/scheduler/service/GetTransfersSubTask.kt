@@ -16,7 +16,7 @@ import java.math.BigInteger
 import java.net.ConnectException
 
 @Service
-class FetchFunction(
+class GetTransfersSubTask(
     private val scannerProxy: ScannerProxy,
     private val webhookCaller: WebhookCaller,
     private val chainSyncRetryHandler: ChainSyncRetryHandler

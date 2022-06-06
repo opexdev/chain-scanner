@@ -1,13 +1,13 @@
 package co.nilin.opex.chainscanner.scheduler.schedule.tasks
 
+import co.nilin.opex.chainscanner.scheduler.api.BlockRangeCalculator
 import co.nilin.opex.chainscanner.scheduler.core.po.ChainSyncRecord
 import co.nilin.opex.chainscanner.scheduler.core.po.ChainSyncSchedule
 import co.nilin.opex.chainscanner.scheduler.core.spi.ChainScannerHandler
 import co.nilin.opex.chainscanner.scheduler.core.spi.ChainSyncRecordHandler
 import co.nilin.opex.chainscanner.scheduler.core.spi.ChainSyncSchedulerHandler
 import co.nilin.opex.chainscanner.scheduler.core.spi.ScheduleTask
-import co.nilin.opex.chainscanner.scheduler.service.BlockRangeCalculator
-import co.nilin.opex.chainscanner.scheduler.service.FetchFunction
+import co.nilin.opex.chainscanner.scheduler.service.GetTransfersSubTask
 import co.nilin.opex.chainscanner.scheduler.utils.LoggerDelegate
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -22,7 +22,7 @@ class SyncLatestTransfers(
     private val chainSyncRecordHandler: ChainSyncRecordHandler,
     chainSyncSchedulerHandler: ChainSyncSchedulerHandler,
     private val blockRangeCalculator: BlockRangeCalculator,
-    private val fetchFunction: FetchFunction
+    private val getTransfersSubTask: GetTransfersSubTask
 ) : ScheduleTask, SyncScheduleTaskBase(chainSyncSchedulerHandler) {
     private val logger: Logger by LoggerDelegate()
 
@@ -35,7 +35,7 @@ class SyncLatestTransfers(
                 val br = blockRange.take(chainScanner.maxBlockRange)
                 br.forEach { bn ->
                     launch {
-                        fetchFunction.fetch(sch, chainScanner, bn.toBigInteger()).onSuccess {
+                        getTransfersSubTask.fetch(sch, chainScanner, bn.toBigInteger()).onSuccess {
                             updateChainSyncRecord(sch.chainName, bn.toBigInteger())
                         }.getOrThrow()
                     }

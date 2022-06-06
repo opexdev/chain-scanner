@@ -5,7 +5,7 @@ import co.nilin.opex.chainscanner.scheduler.core.spi.ChainScannerHandler
 import co.nilin.opex.chainscanner.scheduler.core.spi.ChainSyncRetryHandler
 import co.nilin.opex.chainscanner.scheduler.core.spi.ChainSyncSchedulerHandler
 import co.nilin.opex.chainscanner.scheduler.core.spi.ScheduleTask
-import co.nilin.opex.chainscanner.scheduler.service.FetchFunction
+import co.nilin.opex.chainscanner.scheduler.service.GetTransfersSubTask
 import co.nilin.opex.chainscanner.scheduler.utils.LoggerDelegate
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -17,7 +17,7 @@ class RetryFailedSyncs(
     private val chainScannerHandler: ChainScannerHandler,
     chainSyncSchedulerHandler: ChainSyncSchedulerHandler,
     private val chainSyncRetryHandler: ChainSyncRetryHandler,
-    private val fetchFunction: FetchFunction
+    private val getTransfersSubTask: GetTransfersSubTask
 ) : ScheduleTask, SyncScheduleTaskBase(chainSyncSchedulerHandler) {
     private val logger: Logger by LoggerDelegate()
 
@@ -30,7 +30,7 @@ class RetryFailedSyncs(
                 blockRange.forEach { chainSyncRetry ->
                     launch {
                         logger.debug("Retry block sync on blockNumber: ${chainSyncRetry.blockNumber}")
-                        fetchFunction.fetch(sch, chainScanner, chainSyncRetry.blockNumber).onSuccess {
+                        getTransfersSubTask.fetch(sch, chainScanner, chainSyncRetry.blockNumber).onSuccess {
                             chainSyncRetryHandler.markAsSynced(chainSyncRetry)
                         }.getOrThrow()
                     }

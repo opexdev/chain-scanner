@@ -19,5 +19,5 @@ logging:
 app:
   on-sync-webhook-url: http://bc-gateway
   schedule:
-    error-rate: 1
-    error-rate-period: 60
+    error-rate: 250
+    error-rate-period: 3600

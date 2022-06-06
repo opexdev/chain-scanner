@@ -22,8 +22,8 @@ class ChainServiceImpl(private val web3j: Web3j) : ChainService<List<EthBlock.Tr
             when (e) {
                 is ClientConnectionException -> throw RateLimitException(e.message)
             }
-        }.map {
-            it.transactions.filterIsInstance<EthBlock.TransactionObject>().toList()
+        }.mapCatching { block ->
+            block.transactions.filterIsInstance<EthBlock.TransactionObject>().filter { !it.to.isNullOrBlank() }.toList()
         }.getOrThrow()
     }
 
