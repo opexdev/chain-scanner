@@ -17,7 +17,7 @@ logging:
     co.nilin: TRACE
     reactor.netty.http.client: OFF
 app:
-  on-sync-webhook-url: http://bc-gateway
+  on-sync-webhook-url: http://bc-gateway:8080/wallet-sync
   schedule:
     error-rate: 250
     error-rate-period: 3600

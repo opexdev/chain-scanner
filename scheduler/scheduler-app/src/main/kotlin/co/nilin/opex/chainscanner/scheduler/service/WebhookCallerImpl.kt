@@ -22,7 +22,7 @@ class WebhookCallerImpl(
     private val logger: Logger by LoggerDelegate()
 
     override suspend fun callWebhook(chainName: String, data: List<Transfer>) {
-        val uri = URI.create(onSyncWebhookUrl).resolve("/$chainName")
+        val uri = URI.create("$onSyncWebhookUrl/$chainName").normalize()
         runCatching {
             webClient.put()
                 .uri(uri)

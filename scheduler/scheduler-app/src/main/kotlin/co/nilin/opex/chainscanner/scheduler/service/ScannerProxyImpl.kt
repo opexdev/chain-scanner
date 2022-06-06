@@ -38,7 +38,7 @@ class ScannerProxyImpl(private val webClient: WebClient) : ScannerProxy {
 
     override suspend fun getBlockNumber(url: String): BigInteger {
         return webClient.get()
-            .uri { URI.create(url).resolve("/block-number") }
+            .uri { URI.create("$url/block-number").normalize() }
             .accept(MediaType.APPLICATION_JSON)
             .retrieve()
             .onStatus({ t -> t.isError }, { it.createException() })
