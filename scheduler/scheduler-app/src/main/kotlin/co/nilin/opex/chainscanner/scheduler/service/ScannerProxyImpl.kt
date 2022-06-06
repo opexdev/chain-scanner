@@ -47,7 +47,7 @@ class ScannerProxyImpl(private val webClient: WebClient) : ScannerProxy {
     }
 
     override suspend fun clearCache(url: String, blockNumber: BigInteger) {
-        webClient.get()
+        webClient.delete()
             .uri {
                 URI.create(url).resolve(
                     it.path("/clear-cache").queryParam("blockNumber", blockNumber).build()
