@@ -1,5 +1,5 @@
 chains:
-  - name: bsc
+  - name: test-bsc
     scanners:
       - url: http://bsc-scanner:8080
         maxBlockRange: 30

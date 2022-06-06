@@ -4,7 +4,7 @@ import co.nilin.opex.chainscanner.scheduler.core.po.Transfer
 import co.nilin.opex.chainscanner.scheduler.core.spi.WebhookCaller
 import co.nilin.opex.chainscanner.scheduler.exceptions.WebhookException
 import co.nilin.opex.chainscanner.scheduler.utils.LoggerDelegate
-import kotlinx.coroutines.reactive.awaitFirst
+import kotlinx.coroutines.reactive.awaitFirstOrNull
 import org.slf4j.Logger
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.MediaType
@@ -32,7 +32,7 @@ class WebhookCallerImpl(
                 .retrieve()
                 .onStatus({ t -> t.isError }, { it.createException() })
                 .bodyToMono<Void>()
-                .awaitFirst()
+                .awaitFirstOrNull()
         }.onFailure {
             rethrowWebhookExceptions(it, uri.toString())
         }.onSuccess {
