@@ -6,6 +6,7 @@ import co.nilin.opex.chainscanner.database.dto.toModel
 import co.nilin.opex.chainscanner.database.dto.toPlainObject
 import co.nilin.opex.chainscanner.database.repository.TransferRepository
 import kotlinx.coroutines.reactor.awaitSingle
+import kotlinx.coroutines.reactor.awaitSingleOrNull
 import org.springframework.stereotype.Service
 import java.math.BigInteger
 
@@ -25,6 +26,6 @@ class TransferCacheHandlerImpl(
     }
 
     override suspend fun clearCache(blockNumber: BigInteger) {
-        transferRepository.clearCache(blockNumber).awaitSingle()
+        transferRepository.clearCache(blockNumber).awaitSingleOrNull()
     }
 }

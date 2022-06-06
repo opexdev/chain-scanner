@@ -4,6 +4,7 @@ import co.nilin.opex.chainscanner.scheduler.core.po.Transfer
 import co.nilin.opex.chainscanner.scheduler.core.spi.ScannerProxy
 import co.nilin.opex.chainscanner.scheduler.utils.LoggerDelegate
 import kotlinx.coroutines.reactive.awaitFirst
+import kotlinx.coroutines.reactive.awaitFirstOrNull
 import org.slf4j.Logger
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.MediaType
@@ -57,6 +58,6 @@ class ScannerProxyImpl(private val webClient: WebClient) : ScannerProxy {
             .retrieve()
             .onStatus({ t -> t.isError }, { it.createException() })
             .bodyToMono(parameterizedTypeReference<List<Transfer>>())
-            .awaitFirst()
+            .awaitFirstOrNull()
     }
 }
