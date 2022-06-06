@@ -7,6 +7,7 @@ import co.nilin.opex.chainscanner.scheduler.utils.LoggerDelegate
 import kotlinx.coroutines.reactive.awaitFirst
 import org.slf4j.Logger
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientRequestException
@@ -26,6 +27,8 @@ class WebhookCallerImpl(
         runCatching {
             webClient.put()
                 .uri(uri)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(data)
                 .retrieve()
                 .onStatus({ t -> t.isError }, { it.createException() })
                 .bodyToMono<Void>()
