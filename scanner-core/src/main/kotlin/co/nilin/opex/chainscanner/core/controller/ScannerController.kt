@@ -23,11 +23,6 @@ class ScannerController(
         syncService.getTransfers(blockNumber)
     }.onFailure(::handleRateLimit).getOrThrow()
 
-    @GetMapping("/transfers-by-hash")
-    suspend fun getTransfersByHash(txHash: String): List<Transfer> = runCatching {
-        emptyList<Transfer>()
-    }.onFailure(::handleRateLimit).getOrThrow()
-
     @GetMapping("/block-number")
     suspend fun getBlockNumber(): BigInteger = runCatching {
         chainService.getLatestBlock()
