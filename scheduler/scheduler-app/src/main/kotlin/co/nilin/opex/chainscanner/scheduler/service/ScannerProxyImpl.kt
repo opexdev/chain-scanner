@@ -22,14 +22,9 @@ class ScannerProxyImpl(private val webClient: WebClient) : ScannerProxy {
     private val logger: Logger by LoggerDelegate()
 
     override suspend fun getTransfers(url: String, blockNumber: BigInteger?): List<Transfer> {
+        val uri = URI.create("$url/transfers").normalize()
         return webClient.get()
-            .uri {
-                URI.create(url).resolve(
-                    it.path("/transfers")
-                        .queryParamIfPresent("blockNumber", Optional.ofNullable(blockNumber))
-                        .build()
-                )
-            }
+            .uri { uri.resolve(it.queryParamIfPresent("blockNumber", Optional.ofNullable(blockNumber)).build()) }
             .accept(MediaType.APPLICATION_JSON)
             .retrieve()
             .onStatus({ t -> t.isError }, { it.createException() })
@@ -48,12 +43,9 @@ class ScannerProxyImpl(private val webClient: WebClient) : ScannerProxy {
     }
 
     override suspend fun clearCache(url: String, blockNumber: BigInteger) {
+        val uri = URI.create("$url/clear-cache").normalize()
         webClient.delete()
-            .uri {
-                URI.create(url).resolve(
-                    it.path("/clear-cache").queryParam("blockNumber", blockNumber).build()
-                )
-            }
+            .uri { uri.resolve(it.queryParam("blockNumber", blockNumber).build()) }
             .accept(MediaType.APPLICATION_JSON)
             .retrieve()
             .onStatus({ t -> t.isError }, { it.createException() })

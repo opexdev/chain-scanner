@@ -1,33 +1,25 @@
 package co.nilin.opex.chainscanner.ethereum.service
 
-import co.nilin.opex.chainscanner.core.exceptions.RateLimitException
 import co.nilin.opex.chainscanner.core.spi.ChainService
-import kotlinx.coroutines.coroutineScope
+import co.nilin.opex.chainscanner.ethereum.utils.ExceptionHandling
 import kotlinx.coroutines.reactor.awaitSingle
 import org.springframework.stereotype.Service
 import org.web3j.protocol.Web3j
 import org.web3j.protocol.core.DefaultBlockParameterNumber
-import org.web3j.protocol.core.methods.response.EthBlock
-import org.web3j.protocol.exceptions.ClientConnectionException
+import org.web3j.protocol.core.methods.response.Transaction
 import reactor.kotlin.core.publisher.toMono
 import java.math.BigInteger
 
 @Service
-class ChainServiceImpl(private val web3j: Web3j) : ChainService<List<EthBlock.TransactionObject>> {
-    override suspend fun getTransactions(blockNumber: BigInteger): List<EthBlock.TransactionObject> = coroutineScope {
-        runCatching {
-            val bn = DefaultBlockParameterNumber(blockNumber)
-            web3j.ethGetBlockByNumber(bn, true).sendAsync().toMono().awaitSingle().block
-        }.onFailure { e ->
-            when (e) {
-                is ClientConnectionException -> throw RateLimitException(e.message)
-            }
-        }.mapCatching { block ->
-            block.transactions.filterIsInstance<EthBlock.TransactionObject>().filter { !it.to.isNullOrBlank() }.toList()
-        }.getOrThrow()
-    }
+class ChainServiceImpl(private val web3j: Web3j) : ChainService<List<Transaction>> {
+    override suspend fun getTransactions(blockNumber: BigInteger): List<Transaction> = runCatching {
+        val bn = DefaultBlockParameterNumber(blockNumber)
+        web3j.ethGetBlockByNumber(bn, true).sendAsync().toMono().awaitSingle().block
+    }.onFailure(ExceptionHandling::detectRateLimit).map { block ->
+        block.transactions.filterIsInstance<Transaction>().filter { !it.to.isNullOrBlank() }.toList()
+    }.getOrThrow()
 
-    override suspend fun getLatestBlock(): BigInteger {
-        return web3j.ethBlockNumber().sendAsync().toMono().awaitSingle().blockNumber
-    }
+    override suspend fun getLatestBlock(): BigInteger = runCatching {
+        web3j.ethBlockNumber().sendAsync().toMono().awaitSingle().blockNumber
+    }.onFailure(ExceptionHandling::detectRateLimit).getOrThrow()
 }

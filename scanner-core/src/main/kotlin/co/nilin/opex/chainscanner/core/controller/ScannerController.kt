@@ -19,21 +19,26 @@ class ScannerController(
     private val transferCacheHandler: TransferCacheHandler
 ) {
     @GetMapping("/transfers")
-    suspend fun getTransfers(blockNumber: BigInteger?): List<Transfer> {
-        return runCatching { syncService.getTransfers(blockNumber) }.onFailure { e ->
-            when (e) {
-                is RateLimitException -> throw ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS)
-            }
-        }.getOrThrow()
-    }
+    suspend fun getTransfers(blockNumber: BigInteger?): List<Transfer> = runCatching {
+        syncService.getTransfers(blockNumber)
+    }.onFailure(::handleRateLimit).getOrThrow()
+
+    @GetMapping("/transfers-by-hash")
+    suspend fun getTransfersByHash(txHash: String): List<Transfer> = runCatching {
+        emptyList<Transfer>()
+    }.onFailure(::handleRateLimit).getOrThrow()
 
     @GetMapping("/block-number")
-    suspend fun getBlockNumber(): BigInteger {
-        return chainService.getLatestBlock()
-    }
+    suspend fun getBlockNumber(): BigInteger = runCatching {
+        chainService.getLatestBlock()
+    }.onFailure(::handleRateLimit).getOrThrow()
 
     @DeleteMapping("/clear-cache")
     suspend fun clearCache(blockNumber: BigInteger) {
         transferCacheHandler.clearCache(blockNumber)
+    }
+
+    private fun handleRateLimit(e: Throwable) {
+        if (e is RateLimitException) throw ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS)
     }
 }

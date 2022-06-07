@@ -60,4 +60,17 @@ class GetBlockProxy(
             .bodyToMono(BlockResponse::class.java)
             .awaitSingleOrNull()
     }
+
+    suspend fun getTxData(hash: String): BlockResponse? {
+        logger.debug("Fetching block data of $hash")
+        return webClient.get()
+            .uri("$endpoint/tx/${hash}.json")
+            .accept(MediaType.APPLICATION_JSON)
+            .header("x-api-key", apiKey)
+            .header(HttpHeaders.CONTENT_TYPE, "application/json")
+            .retrieve()
+            .onStatus({ t -> t.isError }, { it.createException() })
+            .bodyToMono(BlockResponse::class.java)
+            .awaitSingleOrNull()
+    }
 }
