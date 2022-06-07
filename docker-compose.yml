@@ -3,9 +3,8 @@ x-postgres-db: &postgres-db
   environment:
     - POSTGRES_USER=${DB_USER:-opex}
     - POSTGRES_PASSWORD=${DB_PASS:-hiopex}
-    - POSTGRES_DB=opex_scanner
-    - POSTGRES_BACKUP_USER=${DB_BACKUP_USER:-opex_backup}
-    - POSTGRES_BACKUP_PASSWORD=${DB_BACKUP_PASS:-hiopex}
+    - POSTGRES_READ_ONLY_USER=${DB_READ_ONLY_USER:-opex_read}
+    - POSTGRES_READ_ONLY_PASSWORD=${DB_READ_ONLY_PASS:-hiopex}
   networks:
     - default
   deploy:
@@ -24,8 +23,8 @@ services:
       - BACKEND_USER=${BACKEND_USER}
       - DB_USER=${DB_USER:-opex}
       - DB_PASS=${DB_PASS:-hiopex}
-      - DB_BACKUP_USER=${DB_BACKUP_USER:-opex_backup}
-      - DB_BACKUP_PASS=${DB_BACKUP_PASS:-hiopex}
+      - DB_READ_ONLY_USER=${DB_READ_ONLY_USER:-opex_read}
+      - DB_READ_ONLY_PASS=${DB_READ_ONLY_PASS:-hiopex}
     cap_add:
       - IPC_LOCK
   vault-ui:
