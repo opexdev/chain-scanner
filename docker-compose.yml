@@ -1,3 +1,17 @@
+x-postgres-db: &postgres-db
+  image: ghcr.io/opexdev/postgres-opex
+  environment:
+    - POSTGRES_USER=${DB_USER:-opex}
+    - POSTGRES_PASSWORD=${DB_PASS:-hiopex}
+    - POSTGRES_DB=opex_scanner
+    - POSTGRES_BACKUP_USER=${DB_BACKUP_USER:-opex_backup}
+    - POSTGRES_BACKUP_PASSWORD=${DB_BACKUP_PASS:-hiopex}
+  networks:
+    - default
+  deploy:
+    restart_policy:
+      condition: on-failure
+
 version: '3.8'
 services:
   vault:
@@ -8,15 +22,10 @@ services:
       - VAULT_ADDR=http://0.0.0.0:8200
       - PANEL_PASS=${PANEL_PASS}
       - BACKEND_USER=${BACKEND_USER}
-      - SMTP_PASS=${SMTP_PASS}
       - DB_USER=${DB_USER:-opex}
       - DB_PASS=${DB_PASS:-hiopex}
       - DB_BACKUP_USER=${DB_BACKUP_USER:-opex_backup}
       - DB_BACKUP_PASS=${DB_BACKUP_PASS:-hiopex}
-      - KEYCLOAK_ADMIN_USERNAME=${KEYCLOAK_ADMIN_USERNAME:-opex-admin}
-      - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD:-hiopex}
-      - OPEX_ADMIN_KEYCLOAK_CLIENT_SECRET=${OPEX_ADMIN_KEYCLOAK_CLIENT_SECRET}
-      - VANDAR_API_KEY=$VANDAR_API_KEY
     cap_add:
       - IPC_LOCK
   vault-ui:
@@ -26,122 +35,110 @@ services:
       - VAULT_AUTH_DEFAULT=USERNAMEPASSWORD
     depends_on:
       - vault
-  consul:
-    image: consul
-    environment:
-      - CONSUL_BIND_INTERFACE=eth0
-    networks:
-      - default
-    deploy:
-      restart_policy:
-        condition: on-failure
-  postgres-gateway:
-    image: ghcr.io/opexdev/postgres-opex
-    environment:
-      - POSTGRES_USER=${DB_USER:-opex}
-      - POSTGRES_PASSWORD=${DB_PASS:-hiopex}
-      - POSTGRES_DB=gateway
-      - POSTGRES_BACKUP_USER=${DB_BACKUP_USER:-opex_backup}
-      - POSTGRES_BACKUP_PASSWORD=${DB_BACKUP_PASS:-hiopex}
+  postgres-scanner-scheduler:
+    <<: *postgres-db
     volumes:
-      - scan-gateway-data:/var/lib/postgresql/data/
-    networks:
-      - default
-  gateway:
-    image: ghcr.io/opexdev/gateway
-    build: gateway
+      - scanner-scheduler-data:/var/lib/postgresql/data/
+  postgres-ethereum-scanner:
+    <<: *postgres-db
+    volumes:
+      - ethereum-scanner-data:/var/lib/postgresql/data/
+  postgres-bitcoin-scanner:
+    <<: *postgres-db
+    volumes:
+      - bitcoin-scanner-data:/var/lib/postgresql/data/
+  postgres-bsc-scanner:
+    <<: *postgres-db
+    volumes:
+      - bsc-scanner-data:/var/lib/postgresql/data/
+  postgres-tron-scanner:
+    <<: *postgres-db
+    volumes:
+      - tron-scanner-data:/var/lib/postgresql/data/
+  scanner-scheduler:
+    image: ghcr.io/opexdev/scanner-scheduler
     environment:
-      - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
-      - CONSUL_HOST=consul
-      - DB_IP_PORT=postgres-gateway
-      - BACKEND_USER=${BACKEND_USER}
-      - VAULT_HOST=vault
-    networks:
-      - default
+      - JAVA_OPTS=-Xmx768m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+      - DB_IP_PORT=postgres-scanner-scheduler
+      - PREFERENCES=$PREFERENCES
+    configs:
+      - preferences.yml
     depends_on:
-      - eth-scan
-      - bsc-scan
-      - bitcoin-scan
-      - postgres-gateway
-    deploy:
-      restart_policy:
-        condition: on-failure
-  eth-scan:
-    image: ghcr.io/opexdev/eth-scan
-    build: eth-scan
-    environment:
-      - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
-      - CONSUL_HOST=consul
-      - RPC_ENDPOINT=${ETH_RPC_ENDPOINT}
+      - vault
+      - postgres-scanner-scheduler
+      - bsc-scanner
     networks:
       - default
-  bitcoin-scan:
-    image: ghcr.io/opexdev/bitcoin-scan
-    build: bitcoin-scan
+  ethereum-scanner:
+    image: ghcr.io/opexdev/ethereum-scanner
     environment:
-      - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
-      - CONSUL_HOST=consul
-      - RPC_ENDPOINT=${BITCOIN_RPC_ENDPOINT}
+      - JAVA_OPTS=-Xmx768m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+      - DB_IP_PORT=postgres-ethereum-scanner
+      - CHAIN_NAME=ethereum
+      - RPC_ENDPOINT=${ETH_RPC_ENDPOINT}
+      - PREFERENCES=$PREFERENCES
+    configs:
+      - preferences.yml
+    depends_on:
+      - vault
+      - postgres-ethereum-scanner
+    networks:
+      - default
+  bitcoin-scanner:
+    image: ghcr.io/opexdev/bitcoin-scanner
+    environment:
+      - JAVA_OPTS=-Xmx768m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+      - DB_IP_PORT=postgres-bitcoin-scanner
       - REST_ENDPOINT=${BITCOIN_REST_ENDPOINT}
       - API_KEY=${BITCOIN_API_KEY}
+      - PREFERENCES=$PREFERENCES
+    configs:
+      - preferences.yml
+    depends_on:
+      - vault
+      - postgres-bitcoin-scanner
     networks:
       - default
-  bsc-scan:
-    image: ghcr.io/opexdev/eth-scan
-    build: eth-scan
+  bsc-scanner:
+    image: ghcr.io/opexdev/ethereum-scanner
     environment:
-      - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
-      - CONSUL_HOST=consul
-      - APPLICATION_NAME=bsc-scan
+      - JAVA_OPTS=-Xmx768m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+      - DB_IP_PORT=postgres-bsc-scanner
+      - CHAIN_NAME=bsc
       - RPC_ENDPOINT=${BSC_RPC_ENDPOINT}
+      - PREFERENCES=$PREFERENCES
+    configs:
+      - preferences.yml
+    depends_on:
+      - vault
+      - postgres-bsc-scanner
     networks:
       - default
-  tron-scan:
-    image: ghcr.io/opexdev/tron-scan
-    build: tron-scan
+  tron-scanner:
+    image: ghcr.io/opexdev/tron-scanner
     environment:
-      - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
-      - CONSUL_HOST=consul
-      - APPLICATION_NAME=tron-scan
+      - JAVA_OPTS=-Xmx768m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+      - DB_IP_PORT=postgres-tron-scanner
       - REST_ENDPOINT=${TRON_REST_ENDPOINT}
       - API_KEY=${TRON_API_KEY}
-    networks:
-      - default
-  test-eth-scan:
-    image: ghcr.io/opexdev/eth-scan
-    build: eth-scan
-    environment:
-      - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
-      - CONSUL_HOST=consul
-      - APPLICATION_NAME=test-eth-scan
-      - RPC_ENDPOINT=${TEST_ETH_RPC_ENDPOINT}
-    networks:
-      - default
-  test-bitcoin-scan:
-    image: ghcr.io/opexdev/bitcoin-scan
-    build: bitcoin-scan
-    environment:
-      - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
-      - CONSUL_HOST=consul
-      - APPLICATION_NAME=test-bitcoin-scan
-      - RPC_ENDPOINT=${TEST_BITCOIN_RPC_ENDPOINT}
-      - REST_ENDPOINT=${TEST_BITCOIN_REST_ENDPOINT}
-      - API_KEY=${TEST_BITCOIN_API_KEY}
-    networks:
-      - default
-  test-bsc-scan:
-    image: ghcr.io/opexdev/eth-scan
-    build: eth-scan
-    environment:
-      - JAVA_OPTS=-Xmx256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
-      - CONSUL_HOST=consul
-      - APPLICATION_NAME=test-bsc-scan
-      - RPC_ENDPOINT=${TEST_BSC_RPC_ENDPOINT}
+      - PREFERENCES=$PREFERENCES
+    configs:
+      - preferences.yml
+    depends_on:
+      - vault
+      - postgres-tron-scanner
     networks:
       - default
 volumes:
   vault-data:
-  scan-gateway-data:
+  scanner-scheduler-data:
+  ethereum-scanner-data:
+  bitcoin-scanner-data:
+  bsc-scanner-data:
+  tron-scanner-data:
 networks:
   default:
     driver: bridge
+configs:
+  preferences.yml:
+    file: preferences.yml

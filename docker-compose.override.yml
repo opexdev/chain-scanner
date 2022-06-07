@@ -1,0 +1,27 @@
+version: '3.8'
+services:
+  scanner-scheduler:
+    image: ghcr.io/opexdev/scanner-scheduler
+    build: scheduler/scheduler-app
+    volumes:
+      - "./preferences.yml:/preferences.yml"
+  ethereum-scanner:
+    image: ghcr.io/opexdev/ethereum-scanner
+    build: ethereum-scanner-app
+    volumes:
+      - "./preferences.yml:/preferences.yml"
+  bitcoin-scanner:
+    image: ghcr.io/opexdev/bitcoin-scanner
+    build: bitcoin-scanner-app
+    volumes:
+      - "./preferences.yml:/preferences.yml"
+  bsc-scanner:
+    image: ghcr.io/opexdev/bsc-scanner
+    build: ethereum-scanner-app
+    volumes:
+      - "./preferences.yml:/preferences.yml"
+  tron-scanner:
+    image: ghcr.io/opexdev/tron-scanner
+    build: tron-scanner-app
+    volumes:
+      - "./preferences.yml:/preferences.yml"

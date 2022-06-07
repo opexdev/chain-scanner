@@ -1,0 +1,23 @@
+server.port: 8080
+spring:
+  application:
+    name: scanner-scheduler
+  main:
+    allow-bean-definition-overriding: false
+  r2dbc:
+    url: r2dbc:postgresql://${DB_IP_PORT:localhost}/opex_scanner
+    username: ${dbusername:opex}
+    password: ${dbpassword:hiopex}
+    initialization-mode: always
+  cloud:
+    config:
+      import: vault://secret/${spring.application.name}
+logging:
+  level:
+    co.nilin: TRACE
+    reactor.netty.http.client: OFF
+app:
+  on-sync-webhook-url: http://bc-gateway:8080/wallet-sync
+  schedule:
+    error-rate: 250
+    error-rate-period: 3600

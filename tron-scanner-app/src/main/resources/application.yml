@@ -1,0 +1,24 @@
+server.port: 8080
+spring:
+  application:
+    name: tron-scanner
+  main:
+    allow-bean-definition-overriding: false
+  r2dbc:
+    url: r2dbc:postgresql://${DB_IP_PORT:localhost}/opex_scanner
+    username: ${dbusername:opex}
+    password: ${dbpassword:hiopex}
+    initialization-mode: always
+  cloud:
+    config:
+      import: vault://secret/${spring.application.name}
+logging:
+  level:
+    co.nilin: DEBUG
+    reactor.netty.http.client: DEBUG
+app:
+  chain:
+    name: tron
+  rest-api:
+    endpoint: ${REST_ENDPOINT}
+    api-key: ${API_KEY}
