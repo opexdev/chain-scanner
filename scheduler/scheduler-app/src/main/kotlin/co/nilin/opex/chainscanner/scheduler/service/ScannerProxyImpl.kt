@@ -35,6 +35,17 @@ class ScannerProxyImpl(private val webClient: WebClient) : ScannerProxy {
             .awaitFirst()
     }
 
+    override suspend fun getByTxHash(url: String, txHash: String): List<Transfer> {
+        val uri = URI.create("$url/transfers-by-hash").normalize()
+        return webClient.get()
+            .uri { uri.resolve(it.queryParam("txHash", txHash).build()) }
+            .accept(MediaType.APPLICATION_JSON)
+            .retrieve()
+            .onStatus({ t -> t.isError }, { it.createException() })
+            .bodyToMono(parameterizedTypeReference<List<Transfer>>())
+            .awaitFirst()
+    }
+
     override suspend fun getBlockNumber(url: String): BigInteger {
         return webClient.get()
             .uri { URI.create("$url/block-number").normalize() }

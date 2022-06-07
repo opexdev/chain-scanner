@@ -22,4 +22,10 @@ class ChainServiceImpl(private val web3j: Web3j) : ChainService<List<Transaction
     override suspend fun getLatestBlock(): BigInteger = runCatching {
         web3j.ethBlockNumber().sendAsync().toMono().awaitSingle().blockNumber
     }.onFailure(ExceptionHandling::detectRateLimit).getOrThrow()
+
+    override suspend fun getTransactionByHash(hash: String): List<Transaction> = runCatching {
+        web3j.ethGetTransactionByHash(hash).sendAsync().toMono().awaitSingle()
+    }.onFailure(ExceptionHandling::detectRateLimit).map {
+        listOf(it.transaction.get())
+    }.getOrThrow()
 }

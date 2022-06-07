@@ -36,4 +36,12 @@ class SyncService<T>(
                 .also { transferCacheHandler.saveTransfers(it) }
         }
     }
+
+    suspend fun getTransferByHash(txHash: String): Transfer {
+        require(txHash.isNotBlank())
+        logger.debug("Fetching for: $chainName - Tx Hash: $txHash")
+        val response = chainService.getTransactionByHash(txHash)
+        logger.debug("Finished fetching tx info for Tx Hash: $txHash")
+        return dataDecoder.decode(response).first()
+    }
 }

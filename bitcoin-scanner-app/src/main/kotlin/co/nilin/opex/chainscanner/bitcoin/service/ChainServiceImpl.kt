@@ -18,4 +18,8 @@ class ChainServiceImpl(private val proxy: GetBlockProxy) : ChainService<BlockRes
     override suspend fun getLatestBlock(): BigInteger = runCatching {
         proxy.getInfo()?.blocks?.toBigInteger() ?: throw IllegalStateException()
     }.onFailure(ExceptionHandling::handleRateLimit).getOrThrow()
+
+    override suspend fun getTransactionByHash(hash: String): BlockResponse {
+        TODO("Not yet implemented")
+    }
 }

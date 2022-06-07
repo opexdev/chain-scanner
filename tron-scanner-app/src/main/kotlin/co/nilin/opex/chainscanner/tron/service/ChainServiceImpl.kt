@@ -16,4 +16,8 @@ class ChainServiceImpl(private val proxy: TronGridProxy) : ChainService<BlockRes
     override suspend fun getLatestBlock(): BigInteger = runCatching {
         proxy.getLatestBlock()?.blockHeader?.rawData?.number?.toBigInteger() ?: throw IllegalStateException()
     }.onFailure(ExceptionHandling::handleRateLimit).getOrThrow()
+
+    override suspend fun getTransactionByHash(hash: String): BlockResponse {
+        TODO("Not yet implemented")
+    }
 }
