@@ -26,4 +26,4 @@ jobs:
       - name: Build Docker images
         env:
           TAG: latest
-        run: docker-compose -f docker-compose.override.yml build
+        run: docker-compose -f docker-compose.build.yml build
