@@ -27,7 +27,7 @@ spring:
     import: vault://secret/${spring.application.name}
 logging:
   level:
-    co.nilin: DEBUG
+    co.nilin: ERROR
     reactor.netty.http.client: DEBUG
 swagger.authUrl: https://api.opex.dev
 app:
