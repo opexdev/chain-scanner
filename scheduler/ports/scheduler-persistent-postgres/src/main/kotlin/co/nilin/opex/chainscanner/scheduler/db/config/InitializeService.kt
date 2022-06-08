@@ -38,17 +38,19 @@ class InitializeService(
     }
 
     private suspend fun addSchedules(data: Preferences) = coroutineScope {
-        data.chains.map {
-            ChainSyncScheduleModel(
-                it.name,
-                LocalDateTime.now(),
-                it.schedule.delay,
-                it.schedule.errorDelay,
-                it.schedule.timeout.toLong(),
-                true,
-                it.schedule.confirmations,
-                it.schedule.maxRetries
-            )
+        data.chains.mapNotNull {
+            it.schedule?.let { sch ->
+                ChainSyncScheduleModel(
+                    it.name,
+                    LocalDateTime.now(),
+                    sch.delay,
+                    sch.errorDelay,
+                    sch.timeout.toLong(),
+                    sch.enabled,
+                    sch.confirmations,
+                    sch.maxRetries
+                )
+            }
         }.also {
             runCatching { chainSyncScheduleRepository.saveAll(it).collectList().awaitSingle() }
         }
