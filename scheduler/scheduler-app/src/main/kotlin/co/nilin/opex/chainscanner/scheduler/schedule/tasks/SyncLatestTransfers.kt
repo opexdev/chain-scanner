@@ -45,7 +45,7 @@ class SyncLatestTransfers(
             rethrowScheduleExceptions(e, sch, chainScanner)
         }.onSuccess {
             sch.enqueueNextSchedule(sch.delay)
-            logger.trace("Successfully fetched transfers for block range: ${blockRange.first} - ${blockRange.last}")
+            logger.info("Successfully fetched transfers for block range: ${blockRange.first} - ${blockRange.last}")
         }
     }
 

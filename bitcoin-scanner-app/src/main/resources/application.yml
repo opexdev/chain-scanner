@@ -27,7 +27,7 @@ spring:
     import: vault://secret/${spring.application.name}
 logging:
   level:
-    co.nilin: ERROR
+    co.nilin: INFO
     reactor.netty.http.client: DEBUG
 app:
   chain:
