@@ -16,8 +16,7 @@ services:
     volumes:
       - "./preferences.yml:/preferences.yml"
   bsc-scanner:
-    image: ghcr.io/opexdev/bsc-scanner
-    build: ethereum-scanner-app
+    image: ghcr.io/opexdev/ethereum-scanner
     volumes:
       - "./preferences.yml:/preferences.yml"
   tron-scanner:
