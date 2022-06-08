@@ -139,6 +139,7 @@ services:
     networks:
       - default
 volumes:
+  vault-data:
   scanner-scheduler-data:
   ethereum-scanner-data:
   bitcoin-scanner-data:
