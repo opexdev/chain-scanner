@@ -3,7 +3,7 @@ x-postgres-db: &postgres-db
   environment:
     - POSTGRES_USER=${DB_USER:-opex}
     - POSTGRES_PASSWORD=${DB_PASS:-hiopex}
-    - POSTGRES_READ_ONLY_USER=${DB_READ_ONLY_USER:-opex_read}
+    - POSTGRES_READ_ONLY_USER=${DB_READ_ONLY_USER:-opex_reader}
     - POSTGRES_READ_ONLY_PASSWORD=${DB_READ_ONLY_PASS:-hiopex}
   networks:
     - default
@@ -60,6 +60,8 @@ services:
       - JAVA_OPTS=-Xmx768m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
       - DB_IP_PORT=postgres-scanner-scheduler
       - PREFERENCES=$PREFERENCES
+      - BACKEND_USER=${BACKEND_USER}
+      - VAULT_HOST=vault
     configs:
       - preferences.yml
     depends_on:
@@ -76,6 +78,8 @@ services:
       - CHAIN_NAME=ethereum
       - RPC_ENDPOINT=${ETH_RPC_ENDPOINT}
       - PREFERENCES=$PREFERENCES
+      - BACKEND_USER=${BACKEND_USER}
+      - VAULT_HOST=vault
     configs:
       - preferences.yml
     depends_on:
@@ -91,6 +95,8 @@ services:
       - REST_ENDPOINT=${BITCOIN_REST_ENDPOINT}
       - API_KEY=${BITCOIN_API_KEY}
       - PREFERENCES=$PREFERENCES
+      - BACKEND_USER=${BACKEND_USER}
+      - VAULT_HOST=vault
     configs:
       - preferences.yml
     depends_on:
@@ -106,6 +112,8 @@ services:
       - CHAIN_NAME=bsc
       - RPC_ENDPOINT=${BSC_RPC_ENDPOINT}
       - PREFERENCES=$PREFERENCES
+      - BACKEND_USER=${BACKEND_USER}
+      - VAULT_HOST=vault
     configs:
       - preferences.yml
     depends_on:
@@ -121,6 +129,8 @@ services:
       - REST_ENDPOINT=${TRON_REST_ENDPOINT}
       - API_KEY=${TRON_API_KEY}
       - PREFERENCES=$PREFERENCES
+      - BACKEND_USER=${BACKEND_USER}
+      - VAULT_HOST=vault
     configs:
       - preferences.yml
     depends_on:
@@ -129,7 +139,6 @@ services:
     networks:
       - default
 volumes:
-  vault-data:
   scanner-scheduler-data:
   ethereum-scanner-data:
   bitcoin-scanner-data:
