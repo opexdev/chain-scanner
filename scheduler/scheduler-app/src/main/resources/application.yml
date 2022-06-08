@@ -23,8 +23,8 @@ spring:
         backend: secret
         profile-separator: '/'
         application-name: ${spring.application.name}
-    config:
-      import: vault://secret/${spring.application.name}
+  config:
+    import: vault://secret/${spring.application.name}
 logging:
   level:
     co.nilin: TRACE
