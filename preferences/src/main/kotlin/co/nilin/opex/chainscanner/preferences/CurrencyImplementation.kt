@@ -3,6 +3,7 @@ package co.nilin.opex.chainscanner.preferences
 import java.math.BigDecimal
 
 data class CurrencyImplementation(
+    var symbol: String? = null,
     var chain: String = "",
     var withdrawEnabled: Boolean = true,
     var token: Boolean = false,
