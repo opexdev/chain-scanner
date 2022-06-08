@@ -10,6 +10,19 @@ spring:
     password: ${dbpassword:hiopex}
     initialization-mode: always
   cloud:
+    vault:
+      host: ${VAULT_HOST}
+      port: 8200
+      scheme: http
+      authentication: APPID
+      app-id:
+        user-id: co.nilin.opex.chainscanner.bitcoin.vault.VaultUserIdMechanism
+      fail-fast: true
+      kv:
+        enabled: true
+        backend: secret
+        profile-separator: '/'
+        application-name: ${spring.application.name}
     config:
       import: vault://secret/${spring.application.name}
 logging:

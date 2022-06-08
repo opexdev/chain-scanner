@@ -66,5 +66,9 @@
             <artifactId>resilience4j-kotlin</artifactId>
             <version>${resilience4jVersion}</version>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-vault-config</artifactId>
+        </dependency>
     </dependencies>
 </project>
