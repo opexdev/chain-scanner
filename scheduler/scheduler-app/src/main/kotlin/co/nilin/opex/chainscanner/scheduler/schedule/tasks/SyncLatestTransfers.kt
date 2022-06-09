@@ -20,10 +20,9 @@ import java.time.LocalDateTime
 class SyncLatestTransfers(
     private val chainScannerHandler: ChainScannerHandler,
     private val chainSyncRecordHandler: ChainSyncRecordHandler,
-    chainSyncSchedulerHandler: ChainSyncSchedulerHandler,
     private val blockRangeCalculator: BlockRangeCalculator,
     private val getTransfersSubTask: GetTransfersSubTask
-) : ScheduleTask, SyncScheduleTaskBase(chainSyncSchedulerHandler) {
+) : ScheduleTask {
     private val logger: Logger by LoggerDelegate()
 
     override suspend fun execute(sch: ChainSyncSchedule) {
@@ -41,10 +40,7 @@ class SyncLatestTransfers(
                     }
                 }
             }
-        }.onFailure { e ->
-            rethrowScheduleExceptions(e, sch, chainScanner)
         }.onSuccess {
-            sch.enqueueNextSchedule(sch.delay)
             logger.info("Successfully fetched transfers for block range: ${blockRange.first} - ${blockRange.last}")
         }
     }

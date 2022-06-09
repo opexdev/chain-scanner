@@ -1,9 +1,11 @@
 package co.nilin.opex.chainscanner.scheduler.schedule
 
+import co.nilin.opex.chainscanner.scheduler.core.po.ChainScanner
 import co.nilin.opex.chainscanner.scheduler.core.po.ChainSyncSchedule
 import co.nilin.opex.chainscanner.scheduler.core.spi.ChainSyncSchedulerHandler
 import co.nilin.opex.chainscanner.scheduler.core.spi.ScheduleTask
 import co.nilin.opex.chainscanner.scheduler.coroutines.Dispatchers
+import co.nilin.opex.chainscanner.scheduler.exceptions.RateLimitException
 import co.nilin.opex.chainscanner.scheduler.utils.LoggerDelegate
 import io.github.resilience4j.ratelimiter.RateLimiterConfig
 import io.github.resilience4j.ratelimiter.RateLimiterRegistry
@@ -12,6 +14,7 @@ import org.slf4j.Logger
 import org.springframework.scheduling.annotation.Scheduled
 import java.time.Duration
 import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
 import javax.annotation.PostConstruct
 
 abstract class ChainSyncScheduleRunner(
@@ -48,24 +51,26 @@ abstract class ChainSyncScheduleRunner(
                         }.recoverCatching {
                             rethrowScheduleExceptions(it, sch)
                         }.onFailure {
+                            sch.enqueueNextSchedule(sch.errorDelay)
                             val isRateLimitReached = !rateLimiterRegistry.rateLimiter(sch.chainName).acquirePermission()
                             if (isRateLimitReached) {
                                 sch.disable()
                                 rateLimiterRegistry.remove(sch.chainName)
                             }
                         }.onSuccess {
-                            logger.debug("Successfully executed chain: ${sch.chainName}")
+                            sch.enqueueNextSchedule(sch.delay)
                         }
                     }
                 }
             }
+            logger.debug("Successfully executed all schedule")
         }
     }
 
-    private fun rethrowScheduleExceptions(e: Throwable, sch: ChainSyncSchedule) {
-        if (e is TimeoutCancellationException) logger.error("Schedule timeout on chain: ${sch.chainName}")
-        else logger.error("Schedule error on chain: {} message: {}", sch.chainName, e.message)
-        throw e
+    private suspend fun rethrowScheduleExceptions(        e: Throwable,        sch: ChainSyncSchedule    ) = when (e) {
+        is TimeoutCancellationException -> logger.error("Schedule timeout on chain: ${sch.chainName}")
+        is RateLimitException -> sch.enqueueNextSchedule(e.delay)
+        else -> throw e
     }
 
     private fun ChainSyncSchedule.disable() = runBlocking(Dispatchers.SCHEDULE_ACTOR) {
@@ -73,6 +78,11 @@ abstract class ChainSyncScheduleRunner(
             chainSyncSchedulerHandler.save(it.copy(enabled = false))
             logger.warn("Disabled schedule on chain : $chainName because of reaching error limit")
         }
+    }
+
+    private suspend fun ChainSyncSchedule.enqueueNextSchedule(nextTimeDiff: Long) {
+        val retryTime = LocalDateTime.now().plus(nextTimeDiff, ChronoUnit.SECONDS)
+        chainSyncSchedulerHandler.save(copy(executeTime = retryTime))
     }
 
     private fun CoroutineScope.isCompleted() = coroutineContext.job.children.all { it.isCompleted }

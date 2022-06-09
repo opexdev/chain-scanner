@@ -35,7 +35,8 @@ class GetTransfersSubTask(
     }.onFailure {
         if (it is WebClientRequestException && it.isConnectionError)
             throw ScannerConnectException("scannerProxy.clearCache()")
-        if (it is WebClientResponseException && it.isTooManyRequests) throw RateLimitException()
+        if (it is WebClientResponseException && it.isTooManyRequests)
+            throw RateLimitException(chainScanner.delayOnRateLimit.toLong(), "Rate limit")
     }
 
     private suspend fun retry(

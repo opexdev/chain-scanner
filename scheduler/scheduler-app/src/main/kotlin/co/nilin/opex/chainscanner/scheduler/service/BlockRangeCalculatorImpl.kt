@@ -32,7 +32,8 @@ class BlockRangeCalculatorImpl(
     }.onFailure { e ->
         if (e is WebClientRequestException && e.isConnectionError)
             throw ScannerConnectException("scannerProxy.getBlockNumber()")
-        if (e is WebClientResponseException && e.isTooManyRequests) throw RateLimitException()
+        if (e is WebClientResponseException && e.isTooManyRequests)
+            throw RateLimitException(chainScanner.delayOnRateLimit.toLong(), "Rate limit")
     }.getOrThrow()
 
     private val WebClientResponseException.isTooManyRequests: Boolean

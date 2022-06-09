@@ -1,3 +1,3 @@
 package co.nilin.opex.chainscanner.scheduler.exceptions
 
-class RateLimitException(message: String? = null) : Exception(message)
+class RateLimitException(val delay: Long, message: String? = null) : Exception(message)
