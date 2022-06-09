@@ -26,7 +26,7 @@ class SyncLatestTransfers(
 
     override suspend fun execute(sch: ChainSyncSchedule) {
         val chainScanner = chainScannerHandler.getScannersByName(sch.chainName).firstOrNull()?.also {
-            logger.debug("No chain scanner found")
+            logger.debug("No chain scanner found for chain: ${sch.chainName}")
         } ?: return
         val blockRange = blockRangeCalculator.calculateBlockRange(chainScanner, sch.confirmations)
         logger.debug("Fetch transfers on block range: ${blockRange.first} - ${blockRange.last}")
