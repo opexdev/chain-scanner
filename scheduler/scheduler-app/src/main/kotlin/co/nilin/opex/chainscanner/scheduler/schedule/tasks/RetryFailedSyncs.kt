@@ -22,7 +22,8 @@ class RetryFailedSyncs(
     private val logger: Logger by LoggerDelegate()
 
     override suspend fun execute(sch: ChainSyncSchedule) {
-        val chainScanner = chainScannerHandler.getScannersByName(sch.chainName).firstOrNull() ?: return
+        val chainScanner = chainScannerHandler.getScannersByName(sch.chainName).firstOrNull()
+            ?: throw IllegalStateException("No chain scanner found for chain: ${sch.chainName}")
         val chainSyncRetries = chainSyncRetryHandler.findAllActive(sch.chainName)
         val blockRange = chainSyncRetries.take(chainScanner.maxBlockRange)
         supervisorScope {
