@@ -34,9 +34,8 @@ class SyncLatestTransfers(
                 val br = blockRange.take(chainScanner.maxBlockRange)
                 br.forEach { bn ->
                     launch {
-                        getTransfersSubTask.fetch(sch, chainScanner, bn.toBigInteger()).onSuccess {
-                            updateChainSyncRecord(sch.chainName, bn.toBigInteger())
-                        }
+                        getTransfersSubTask.fetch(sch, chainScanner, bn.toBigInteger())
+                        updateChainSyncRecord(sch.chainName, bn.toBigInteger())
                     }
                 }
             }
