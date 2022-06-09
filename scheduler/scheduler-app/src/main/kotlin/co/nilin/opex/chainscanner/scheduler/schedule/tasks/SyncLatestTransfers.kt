@@ -35,10 +35,10 @@ class SyncLatestTransfers(
                 br.forEach { bn ->
                     launch {
                         getTransfersSubTask.fetch(sch, chainScanner, bn.toBigInteger())
-                        updateChainSyncRecord(sch.chainName, bn.toBigInteger())
                     }
                 }
             }
+            updateChainSyncRecord(sch.chainName, blockRange.last.toBigInteger())
         }.onSuccess {
             logger.info("Successfully fetched transfers for block range: ${blockRange.first} - ${blockRange.last}")
         }
