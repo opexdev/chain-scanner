@@ -1,10 +1,10 @@
 package co.nilin.opex.chainscanner.scheduler.schedule
 
 import co.nilin.opex.chainscanner.scheduler.core.spi.ChainSyncSchedulerHandler
+import co.nilin.opex.chainscanner.scheduler.coroutines.Dispatchers
 import co.nilin.opex.chainscanner.scheduler.schedule.tasks.RetryFailedSyncs
 import co.nilin.opex.chainscanner.scheduler.schedule.tasks.SyncLatestTransfers
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 
@@ -17,7 +17,7 @@ class SyncLatestTransfersSchedule(
     errorRatePeriod: Int
 ) : ChainSyncScheduleRunner(
     sync,
-    CoroutineScope(Dispatchers.IO),
+    CoroutineScope(Dispatchers.SCHEDULER),
     chainSyncSchedulerHandler,
     errorRate,
     errorRatePeriod
@@ -33,7 +33,7 @@ class RetryFailedSyncsSchedule(
     errorRatePeriod: Int
 ) : ChainSyncScheduleRunner(
     retry,
-    CoroutineScope(Dispatchers.IO),
+    CoroutineScope(Dispatchers.SCHEDULER),
     chainSyncSchedulerHandler,
     errorRate,
     errorRatePeriod
