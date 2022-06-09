@@ -41,7 +41,7 @@ abstract class ChainSyncScheduleRunner(
         if (!scope.isCompleted()) return
         scope.launch {
             val schedules = chainSyncSchedulerHandler.fetchActiveSchedules(LocalDateTime.now())
-            logger.debug("Schedules count: ${schedules.size}")
+            logger.trace("Active schedules count: ${schedules.size}")
             coroutineScope {
                 schedules.forEach { sch ->
                     launch {
@@ -50,6 +50,7 @@ abstract class ChainSyncScheduleRunner(
                         }.recoverCatching {
                             rethrowScheduleExceptions(it, sch)
                         }.onFailure {
+                            logger.error("Schedule error on chain: ${sch.chainName} message: ${it.message}")
                             sch.enqueueNextSchedule(sch.errorDelay)
                             val isRateLimitReached = !rateLimiterRegistry.rateLimiter(sch.chainName).acquirePermission()
                             if (isRateLimitReached) {
@@ -62,12 +63,11 @@ abstract class ChainSyncScheduleRunner(
                     }
                 }
             }
-            logger.debug("Successfully executed all schedule")
+            if (schedules.isNotEmpty()) logger.debug("Successfully executed all schedules")
         }
     }
 
     private suspend fun rethrowScheduleExceptions(e: Throwable, sch: ChainSyncSchedule) = when (e) {
-        is TimeoutCancellationException -> logger.error("Schedule timeout on chain: ${sch.chainName}")
         is RateLimitException -> sch.enqueueNextSchedule(e.delay)
         else -> throw e
     }

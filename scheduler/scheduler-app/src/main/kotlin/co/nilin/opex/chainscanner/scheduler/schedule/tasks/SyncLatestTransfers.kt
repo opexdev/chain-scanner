@@ -5,7 +5,6 @@ import co.nilin.opex.chainscanner.scheduler.core.po.ChainSyncRecord
 import co.nilin.opex.chainscanner.scheduler.core.po.ChainSyncSchedule
 import co.nilin.opex.chainscanner.scheduler.core.spi.ChainScannerHandler
 import co.nilin.opex.chainscanner.scheduler.core.spi.ChainSyncRecordHandler
-import co.nilin.opex.chainscanner.scheduler.core.spi.ChainSyncSchedulerHandler
 import co.nilin.opex.chainscanner.scheduler.core.spi.ScheduleTask
 import co.nilin.opex.chainscanner.scheduler.service.GetTransfersSubTask
 import co.nilin.opex.chainscanner.scheduler.utils.LoggerDelegate
@@ -26,7 +25,9 @@ class SyncLatestTransfers(
     private val logger: Logger by LoggerDelegate()
 
     override suspend fun execute(sch: ChainSyncSchedule) {
-        val chainScanner = chainScannerHandler.getScannersByName(sch.chainName).firstOrNull() ?: return
+        val chainScanner = chainScannerHandler.getScannersByName(sch.chainName).firstOrNull()?.also {
+            logger.debug("No chain scanner found")
+        } ?: return
         val blockRange = blockRangeCalculator.calculateBlockRange(chainScanner, sch.confirmations)
         logger.debug("Fetch transfers on block range: ${blockRange.first} - ${blockRange.last}")
         runCatching {
