@@ -20,20 +20,31 @@ class ScannerController(
 ) {
     @GetMapping("/transfers")
     suspend fun getTransfers(blockNumber: BigInteger?): List<Transfer> = runCatching {
+        blockNumberCheck(blockNumber)
         syncService.getTransfers(blockNumber)
-    }.onFailure(::handleRateLimit).getOrThrow()
+    }.onFailure(::handleRateLimit).onFailure(::handleUnexpected).getOrThrow()
 
     @GetMapping("/block-number")
     suspend fun getBlockNumber(): BigInteger = runCatching {
         chainService.getLatestBlock()
-    }.onFailure(::handleRateLimit).getOrThrow()
+    }.onFailure(::handleRateLimit).onFailure(::handleUnexpected).getOrThrow()
 
     @DeleteMapping("/clear-cache")
-    suspend fun clearCache(blockNumber: BigInteger) {
+    suspend fun clearCache(blockNumber: BigInteger) = runCatching {
+        blockNumberCheck(blockNumber)
         transferCacheHandler.clearCache(blockNumber)
-    }
+    }.onFailure(::handleUnexpected).getOrThrow()
 
     private fun handleRateLimit(e: Throwable) {
         if (e is RateLimitException) throw ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS)
+    }
+
+    private fun handleUnexpected(e: Throwable) {
+        throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.message)
+    }
+
+    private fun blockNumberCheck(blockNumber: BigInteger?) {
+        val m = "`blockNumber` must be positive"
+        if (blockNumber?.abs() !== blockNumber) throw ResponseStatusException(HttpStatus.BAD_REQUEST, m)
     }
 }
