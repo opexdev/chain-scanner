@@ -1,6 +1,5 @@
 package co.nilin.opex.chainscanner.scheduler.schedule
 
-import co.nilin.opex.chainscanner.scheduler.core.po.ChainScanner
 import co.nilin.opex.chainscanner.scheduler.core.po.ChainSyncSchedule
 import co.nilin.opex.chainscanner.scheduler.core.spi.ChainSyncSchedulerHandler
 import co.nilin.opex.chainscanner.scheduler.core.spi.ScheduleTask
@@ -67,7 +66,7 @@ abstract class ChainSyncScheduleRunner(
         }
     }
 
-    private suspend fun rethrowScheduleExceptions(        e: Throwable,        sch: ChainSyncSchedule    ) = when (e) {
+    private suspend fun rethrowScheduleExceptions(e: Throwable, sch: ChainSyncSchedule) = when (e) {
         is TimeoutCancellationException -> logger.error("Schedule timeout on chain: ${sch.chainName}")
         is RateLimitException -> sch.enqueueNextSchedule(e.delay)
         else -> throw e

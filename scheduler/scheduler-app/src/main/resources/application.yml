@@ -27,7 +27,7 @@ spring:
     import: vault://secret/${spring.application.name}
 logging:
   level:
-    co.nilin: INFO
+    co.nilin: TRACE
     reactor.netty.http.client: OFF
 app:
   on-sync-webhook-url: http://bc-gateway:8080/wallet-sync
