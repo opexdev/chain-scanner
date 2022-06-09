@@ -34,7 +34,7 @@ class InitializeService(
     }
 
     private suspend fun addChains(data: List<Chain>) = coroutineScope {
-        data.map { chainRepository.insert(it.name).awaitSingleOrNull() }
+        data.map { runCatching { chainRepository.insert(it.name).awaitSingleOrNull() } }
     }
 
     private suspend fun addSchedules(data: Preferences) = coroutineScope {
