@@ -37,7 +37,7 @@ class SyncLatestTransfers(
                     launch {
                         getTransfersSubTask.fetch(sch, chainScanner, bn.toBigInteger()).onSuccess {
                             updateChainSyncRecord(sch.chainName, bn.toBigInteger())
-                        }.getOrThrow()
+                        }
                     }
                 }
             }

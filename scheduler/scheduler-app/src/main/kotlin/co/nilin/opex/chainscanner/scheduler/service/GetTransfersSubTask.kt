@@ -23,10 +23,9 @@ class GetTransfersSubTask(
 ) {
     suspend fun fetch(sch: ChainSyncSchedule, chainScanner: ChainScanner, blockNumber: BigInteger) = runCatching {
         scannerProxy.getTransfers(chainScanner.url, blockNumber)
-    }.recoverCatching { e ->
-        if (e is WebClientResponseException && e.isTooManyRequests) throw RateLimitException()
-        else if (e is WebClientRequestException && e.isConnectionError) throw ScannerConnectException("Get transfers")
-        else throw e
+    }.onFailure { e ->
+        if (e is WebClientRequestException && e.isConnectionError)
+            throw ScannerConnectException("scannerProxy.getTransfers()")
     }.mapCatching {
         webhookCaller.callWebhook(chainScanner.chainName, it)
     }.onFailure { e ->
@@ -34,7 +33,9 @@ class GetTransfersSubTask(
     }.mapCatching {
         scannerProxy.clearCache(chainScanner.url, blockNumber)
     }.onFailure {
-        if (it is WebClientRequestException && it.isConnectionError) throw ScannerConnectException("Clear cache")
+        if (it is WebClientRequestException && it.isConnectionError)
+            throw ScannerConnectException("scannerProxy.clearCache()")
+        if (it is WebClientResponseException && it.isTooManyRequests) throw RateLimitException()
     }
 
     private suspend fun retry(

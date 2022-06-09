@@ -33,7 +33,7 @@ class RetryFailedSyncs(
                         getTransfersSubTask.fetch(sch, chainScanner, chainSyncRetry.blockNumber).onSuccess {
                             chainSyncRetryHandler.markAsSynced(chainSyncRetry)
                             logger.info("Successfully retried block: ${chainSyncRetry.blockNumber}")
-                        }.getOrThrow()
+                        }
                     }
                 }
             }
