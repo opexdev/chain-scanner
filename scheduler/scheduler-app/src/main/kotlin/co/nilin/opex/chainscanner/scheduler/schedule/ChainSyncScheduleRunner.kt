@@ -49,7 +49,10 @@ abstract class ChainSyncScheduleRunner(
                             rethrowScheduleExceptions(it, sch)
                         }.onFailure {
                             val isRateLimitReached = !rateLimiterRegistry.rateLimiter(sch.chainName).acquirePermission()
-                            if (isRateLimitReached) sch.disable()
+                            if (isRateLimitReached) {
+                                sch.disable()
+                                rateLimiterRegistry.remove(sch.chainName)
+                            }
                         }.onSuccess {
                             logger.debug("Successfully executed chain: ${sch.chainName}")
                         }
