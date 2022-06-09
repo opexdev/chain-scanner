@@ -32,6 +32,6 @@ logging:
 swagger.authUrl: https://api.opex.dev
 app:
   chain:
-    name: ${CHAIN_NAME}
+    name: ${CHAIN_NAME:ethereum}
   rpc:
     endpoint: ${RPC_ENDPOINT}

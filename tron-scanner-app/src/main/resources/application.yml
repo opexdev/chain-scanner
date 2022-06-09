@@ -31,7 +31,7 @@ logging:
     reactor.netty.http.client: DEBUG
 app:
   chain:
-    name: tron
+    name: ${CHAIN_NAME:tron}
   rest-api:
     endpoint: ${REST_ENDPOINT}
     api-key: ${API_KEY}
