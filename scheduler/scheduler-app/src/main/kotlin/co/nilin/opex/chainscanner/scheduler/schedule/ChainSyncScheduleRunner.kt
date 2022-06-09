@@ -42,7 +42,7 @@ abstract class ChainSyncScheduleRunner(
         scope.launch {
             val schedules = chainSyncSchedulerHandler.fetchActiveSchedules(LocalDateTime.now())
             logger.trace("Active schedules count: ${schedules.size}")
-            coroutineScope {
+            supervisorScope {
                 schedules.forEach { sch ->
                     launch {
                         runCatching {
@@ -67,9 +67,12 @@ abstract class ChainSyncScheduleRunner(
         }
     }
 
-    private suspend fun rethrowScheduleExceptions(e: Throwable, sch: ChainSyncSchedule) = when (e) {
-        is RateLimitException -> sch.enqueueNextSchedule(e.delay)
-        else -> throw e
+    private suspend fun rethrowScheduleExceptions(e: Throwable, sch: ChainSyncSchedule) {
+        logger.error("ERROR: ${sch.chainName} message: ${e.message}")
+        return when (e) {
+            is RateLimitException -> sch.enqueueNextSchedule(e.delay)
+            else -> throw e
+        }
     }
 
     private fun ChainSyncSchedule.disable() = runBlocking(Dispatchers.SCHEDULE_ACTOR) {

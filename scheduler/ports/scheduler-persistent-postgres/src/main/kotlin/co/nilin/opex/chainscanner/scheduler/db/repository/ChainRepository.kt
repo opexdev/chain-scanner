@@ -8,6 +8,6 @@ import reactor.core.publisher.Mono
 
 @Repository
 interface ChainRepository : ReactiveCrudRepository<ChainModel, String> {
-    @Query("insert into chains values (:name) on conflict do nothing")
+    @Query("insert into chains values (:name)")
     fun insert(name: String): Mono<Int>
 }
