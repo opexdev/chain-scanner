@@ -47,10 +47,9 @@ abstract class ChainSyncScheduleRunner(
                     launch {
                         runCatching {
                             withTimeout(sch.timeout * 1000) { scheduleTask.execute(sch) }
-                        }.recoverCatching {
-                            rethrowScheduleExceptions(it, sch)
                         }.onFailure {
                             logger.error("Schedule error on chain: ${sch.chainName} message: ${it.message}")
+                            if (it is RateLimitException) sch.enqueueNextSchedule(it.delay)
                             sch.enqueueNextSchedule(sch.errorDelay)
                             val isRateLimitReached = !rateLimiterRegistry.rateLimiter(sch.chainName).acquirePermission()
                             if (isRateLimitReached) {
@@ -64,14 +63,6 @@ abstract class ChainSyncScheduleRunner(
                 }
             }
             if (schedules.isNotEmpty()) logger.debug("Successfully executed all schedules")
-        }
-    }
-
-    private suspend fun rethrowScheduleExceptions(e: Throwable, sch: ChainSyncSchedule) {
-        logger.error("ERROR: ${sch.chainName} message: ${e.message}")
-        return when (e) {
-            is RateLimitException -> sch.enqueueNextSchedule(e.delay)
-            else -> throw e
         }
     }
 
