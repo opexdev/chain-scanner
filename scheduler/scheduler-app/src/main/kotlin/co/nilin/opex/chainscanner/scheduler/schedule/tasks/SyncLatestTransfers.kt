@@ -28,7 +28,7 @@ class SyncLatestTransfers(
         val chainScanner = chainScannerHandler.getScannersByName(sch.chainName).firstOrNull()
             ?: throw IllegalStateException("No chain scanner found for chain: ${sch.chainName}")
         val blockRange = blockRangeCalculator.calculateBlockRange(chainScanner, sch.confirmations)
-        logger.debug("Fetch transfers on block range: ${blockRange.first} - ${blockRange.last}")
+        logger.debug("Fetch transfers of chain: ${sch.chainName} blocks: ${blockRange.first} - ${blockRange.last}")
         runCatching {
             coroutineScope {
                 val br = blockRange.take(chainScanner.maxBlockRange)
@@ -40,7 +40,7 @@ class SyncLatestTransfers(
             }
             updateChainSyncRecord(sch.chainName, blockRange.last.toBigInteger())
         }.onSuccess {
-            logger.info("Successfully fetched transfers for block range: ${blockRange.first} - ${blockRange.last}")
+            logger.info("Successfully fetched transfers of chain: ${sch.chainName}  blocks: ${blockRange.first} - ${blockRange.last}")
         }
     }
 

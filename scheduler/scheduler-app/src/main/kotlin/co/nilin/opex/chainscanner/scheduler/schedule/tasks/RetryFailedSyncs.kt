@@ -29,12 +29,12 @@ class RetryFailedSyncs(
         supervisorScope {
             blockRange.forEach { chainSyncRetry ->
                 launch {
-                    logger.debug("Retry block sync for blockNumber: ${chainSyncRetry.blockNumber}")
+                    logger.debug("Retry syncing for chain: ${sch.chainName} block: ${chainSyncRetry.blockNumber}")
                     getTransfersSubTask.fetch(sch, chainScanner, chainSyncRetry.blockNumber).onSuccess {
                         chainSyncRetryHandler.markAsSynced(chainSyncRetry)
-                        logger.info("Successfully retried block: ${chainSyncRetry.blockNumber}")
+                        logger.info("Successfully retried syncing for chain: ${sch.chainName} block: ${chainSyncRetry.blockNumber}")
                     }.onFailure {
-                        logger.error("Failed to sync block: ${chainSyncRetry.blockNumber} tries: ${chainSyncRetry.retries}/${chainSyncRetry.maxRetries}")
+                        logger.error("Failed to sync chain: ${sch.chainName} block: ${chainSyncRetry.blockNumber} tries: ${chainSyncRetry.retries}/${chainSyncRetry.maxRetries}")
                         if (it is ScannerConnectException) cancel(it.message ?: "Unknown")
                     }
                 }
