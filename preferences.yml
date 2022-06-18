@@ -1,0 +1,18 @@
+chains:
+  - name: test-bsc
+    scanners:
+      - url: http://bsc-scanner:8080
+        maxBlockRange: 30
+        delayOnRateLimit: 300
+    schedule:
+      delay: 6
+      errorDelay: 3
+      timeout: 30
+      maxRetries: 5
+      confirmations: 0
+currencies:
+  - symbol: BUSD
+    name: Binance USD
+    implementations:
+      - chain: bsc
+        tokenAddress: 0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56

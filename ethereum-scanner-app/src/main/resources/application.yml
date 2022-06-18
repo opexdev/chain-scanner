@@ -1,0 +1,37 @@
+server.port: 8080
+spring:
+  application:
+    name: ethereum-scanner
+  main:
+    allow-bean-definition-overriding: false
+  r2dbc:
+    url: r2dbc:postgresql://${DB_IP_PORT:localhost}/opex
+    username: ${dbusername:opex}
+    password: ${dbpassword:hiopex}
+    initialization-mode: always
+  cloud:
+    vault:
+      host: ${VAULT_HOST}
+      port: 8200
+      scheme: http
+      authentication: APPID
+      app-id:
+        user-id: co.nilin.opex.chainscanner.ethereum.vault.VaultUserIdMechanism
+      fail-fast: true
+      kv:
+        enabled: true
+        backend: secret
+        profile-separator: '/'
+        application-name: ${spring.application.name}
+  config:
+    import: vault://secret/${spring.application.name}
+logging:
+  level:
+    co.nilin: INFO
+    reactor.netty.http.client: DEBUG
+swagger.authUrl: https://api.opex.dev
+app:
+  chain:
+    name: ${CHAIN_NAME:ethereum}
+  rpc:
+    endpoint: ${RPC_ENDPOINT}
