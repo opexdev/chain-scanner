@@ -15,7 +15,7 @@ class TransferCacheHandlerImpl(
     private val transferRepository: TransferRepository
 ) : TransferCacheHandler {
     override suspend fun saveTransfers(transfers: List<Transfer>) {
-        transferRepository.saveAll(transfers.map { it.toModel() })
+        transferRepository.saveAll(transfers.map { it.toModel() }).collectList().awaitSingle()
     }
 
     override suspend fun getTransfers(tokenAddresses: List<String>, blockNumber: BigInteger?): List<Transfer> {
