@@ -1,5 +1,6 @@
 package co.nilin.opex.chainscanner.scheduler.schedule
 
+import co.nilin.opex.chainscanner.scheduler.core.spi.ChainScannerHandler
 import co.nilin.opex.chainscanner.scheduler.core.spi.ChainSyncSchedulerHandler
 import co.nilin.opex.chainscanner.scheduler.coroutines.Dispatchers
 import co.nilin.opex.chainscanner.scheduler.schedule.tasks.RetryFailedSyncs
@@ -10,7 +11,9 @@ import org.springframework.stereotype.Service
 
 @Service
 class SyncLatestTransfersSchedule(
-    chainSyncSchedulerHandler: ChainSyncSchedulerHandler, sync: SyncLatestTransfers,
+    chainSyncSchedulerHandler: ChainSyncSchedulerHandler,
+    chainScannerHandler: ChainScannerHandler,
+    sync: SyncLatestTransfers,
     @Value("\${app.schedule.error-rate}")
     errorRate: Int,
     @Value("\${app.schedule.error-rate-period}")
@@ -19,6 +22,7 @@ class SyncLatestTransfersSchedule(
     sync,
     CoroutineScope(Dispatchers.SCHEDULER),
     chainSyncSchedulerHandler,
+    chainScannerHandler,
     errorRate,
     errorRatePeriod
 )
@@ -26,6 +30,7 @@ class SyncLatestTransfersSchedule(
 @Service
 class RetryFailedSyncsSchedule(
     chainSyncSchedulerHandler: ChainSyncSchedulerHandler,
+    chainScannerHandler: ChainScannerHandler,
     retry: RetryFailedSyncs,
     @Value("\${app.schedule.error-rate}")
     errorRate: Int,
@@ -35,6 +40,7 @@ class RetryFailedSyncsSchedule(
     retry,
     CoroutineScope(Dispatchers.SCHEDULER),
     chainSyncSchedulerHandler,
+    chainScannerHandler,
     errorRate,
     errorRatePeriod
 )

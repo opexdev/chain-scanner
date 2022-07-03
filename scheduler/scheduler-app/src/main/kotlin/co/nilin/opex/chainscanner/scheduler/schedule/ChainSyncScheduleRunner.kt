@@ -1,6 +1,7 @@
 package co.nilin.opex.chainscanner.scheduler.schedule
 
 import co.nilin.opex.chainscanner.scheduler.core.po.ChainSyncSchedule
+import co.nilin.opex.chainscanner.scheduler.core.spi.ChainScannerHandler
 import co.nilin.opex.chainscanner.scheduler.core.spi.ChainSyncSchedulerHandler
 import co.nilin.opex.chainscanner.scheduler.core.spi.ScheduleTask
 import co.nilin.opex.chainscanner.scheduler.coroutines.Dispatchers
@@ -20,6 +21,7 @@ abstract class ChainSyncScheduleRunner(
     private val scheduleTask: ScheduleTask,
     private val scope: CoroutineScope,
     private val chainSyncSchedulerHandler: ChainSyncSchedulerHandler,
+    private val chainScannerHandler: ChainScannerHandler,
     private val errorRate: Int,
     private val errorRatePeriod: Int,
 ) {
@@ -45,11 +47,15 @@ abstract class ChainSyncScheduleRunner(
             supervisorScope {
                 schedules.forEach { sch ->
                     launch {
+                        val chainScanners = chainScannerHandler.getScannersByName(sch.chainName)
+                        val cs = chainScanners.firstOrNull()
+                            ?: throw IllegalStateException("No chain scanner found for chain: ${sch.chainName}")
+                        val rateLimitDelay = chainScanners.maxOf { it.delayOnRateLimit }
                         runCatching {
-                            withTimeout(sch.timeout * 1000) { scheduleTask.execute(sch) }
+                            withTimeout(sch.timeout * 1000) { scheduleTask.execute(sch, cs) }
                         }.onFailure {
                             logger.error("Schedule error on chain: ${sch.chainName} message: ${it.message}")
-                            if (it is RateLimitException) sch.enqueueNextSchedule(it.delay)
+                            if (it is RateLimitException) sch.enqueueNextSchedule(rateLimitDelay.toLong())
                             sch.enqueueNextSchedule(sch.errorDelay)
                             val isRateLimitReached = !rateLimiterRegistry.rateLimiter(sch.chainName).acquirePermission()
                             if (isRateLimitReached) {
@@ -69,7 +75,7 @@ abstract class ChainSyncScheduleRunner(
     private fun ChainSyncSchedule.disable() = runBlocking(Dispatchers.SCHEDULE_ACTOR) {
         chainSyncSchedulerHandler.findByChain(chainName)?.takeIf { it.enabled }?.let {
             chainSyncSchedulerHandler.save(it.copy(enabled = false))
-            logger.warn("Disabled schedule on chain : $chainName because of reaching error limit")
+            logger.warn("Disabled schedule on chain : $chainName because of exceeding error limit")
         }
     }
 

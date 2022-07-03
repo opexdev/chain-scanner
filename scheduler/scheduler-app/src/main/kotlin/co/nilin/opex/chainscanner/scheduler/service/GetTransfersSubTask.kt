@@ -6,14 +6,8 @@ import co.nilin.opex.chainscanner.scheduler.core.po.ChainSyncSchedule
 import co.nilin.opex.chainscanner.scheduler.core.spi.ChainSyncRetryHandler
 import co.nilin.opex.chainscanner.scheduler.core.spi.ScannerProxy
 import co.nilin.opex.chainscanner.scheduler.core.spi.WebhookCaller
-import co.nilin.opex.chainscanner.scheduler.exceptions.RateLimitException
-import co.nilin.opex.chainscanner.scheduler.exceptions.ScannerConnectException
-import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
-import org.springframework.web.reactive.function.client.WebClientRequestException
-import org.springframework.web.reactive.function.client.WebClientResponseException
 import java.math.BigInteger
-import java.net.ConnectException
 
 @Service
 class GetTransfersSubTask(
@@ -23,20 +17,12 @@ class GetTransfersSubTask(
 ) {
     suspend fun fetch(sch: ChainSyncSchedule, chainScanner: ChainScanner, blockNumber: BigInteger) = runCatching {
         scannerProxy.getTransfers(chainScanner.url, blockNumber)
-    }.onFailure { e ->
-        if (e is WebClientRequestException && e.isConnectionError)
-            throw ScannerConnectException("scannerProxy.getTransfers()")
     }.mapCatching {
         webhookCaller.callWebhook(chainScanner.chainName, it)
-    }.onFailure { e ->
-        retry(chainScanner, blockNumber, e.message, sch)
+    }.onFailure {
+        retry(chainScanner, blockNumber, it.message, sch)
     }.mapCatching {
         scannerProxy.clearCache(chainScanner.url, blockNumber)
-    }.onFailure {
-        if (it is WebClientRequestException && it.isConnectionError)
-            throw ScannerConnectException("scannerProxy.clearCache()")
-        if (it is WebClientResponseException && it.isTooManyRequests)
-            throw RateLimitException(chainScanner.delayOnRateLimit.toLong(), "Rate limit")
     }
 
     private suspend fun retry(
@@ -44,17 +30,12 @@ class GetTransfersSubTask(
         blockNumber: BigInteger,
         error: String?,
         sch: ChainSyncSchedule
-    ) {
+    ): Boolean {
         val chainSyncRetry =
             chainSyncRetryHandler.findByChainAndBlockNumber(chainScanner.chainName, blockNumber)?.let {
                 it.copy(retries = it.retries + 1, giveUp = it.retries + 1 >= it.maxRetries)
             } ?: ChainSyncRetry(chainScanner.chainName, blockNumber, maxRetries = sch.maxRetries)
         chainSyncRetryHandler.save(chainSyncRetry.copy(error = error))
+        return chainSyncRetry.giveUp
     }
-
-    private val WebClientResponseException.isTooManyRequests: Boolean
-        get() = statusCode == HttpStatus.TOO_MANY_REQUESTS
-
-    private val WebClientRequestException.isConnectionError: Boolean
-        get() = mostSpecificCause is ConnectException
 }
